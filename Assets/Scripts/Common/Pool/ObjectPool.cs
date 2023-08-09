@@ -9,16 +9,17 @@ public class ObjectPool<T> where T : IPoolable
     private Queue<T> unusedObjectQueue = null;
 
     private GameObject prefab = null;
+    private Transform rootTransform;
 
-    public async void Initialize(string _prefabPath, int _initializeCreateCount = 8)
+    public async void Initialize(string _prefabPath, int _initializeCreateCount, Transform _root)
     {
         string prefabPath = Path.Combine("", _prefabPath);
         //.. TODO :: Addressable / 비동기 적용
         prefab = Resources.Load(prefabPath, typeof(GameObject)) as GameObject;
-
-        for(int i = 0; i < _initializeCreateCount; i++)
+        rootTransform = _root;
+        for (int i = 0; i < _initializeCreateCount; i++)
         {
-            EnqueueObject(CreateObject());
+            CreateObject();
         }
     }
 
@@ -57,9 +58,9 @@ public class ObjectPool<T> where T : IPoolable
 
     private T CreateObject()
     {
-        GameObject newObject = GameObject.Instantiate(prefab);
+        GameObject newObject = GameObject.Instantiate(prefab, rootTransform);
         var componenet = newObject.GetComponent<T>();
-
+        EnqueueObject(componenet);
         return componenet;
     }
 

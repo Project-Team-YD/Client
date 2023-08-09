@@ -6,8 +6,13 @@ using UnityEngine;
 public class GameSceneController : BaseSceneController
 {
     #region Enemy
-    private ObjectPool<IPoolable> pool = null;
+    [SerializeField] private Transform monsterPoolRoot;
+    private ObjectPool<IPoolable> monsterPool = null;
     private Queue<EnemyObject> test = new Queue<EnemyObject>();
+    private List<EnemyObject> monsterList = new List<EnemyObject>();
+    private int createCount;
+    private int regenCount;
+    private List<Vector2> summonPosition = new List<Vector2>();
     #endregion
 
     #region Map
@@ -30,8 +35,11 @@ public class GameSceneController : BaseSceneController
 
     private void Start()
     {
-        pool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
-        pool.Initialize("Prefabs/EnemyObject", EnemyTable.getInstance.GetDataCount());
+        createCount = EnemyTable.getInstance.GetCreateCount();
+        regenCount = EnemyTable.getInstance.GetRegenCount();
+
+        monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
+        monsterPool.Initialize("Prefabs/EnemyObject", createCount, monsterPoolRoot);
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -55,6 +63,8 @@ public class GameSceneController : BaseSceneController
 
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;
         }
+
+        CreateMonster();
     }
 
     private void LateUpdate()
@@ -64,28 +74,77 @@ public class GameSceneController : BaseSceneController
 
     private void Update()
     {
-        if (Input.GetKeyUp(KeyCode.Escape))
-        {
+        //if (Input.GetKeyUp(KeyCode.Escape))
+        //{
 
-        }
+        //}
 
-        if (Input.GetKeyDown(KeyCode.Z))
-        {
-            var obj = (EnemyObject)pool.GetObject();
-            obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(test.Count));
-            test.Enqueue(obj);
-        }
+        //if (Input.GetKeyDown(KeyCode.Z))
+        //{
+        //    var obj = (EnemyObject)pool.GetObject();
+        //    obj.OnActivate();
+        //    obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(test.Count));
+        //    test.Enqueue(obj);
+        //}
 
         if (Input.GetKeyDown(KeyCode.X))
         {
-            pool.EnqueueObject(test.Dequeue());
+            monsterPool.EnqueueObject(monsterList[0]);
         }
 
         // 조이패드 임시
         OnClickJoypad();
     }
+    private void CreateMonster()
+    {        
+        for (int i = 0; i < createCount; i++)
+        {
+            var obj = (EnemyObject)monsterPool.GetObject();
+            var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+            if (summonPosition.Contains(monsterPosition))
+            {
+                monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+            }
+            else
+            {
+                summonPosition.Add(monsterPosition);
+            }
+            obj.transform.localPosition = monsterPosition;
+            obj.OnActivate();
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            monsterList.Add(obj);
+        }
+        summonPosition.Clear();
+    }
+    private void RegenMonster()
+    {        
+        for (int i = 0; i < regenCount; i++)
+        {
+            var obj = (EnemyObject)monsterPool.GetObject();
+            var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+            if(summonPosition.Contains(monsterPosition))
+            {
+                monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+            }
+            else
+            {
+                summonPosition.Add(monsterPosition);
+            }
+            obj.transform.localPosition = monsterPosition;
+            obj.OnActivate();
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            monsterList.Add(obj);
+        }
+        summonPosition.Clear();
+    }
+    private Vector2 RandomSummonPosition(float _x, float _y)
+    {        
+        float randomX = Random.Range(-(_x / 2) + 1f, (_x / 2) - 1f);
+        float randomY = Random.Range(-(_y / 2) + 1f, (_y / 2) - 1f);
+        Vector2 position = new Vector2(randomX, randomY);        
 
+        return position;
+    }
     #region MapCreate
     public void MapInfoInit(MapInfo _info)
     {

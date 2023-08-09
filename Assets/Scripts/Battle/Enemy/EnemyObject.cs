@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class EnemyObject : MonoBehaviour, IPoolable
 {
+    private MonsterType type;
+    private float hp;
+    private float attackDistance;
     public void Init(EnemyInfo _info)
     {
-        name = _info.index.ToString();
+        name = _info.name.ToString();
+        type = _info.type;
+        hp = _info.hp;
+        attackDistance = _info.attackDistance;
     }
 
     public void OnActivate()
