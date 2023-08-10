@@ -12,7 +12,7 @@ public class GameSceneController : BaseSceneController
     private List<EnemyObject> monsterList = new List<EnemyObject>();
     private int createCount;
     private int regenCount;
-    private List<Vector2> summonPosition = new List<Vector2>();
+    private List<Vector2> summonPosition = new List<Vector2>();    
     #endregion
 
     #region Map
@@ -61,10 +61,11 @@ public class GameSceneController : BaseSceneController
 
             cameraController.SetMapSize(map.MapWidth, map.MapHeight);
 
-            localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;
+            localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
         }
 
-        CreateMonster();
+        StartCoroutine(CreateDelay());
+        StartCoroutine(RegenDelay());
     }
 
     private void LateUpdate()
@@ -87,13 +88,19 @@ public class GameSceneController : BaseSceneController
         //    test.Enqueue(obj);
         //}
 
-        if (Input.GetKeyDown(KeyCode.X))
-        {
-            monsterPool.EnqueueObject(monsterList[0]);
-        }
+        //if (Input.GetKeyDown(KeyCode.X))
+        //{
+        //    monsterPool.EnqueueObject(monsterList[0]);
+        //}
 
         // 조이패드 임시
         OnClickJoypad();
+
+        // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
+        for (int i = 0; i < monsterList.Count; i++)
+        {
+            monsterList[i].OnMoveTarget(playerTransform.gameObject);
+        }
     }
     private void CreateMonster()
     {        
@@ -116,6 +123,11 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
+    private IEnumerator CreateDelay()
+    {
+        yield return YieldCache.WaitForSeconds(1.5f);
+        CreateMonster();
+    }
     private void RegenMonster()
     {        
         for (int i = 0; i < regenCount; i++)
@@ -136,6 +148,14 @@ public class GameSceneController : BaseSceneController
             monsterList.Add(obj);
         }
         summonPosition.Clear();
+    }
+    private IEnumerator RegenDelay()
+    {
+        while (true)
+        {
+            yield return YieldCache.WaitForSeconds(5f);
+            RegenMonster();
+        }
     }
     private Vector2 RandomSummonPosition(float _x, float _y)
     {        

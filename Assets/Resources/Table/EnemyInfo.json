@@ -3,6 +3,7 @@
 		"name": "CloseMonster",
 		"type": "Close",
 		"hp": 20,
-		"attackDistance": 0,		
+		"moveSpeed": 3,
+		"attackDistance": 0
 	}
 ]
