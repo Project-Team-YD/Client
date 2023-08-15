@@ -22,6 +22,14 @@ public class EnemyObject : MonoBehaviour, IPoolable
     public void OnMoveTarget(GameObject _target)
     {
         var direction = (_target.transform.localPosition - gameObject.transform.localPosition).normalized;
+        if(direction.x < 0f)
+        {
+            spriteRenderer.flipX = true;
+        }
+        else
+        {
+            spriteRenderer.flipX = false;
+        }
         transform.localPosition += (moveSpeed * Time.deltaTime) * direction;
     }
 
