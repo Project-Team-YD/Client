@@ -8,9 +8,9 @@
 using grpc = global::Grpc.Core;
 
 namespace MainGrpcClient {
-  public static partial class GlobalRpcService
+  public static partial class GlobalGRpcService
   {
-    static readonly string __ServiceName = "main_grpc.GlobalRpcService";
+    static readonly string __ServiceName = "main_grpc.GlobalGRpcService";
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static void __Helper_SerializeMessage(global::Google.Protobuf.IMessage message, grpc::SerializationContext context)
@@ -51,10 +51,10 @@ namespace MainGrpcClient {
     static readonly grpc::Marshaller<global::MainGrpcClient.GlobalGrpcResponse> __Marshaller_main_grpc_GlobalGrpcResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::MainGrpcClient.GlobalGrpcResponse.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse> __Method_SayHello = new grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(
+    static readonly grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse> __Method_GlobalGRpc = new grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(
         grpc::MethodType.Unary,
         __ServiceName,
-        "SayHello",
+        "GlobalGRpc",
         __Marshaller_main_grpc_GlobalGrpcRequest,
         __Marshaller_main_grpc_GlobalGrpcResponse);
 
@@ -64,80 +64,80 @@ namespace MainGrpcClient {
       get { return global::MainGrpcClient.GlobalGrpcReflection.Descriptor.Services[0]; }
     }
 
-    /// <summary>Base class for server-side implementations of GlobalRpcService</summary>
-    [grpc::BindServiceMethod(typeof(GlobalRpcService), "BindService")]
-    public abstract partial class GlobalRpcServiceBase
+    /// <summary>Base class for server-side implementations of GlobalGRpcService</summary>
+    [grpc::BindServiceMethod(typeof(GlobalGRpcService), "BindService")]
+    public abstract partial class GlobalGRpcServiceBase
     {
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::MainGrpcClient.GlobalGrpcResponse> SayHello(global::MainGrpcClient.GlobalGrpcRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::MainGrpcClient.GlobalGrpcResponse> GlobalGRpc(global::MainGrpcClient.GlobalGrpcRequest request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
 
     }
 
-    /// <summary>Client for GlobalRpcService</summary>
-    public partial class GlobalRpcServiceClient : grpc::ClientBase<GlobalRpcServiceClient>
+    /// <summary>Client for GlobalGRpcService</summary>
+    public partial class GlobalGRpcServiceClient : grpc::ClientBase<GlobalGRpcServiceClient>
     {
-      /// <summary>Creates a new client for GlobalRpcService</summary>
+      /// <summary>Creates a new client for GlobalGRpcService</summary>
       /// <param name="channel">The channel to use to make remote calls.</param>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public GlobalRpcServiceClient(grpc::ChannelBase channel) : base(channel)
+      public GlobalGRpcServiceClient(grpc::ChannelBase channel) : base(channel)
       {
       }
-      /// <summary>Creates a new client for GlobalRpcService that uses a custom <c>CallInvoker</c>.</summary>
+      /// <summary>Creates a new client for GlobalGRpcService that uses a custom <c>CallInvoker</c>.</summary>
       /// <param name="callInvoker">The callInvoker to use to make remote calls.</param>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public GlobalRpcServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
+      public GlobalGRpcServiceClient(grpc::CallInvoker callInvoker) : base(callInvoker)
       {
       }
       /// <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      protected GlobalRpcServiceClient() : base()
+      protected GlobalGRpcServiceClient() : base()
       {
       }
       /// <summary>Protected constructor to allow creation of configured clients.</summary>
       /// <param name="configuration">The client configuration.</param>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      protected GlobalRpcServiceClient(ClientBaseConfiguration configuration) : base(configuration)
+      protected GlobalGRpcServiceClient(ClientBaseConfiguration configuration) : base(configuration)
       {
       }
 
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::MainGrpcClient.GlobalGrpcResponse SayHello(global::MainGrpcClient.GlobalGrpcRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual global::MainGrpcClient.GlobalGrpcResponse GlobalGRpc(global::MainGrpcClient.GlobalGrpcRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return SayHello(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+        return GlobalGRpc(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::MainGrpcClient.GlobalGrpcResponse SayHello(global::MainGrpcClient.GlobalGrpcRequest request, grpc::CallOptions options)
+      public virtual global::MainGrpcClient.GlobalGrpcResponse GlobalGRpc(global::MainGrpcClient.GlobalGrpcRequest request, grpc::CallOptions options)
       {
-        return CallInvoker.BlockingUnaryCall(__Method_SayHello, null, options, request);
+        return CallInvoker.BlockingUnaryCall(__Method_GlobalGRpc, null, options, request);
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::MainGrpcClient.GlobalGrpcResponse> SayHelloAsync(global::MainGrpcClient.GlobalGrpcRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      public virtual grpc::AsyncUnaryCall<global::MainGrpcClient.GlobalGrpcResponse> GlobalGRpcAsync(global::MainGrpcClient.GlobalGrpcRequest request, grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
       {
-        return SayHelloAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
+        return GlobalGRpcAsync(request, new grpc::CallOptions(headers, deadline, cancellationToken));
       }
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual grpc::AsyncUnaryCall<global::MainGrpcClient.GlobalGrpcResponse> SayHelloAsync(global::MainGrpcClient.GlobalGrpcRequest request, grpc::CallOptions options)
+      public virtual grpc::AsyncUnaryCall<global::MainGrpcClient.GlobalGrpcResponse> GlobalGRpcAsync(global::MainGrpcClient.GlobalGrpcRequest request, grpc::CallOptions options)
       {
-        return CallInvoker.AsyncUnaryCall(__Method_SayHello, null, options, request);
+        return CallInvoker.AsyncUnaryCall(__Method_GlobalGRpc, null, options, request);
       }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      protected override GlobalRpcServiceClient NewInstance(ClientBaseConfiguration configuration)
+      protected override GlobalGRpcServiceClient NewInstance(ClientBaseConfiguration configuration)
       {
-        return new GlobalRpcServiceClient(configuration);
+        return new GlobalGRpcServiceClient(configuration);
       }
     }
 
     /// <summary>Creates service definition that can be registered with a server</summary>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public static grpc::ServerServiceDefinition BindService(GlobalRpcServiceBase serviceImpl)
+    public static grpc::ServerServiceDefinition BindService(GlobalGRpcServiceBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_SayHello, serviceImpl.SayHello).Build();
+          .AddMethod(__Method_GlobalGRpc, serviceImpl.GlobalGRpc).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -145,9 +145,9 @@ namespace MainGrpcClient {
     /// <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
     /// <param name="serviceImpl">An object implementing the server-side handling logic.</param>
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    public static void BindService(grpc::ServiceBinderBase serviceBinder, GlobalRpcServiceBase serviceImpl)
+    public static void BindService(grpc::ServiceBinderBase serviceBinder, GlobalGRpcServiceBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SayHello, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(serviceImpl.SayHello));
+      serviceBinder.AddMethod(__Method_GlobalGRpc, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(serviceImpl.GlobalGRpc));
     }
 
   }
