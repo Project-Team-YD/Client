@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 public class GameSceneController : BaseSceneController
@@ -12,7 +14,7 @@ public class GameSceneController : BaseSceneController
     private List<EnemyObject> monsterList = new List<EnemyObject>();
     private int createCount;
     private int regenCount;
-    private List<Vector2> summonPosition = new List<Vector2>();    
+    private List<Vector2> summonPosition = new List<Vector2>();
     #endregion
 
     #region Map
@@ -28,12 +30,18 @@ public class GameSceneController : BaseSceneController
     private float height;
     #endregion
 
+    #region UniTask
+    private CancellationToken monsterCreateCancel = new CancellationToken();
+    private CancellationToken monsterRegenCancel = new CancellationToken();
+    private CancellationToken monsterMoveCancel = new CancellationToken();
+    #endregion
+
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
     }
 
-    private void Start()
+    private async void Start()
     {
         createCount = EnemyTable.getInstance.GetCreateCount();
         regenCount = EnemyTable.getInstance.GetRegenCount();
@@ -64,8 +72,10 @@ public class GameSceneController : BaseSceneController
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
         }
 
-        StartCoroutine(CreateDelay());
-        StartCoroutine(RegenDelay());
+        await CreateMonster();
+        RegenMonster().Forget();
+
+        StartMoveMonster();
     }
 
     private void LateUpdate()
@@ -95,15 +105,12 @@ public class GameSceneController : BaseSceneController
 
         // 조이패드 임시
         OnClickJoypad();
-
-        // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
-        for (int i = 0; i < monsterList.Count; i++)
-        {
-            monsterList[i].OnMoveTarget(playerTransform.gameObject);
-        }
     }
-    private void CreateMonster()
-    {        
+
+    private async UniTask CreateMonster()
+    {
+        await UniTask.Delay(1500, cancellationToken: monsterCreateCancel);
+
         for (int i = 0; i < createCount; i++)
         {
             var obj = (EnemyObject)monsterPool.GetObject();
@@ -123,18 +130,16 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
-    private IEnumerator CreateDelay()
+
+    private async UniTaskVoid RegenMonster()
     {
-        yield return YieldCache.WaitForSeconds(1.5f);
-        CreateMonster();
-    }
-    private void RegenMonster()
-    {        
+        await UniTask.Delay(5000, cancellationToken: monsterRegenCancel);
+
         for (int i = 0; i < regenCount; i++)
         {
             var obj = (EnemyObject)monsterPool.GetObject();
             var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
-            if(summonPosition.Contains(monsterPosition))
+            if (summonPosition.Contains(monsterPosition))
             {
                 monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
             }
@@ -149,28 +154,43 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
-    private IEnumerator RegenDelay()
+
+    private async void StartMoveMonster()
+    {
+        await MoveMonster();
+    }
+
+    // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
+    private async UniTask MoveMonster()
     {
         while (true)
         {
-            yield return YieldCache.WaitForSeconds(5f);
-            RegenMonster();
+            for (int i = 0; i < monsterList.Count; i++)
+            {
+                if (monsterList[i].gameObject.activeSelf)
+                    // playerTarget 생성때 넣어주는 방법 생각해보기
+                    monsterList[i].OnMoveTarget(playerTransform.gameObject);
+            }
+
+            await UniTask.Yield();
         }
     }
+
     private Vector2 RandomSummonPosition(float _x, float _y)
-    {        
+    {
         float randomX = Random.Range(-(_x / 2) + 1f, (_x / 2) - 1f);
         float randomY = Random.Range(-(_y / 2) + 1f, (_y / 2) - 1f);
-        Vector2 position = new Vector2(randomX, randomY);        
+        Vector2 position = new Vector2(randomX, randomY);
 
         return position;
     }
+
     #region MapCreate
     public void MapInfoInit(MapInfo _info)
     {
         backgroundSpriteRenderer.color = _info.MapBackgroundColor;
         width = _info.MapWidth;
-        height = _info.MapHeight;        
+        height = _info.MapHeight;
         spriteRenderer.transform.localPosition = Vector3.zero;
         spriteRenderer.drawMode = SpriteDrawMode.Tiled;
         spriteRenderer.sprite = GetMapSprite(_info.MapImage);
@@ -178,7 +198,7 @@ public class GameSceneController : BaseSceneController
         boundarySpriteRenderer.sprite = GetMapSprite(_info.BoundaryImage);
         boundarySpriteRenderer.transform.localScale = new Vector2(width / 10, height / 10);
         boundarySpriteRenderer.color = _info.BoundaryColor;
-        if(_info.ObstructionInfos != null)
+        if (_info.ObstructionInfos != null)
         {
             int count = _info.ObstructionInfos.Length;
             for (int i = 0; i < count; i++)

@@ -97,78 +97,78 @@ public struct JobAABBController : IJob
 //using Unity.Mathematics;
 //using Unity.Burst;
 
-public class EnemySpawner : MonoBehaviour
-{
-    public GameObject enemyPrefab;
-    public int enemyCount = 10;
-    public float spawnRadius = 10f;
+//public class EnemySpawner : MonoBehaviour
+//{
+//    public GameObject enemyPrefab;
+//    public int enemyCount = 10;
+//    public float spawnRadius = 10f;
 
-    private NativeArray<Vector3> positions;
-    private Transform playerTransform;
-    private JobHandle spawnerJobHandle;
+//    private NativeArray<Vector3> positions;
+//    private Transform playerTransform;
+//    private JobHandle spawnerJobHandle;
 
-    private void Start()
-    {
-        positions = new NativeArray<Vector3>(enemyCount, Allocator.Persistent);
-        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
-        SpawnEnemies();
-    }
+//    private void Start()
+//    {
+//        positions = new NativeArray<Vector3>(enemyCount, Allocator.Persistent);
+//        playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
+//        SpawnEnemies();
+//    }
 
-    private void Update()
-    {
-        if (spawnerJobHandle.IsCompleted)
-        {
-            MoveEnemies();
-            spawnerJobHandle.Complete();
-            SpawnEnemies();
-        }
-    }
+//    private void Update()
+//    {
+//        if (spawnerJobHandle.IsCompleted)
+//        {
+//            MoveEnemies();
+//            spawnerJobHandle.Complete();
+//            SpawnEnemies();
+//        }
+//    }
 
-    private void OnDestroy()
-    {
-        spawnerJobHandle.Complete();
-        positions.Dispose();
-    }
+//    private void OnDestroy()
+//    {
+//        spawnerJobHandle.Complete();
+//        positions.Dispose();
+//    }
 
-    private void SpawnEnemies()
-    {
-        for (int i = 0; i < enemyCount; i++)
-        {
-            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * spawnRadius;
-            Vector3 spawnPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
-            positions[i] = spawnPosition;
-            Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
-        }
-    }
+//    private void SpawnEnemies()
+//    {
+//        for (int i = 0; i < enemyCount; i++)
+//        {
+//            Vector2 randomPoint = UnityEngine.Random.insideUnitCircle * spawnRadius;
+//            Vector3 spawnPosition = new Vector3(randomPoint.x, 0f, randomPoint.y);
+//            positions[i] = spawnPosition;
+//            Instantiate(enemyPrefab, spawnPosition, Quaternion.identity);
+//        }
+//    }
 
-    //[BurstCompile]
-    private struct MoveJob : IJobParallelForTransform
-    {
-        [ReadOnly] public NativeArray<Vector3> positions;
-        public TransformAccessArray transforms;
-        public float speed;
-        public float deltaTime;
+//    //[BurstCompile]
+//    private struct MoveJob : IJobParallelForTransform
+//    {
+//        [ReadOnly] public NativeArray<Vector3> positions;
+//        public TransformAccessArray transforms;
+//        public float speed;
+//        public float deltaTime;
 
-        public void Execute(int index, TransformAccess transform)
-        {
-            Vector3 direction = positions[index] - transform.position;
-            transform.position += direction.normalized * speed * deltaTime;
-        }
-    }
+//        public void Execute(int index, TransformAccess transform)
+//        {
+//            Vector3 direction = positions[index] - transform.position;
+//            transform.position += direction.normalized * speed * deltaTime;
+//        }
+//    }
 
-    private void MoveEnemies()
-    {
-        var transforms = new TransformAccessArray(enemyCount);
-        var moveJob = new MoveJob
-        {
-            positions = positions,
-            transforms = transforms,
-            speed = 5f, // Adjust the speed as desired
-            deltaTime = Time.deltaTime
-        };
-        //transforms.SetTransforms(enemyPrefab.transform);
-        spawnerJobHandle = moveJob.Schedule(transforms);
-        JobHandle.ScheduleBatchedJobs();
-        transforms.Dispose();
-    }
-}
+//    private void MoveEnemies()
+//    {
+//        var transforms = new TransformAccessArray(enemyCount);
+//        var moveJob = new MoveJob
+//        {
+//            positions = positions,
+//            transforms = transforms,
+//            speed = 5f, // Adjust the speed as desired
+//            deltaTime = Time.deltaTime
+//        };
+//        //transforms.SetTransforms(enemyPrefab.transform);
+//        spawnerJobHandle = moveJob.Schedule(transforms);
+//        JobHandle.ScheduleBatchedJobs();
+//        transforms.Dispose();
+//    }
+//}

@@ -9,6 +9,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private float moveSpeed;
     private float attackDistance;
     private SpriteRenderer spriteRenderer;
+
     public void Init(EnemyInfo _info)
     {
         name = _info.name.ToString();
