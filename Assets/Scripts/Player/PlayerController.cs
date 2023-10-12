@@ -15,6 +15,21 @@ public class PlayerController : BasePlayerController
     private SpriteRenderer playerSprite;
     private Animator playerAnim;
 
+    private AABB curAABB;
+
+    public AABB GetPlayerAABB
+    {
+        get
+        {
+            if (curAABB == null)
+            {
+                curAABB = new AABB(this.transform, playerSprite.size);
+            }
+
+            return curAABB;
+        }
+    }
+
     public PlayerController(Transform _transform) : base(_transform)
     {
         playerSprite = _transform.gameObject.GetComponent<SpriteRenderer>();
@@ -26,7 +41,7 @@ public class PlayerController : BasePlayerController
     public Vector3 SetMapSize
     {
         set
-        { 
+        {
             //mapSize = value * 0.5f;
             // TODO:: 임시로 캐릭터 크기는 scale로 추후 수정필요
             mapSizeWidth = value.x * HALF - (transform.localScale.x + HALF); // * -> + 로 변경..맵 끝과 플레이어 자기 자신의 크기 반절만큼 덜 가기위해...
@@ -53,7 +68,7 @@ public class PlayerController : BasePlayerController
 
         _speed *= speed;
 
-        base.OnMove(_dir, _speed);        
+        base.OnMove(_dir, _speed);
     }
 
     public Transform GetPlayerTransform { get { return transform; } }

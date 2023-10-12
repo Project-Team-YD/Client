@@ -19,12 +19,12 @@ public class AABB
         thisTransform = _transform;
     }
 
-    public float GetLift
+    public float GetLeft
     {
         get { return thisTransform.position.x - size.x; }
     }
 
-    public float GetLight
+    public float GetRight
     {
         get { return thisTransform.position.x + size.x; }
     }
@@ -47,7 +47,7 @@ public class AABB
     public bool CheckCollision(AABB _other)
     {
         // 충돌 안함
-        if (GetLight < _other.GetLift || GetLift > _other.GetLight) return false;
+        if (GetRight < _other.GetLeft || GetLeft > _other.GetRight) return false;
         if (GetTop < _other.GetButtom || GetButtom > _other.GetTop) return false;
 
         // 충돌

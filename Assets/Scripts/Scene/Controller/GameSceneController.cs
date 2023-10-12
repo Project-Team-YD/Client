@@ -44,7 +44,7 @@ public class GameSceneController : BaseSceneController
     private async void Start()
     {
         createCount = EnemyTable.getInstance.GetCreateCount();
-        regenCount = EnemyTable.getInstance.GetRegenCount();
+        regenCount =  EnemyTable.getInstance.GetRegenCount();
 
         monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
         monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot);
@@ -76,6 +76,8 @@ public class GameSceneController : BaseSceneController
         RegenMonster().Forget();
 
         StartMoveMonster();
+
+        StartCheckMonster();
     }
 
     private void LateUpdate()
@@ -271,4 +273,30 @@ public class GameSceneController : BaseSceneController
             joypadController.OnJoypadUp();
         }
     }
+
+
+    private async void StartCheckMonster()
+    {
+        await CheckCollisionMonster();
+    }
+
+    // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
+    private async UniTask CheckCollisionMonster()
+    {
+        while (true)
+        {
+            for (int i = 0; i < monsterList.Count; i++)
+            {
+                var isCollision = monsterList[i].OnCheckCollision(localPlayerController.GetPlayerAABB);
+
+                if (isCollision)
+                {
+                    Debug.Log($"충돌 / {i}번");
+                }
+            }
+
+            await UniTask.Yield();
+        }
+    }
+
 }

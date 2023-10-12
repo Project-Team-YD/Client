@@ -13,11 +13,13 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private MonsterState nowState;
     private Animator monsterAnim;
 
+    private AABB curAABB;
+
     [SerializeField]
     private RuntimeAnimatorController[] Anim;
     private void Awake()
     {
-        monsterAnim = gameObject.GetComponent<Animator>();        
+        monsterAnim = gameObject.GetComponent<Animator>();
     }
 
     public void Init(EnemyInfo _info)
@@ -49,7 +51,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
             //    spriteRenderer.flipX = false;
             //}
             spriteRenderer.flipX = isLeft;
-            if(type == MonsterType.Long)
+            if (type == MonsterType.Long)
             {
                 spriteRenderer.flipX = !isLeft;
             }
@@ -75,5 +77,16 @@ public class EnemyObject : MonoBehaviour, IPoolable
     public void OnDeactivate()
     {
         gameObject.SetActive(false);
+    }
+
+    public bool OnCheckCollision(AABB _other)
+    {
+        if (curAABB == null)
+        {
+            var size = gameObject.GetComponent<SpriteRenderer>().size;
+            curAABB = new AABB(this.transform, size);
+        }
+
+        return curAABB.CheckCollision(_other);
     }
 }
