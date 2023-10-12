@@ -8,7 +8,15 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private float hp;
     private float moveSpeed;
     private float attackDistance;
+    private float attackPower;
     private SpriteRenderer spriteRenderer;
+    private MonsterState nowState;
+    private Animator monsterAnim;
+
+    private void Awake()
+    {
+        monsterAnim = gameObject.GetComponent<Animator>();        
+    }
 
     public void Init(EnemyInfo _info)
     {
@@ -17,21 +25,37 @@ public class EnemyObject : MonoBehaviour, IPoolable
         hp = _info.hp;
         moveSpeed = _info.moveSpeed;
         attackDistance = _info.attackDistance;
+        attackPower = _info.attackPower;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/{type}/{type}_0");
+        nowState = MonsterState.Chase;        
     }
 
-    public void OnMoveTarget(GameObject _target)
+    public void OnMoveTarget(Transform _target)
     {
-        var direction = (_target.transform.localPosition - gameObject.transform.localPosition).normalized;
-        if(direction.x < 0f)
+        if (nowState != MonsterState.Die && _target != null)
         {
-            spriteRenderer.flipX = true;
+            var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
+            if (direction.x < 0f)
+            {
+                spriteRenderer.flipX = true;
+            }
+            else
+            {
+                spriteRenderer.flipX = false;
+            }
+            transform.localPosition += (moveSpeed * direction) * Time.deltaTime;
         }
-        else
-        {
-            spriteRenderer.flipX = false;
-        }
-        transform.localPosition += (moveSpeed * Time.deltaTime) * direction;
+    }
+
+    public MonsterState GetState()
+    {
+        return nowState;
+    }
+
+    public void SetState(MonsterState _state)
+    {
+        nowState = _state;
     }
 
     public void OnActivate()

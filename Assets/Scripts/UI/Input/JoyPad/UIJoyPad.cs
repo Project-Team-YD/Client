@@ -44,7 +44,7 @@ public class UIJoyPad : MoveHandler
         Vector2 joypadBackgroundPos = joypadBackgroundRectTransform.position;
 
         float distanceInput = Vector2.Distance(joypadBackgroundPos, _inputPos);
-        Debug.Log($"distanceInput / {distanceInput}");
+        //Debug.Log($"distanceInput / {distanceInput}");
 
         // 방향 벡터
         direction = (_inputPos - joypadBackgroundPos).normalized;
@@ -52,7 +52,7 @@ public class UIJoyPad : MoveHandler
         UpdateJoypadUI(joypadBackgroundPos, distanceInput, direction);
 
         distance = Vector2.Distance(joypadBackgroundRectTransform.position, joypadStickRectTransform.position);
-        Debug.Log($"distance / {distance}");
+        //Debug.Log($"distance / {distance}");
 
         // speed를 0~1로 계산
         joypadInputSpeed = distance / maxDistance;

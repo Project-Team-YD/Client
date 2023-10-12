@@ -10,11 +10,11 @@ public class GameSceneController : BaseSceneController
     #region Enemy
     [SerializeField] private Transform monsterPoolRoot;
     private ObjectPool<IPoolable> monsterPool = null;
-    private Queue<EnemyObject> test = new Queue<EnemyObject>();
     private List<EnemyObject> monsterList = new List<EnemyObject>();
     private int createCount;
     private int regenCount;
     private List<Vector2> summonPosition = new List<Vector2>();
+    private readonly int MAX_WAVE_MONSTER = 100;
     #endregion
 
     #region Map
@@ -47,7 +47,7 @@ public class GameSceneController : BaseSceneController
         regenCount = EnemyTable.getInstance.GetRegenCount();
 
         monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
-        monsterPool.Initialize("Prefabs/EnemyObject", createCount, monsterPoolRoot);
+        monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot); 
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -106,7 +106,10 @@ public class GameSceneController : BaseSceneController
         // 조이패드 임시
         OnClickJoypad();
     }
-
+    /// <summary>
+    /// 몬스터 생성 함수(중복 포지션 생성이 안되도록 난수 중복 제거 로직 사용)
+    /// </summary>
+    /// <returns></returns>
     private async UniTask CreateMonster()
     {
         await UniTask.Delay(1500, cancellationToken: monsterCreateCancel);
@@ -130,7 +133,10 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
-
+    /// <summary>
+    /// 몬스터 리젠 함수..리젠 시간이 될때마다 호출.
+    /// </summary>
+    /// <returns></returns>
     private async UniTaskVoid RegenMonster()
     {
         await UniTask.Delay(5000, cancellationToken: monsterRegenCancel);
@@ -167,9 +173,9 @@ public class GameSceneController : BaseSceneController
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
-                if (monsterList[i].gameObject.activeSelf)
+                if (monsterList[i].GetState() == MonsterState.Chase)
                     // playerTarget 생성때 넣어주는 방법 생각해보기
-                    monsterList[i].OnMoveTarget(playerTransform.gameObject);
+                    monsterList[i].OnMoveTarget(playerTransform);
             }
 
             await UniTask.Yield();

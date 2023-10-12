@@ -1,1 +1,24 @@
-[{"MapId":1001,"MapWidth":50.0,"MapHeight":50.0,"MapBackgroundColor":{"r":76,"g":76,"b":99,"a":255},"BoundaryColor":{"r":0,"g":0,"b":0,"a":255},"MapImage":"Map_Pattern_01","BoundaryImage":"Map_Edge","CharacterStartPositionX":0.0,"CharacterStartPositionY":0.0,"ObstructionInfos":null}]
+[
+  {
+    "MapId": 1001,
+    "MapWidth": 50.0,
+    "MapHeight": 50.0,
+    "MapBackgroundColor": {
+      "r": 76,
+      "g": 76,
+      "b": 99,
+      "a": 255
+    },
+    "BoundaryColor": {
+      "r": 0,
+      "g": 0,
+      "b": 0,
+      "a": 255
+    },
+    "MapImage": "Map_Pattern_01",
+    "BoundaryImage": "Map_Edge",
+    "CharacterStartPositionX": 0.0,
+    "CharacterStartPositionY": 0.0,
+    "ObstructionInfos": null
+  }
+]

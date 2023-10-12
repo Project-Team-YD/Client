@@ -7,9 +7,6 @@ public class BaseSceneController : MonoBehaviour
 {
     public string musicName = string.Empty;
 
-    private ObjectPool<IPoolable> pool = null;
-    private Queue<EnemyObject> test = new Queue<EnemyObject>();
-
     static protected int chapterIndex; // 임시..나중에 로비에서 선택한 챕터와 캐릭터등을 매니저로 만들어서 게임씬에 넘겨줘야 될 것 같음..
     protected MapInfo chapterMap;
     private Sprite mapImage = null;
