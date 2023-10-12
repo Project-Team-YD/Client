@@ -47,7 +47,7 @@ public class GameSceneController : BaseSceneController
         regenCount = EnemyTable.getInstance.GetRegenCount();
 
         monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
-        monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot); 
+        monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot);
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -155,7 +155,7 @@ public class GameSceneController : BaseSceneController
             }
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
             monsterList.Add(obj);
         }
         summonPosition.Clear();

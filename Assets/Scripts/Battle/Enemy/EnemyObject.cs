@@ -13,6 +13,8 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private MonsterState nowState;
     private Animator monsterAnim;
 
+    [SerializeField]
+    private RuntimeAnimatorController[] Anim;
     private void Awake()
     {
         monsterAnim = gameObject.GetComponent<Animator>();        
@@ -28,7 +30,8 @@ public class EnemyObject : MonoBehaviour, IPoolable
         attackPower = _info.attackPower;
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/{type}/{type}_0");
-        nowState = MonsterState.Chase;        
+        nowState = MonsterState.Chase;
+        monsterAnim.runtimeAnimatorController = Anim[(int)type];
     }
 
     public void OnMoveTarget(Transform _target)
@@ -36,13 +39,19 @@ public class EnemyObject : MonoBehaviour, IPoolable
         if (nowState != MonsterState.Die && _target != null)
         {
             var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
-            if (direction.x < 0f)
+            bool isLeft = direction.x < 0f;
+            //if (direction.x < 0f)
+            //{
+            //    spriteRenderer.flipX = true;
+            //}
+            //else
+            //{
+            //    spriteRenderer.flipX = false;
+            //}
+            spriteRenderer.flipX = isLeft;
+            if(type == MonsterType.Long)
             {
-                spriteRenderer.flipX = true;
-            }
-            else
-            {
-                spriteRenderer.flipX = false;
+                spriteRenderer.flipX = !isLeft;
             }
             transform.localPosition += (moveSpeed * direction) * Time.deltaTime;
         }

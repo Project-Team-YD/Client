@@ -11,10 +11,16 @@ public class PlayerController : BasePlayerController
 
     private float mapSizeWidth = 0;
     private float mapSizeHeight = 0;
-    //private Vector3 mapSize = Vector3.zero;
+
+    private SpriteRenderer playerSprite;
+    private Animator playerAnim;
 
     public PlayerController(Transform _transform) : base(_transform)
     {
+        playerSprite = _transform.gameObject.GetComponent<SpriteRenderer>();
+        playerAnim = _transform.gameObject.GetComponent<Animator>();
+
+        playerSprite.sprite = Resources.Load<Sprite>($"Player/player_0");
     }
 
     public Vector3 SetMapSize
@@ -42,9 +48,12 @@ public class PlayerController : BasePlayerController
 
     public override void OnMove(Vector3 _dir, float _speed)
     {
+        bool isLeft = _dir.x < 0f;
+        playerSprite.flipX = !isLeft;
+
         _speed *= speed;
 
-        base.OnMove(_dir, _speed);
+        base.OnMove(_dir, _speed);        
     }
 
     public Transform GetPlayerTransform { get { return transform; } }
