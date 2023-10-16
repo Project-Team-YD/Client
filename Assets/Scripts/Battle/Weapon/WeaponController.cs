@@ -15,15 +15,15 @@ public class WeaponController : MonoBehaviour
         playerTransform = gameObject.transform.parent.transform;
         int slotCount = slot.Length;
         for (int i = 0; i < slotCount; i++) // 슬릇 두개에 근접무기 넣어두고 회전테스트.
-        {            
-            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(i); // 임시..테스트용
+        {
+            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(i + 2); // 임시..테스트용
             isRight = i == 0 ? false : true;
             slot[i].InitWeapon(info, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
             var type = slot[i].GetWeaponType();
             if (type == WeaponType.dagger || type == WeaponType.sword)
             {
-                if(i == 0)
+                if (i == 0)
                 {
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, rotate);
                 }
@@ -31,6 +31,8 @@ public class WeaponController : MonoBehaviour
                 {
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, -rotate);
                 }
+
+                // 근접무기의 경우 여기서 AABB 적용
             }
         }
     }
@@ -41,6 +43,6 @@ public class WeaponController : MonoBehaviour
         for (int i = 0; i < slotCount; i++)
         {
             slot[i].WeaponAttack(slot[i].GetWeaponType(), slot[i].transform);
-        }        
+        }
     }
 }

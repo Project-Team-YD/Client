@@ -310,11 +310,7 @@ public class GameSceneController : BaseSceneController
                     Debug.Log($"충돌 / {i}번");
 
                     // 데미지 주다가
-                    // hp가 0이면 죽임
-                    monsterList[i].SetState(MonsterState.Die);
-
-                    monsterPool.EnqueueObject(monsterList[i]);
-                    monsterList.RemoveAt(i);
+                    AttackMonster(i);
                 }
             }
 
@@ -347,13 +343,53 @@ public class GameSceneController : BaseSceneController
         var direction = _enemy.transform.position - obj.transform.position;
         obj.SetBulletSprite(_type, _enemy.transform);
         obj.OnActivate();
-        while (true)
+
+        bool isMove = true;
+
+        while (isMove)
         {
+            if (obj == null)
+                isMove = false;
+
             obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
 
-            // 충돌체크 필요
+            // 원거리 무기의 경우 여기서 AABB 적용
+            var isCheck = CheckMonsterAttack(obj);
+            if (isCheck)
+            {
+                bulletPool.EnqueueObject(obj);
+                isMove = false;
+            }
 
+            // 충돌체크 필요
             await UniTask.Yield();
+
+            if (obj == null)
+                isMove = false;
         }
+    }
+
+    private bool CheckMonsterAttack(Bullet _bullet)
+    {
+        for (int i = 0; i < monsterList.Count; i++)
+        {
+            var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
+            if (isCollision)
+            {
+                AttackMonster(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void AttackMonster(int _index)
+    {
+        // hp가 0이면 죽임
+        monsterList[_index].SetState(MonsterState.Die);
+
+        monsterPool.EnqueueObject(monsterList[_index]);
+        monsterList.RemoveAt(_index);
     }
 }
