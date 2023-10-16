@@ -3,24 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using HSMLibrary.Manager;
 
 public class LobbySceneController : BaseSceneController
 {
-    [SerializeField] Button gameStartButton = null;
-    [SerializeField] Button nextBtn = null;
-    [SerializeField] Button prevBtn = null;
-    [SerializeField] Text chapterNumber = null;
-    [SerializeField] Image mapImage = null;
+    [SerializeField] Button shoptBtn = null;
+    [SerializeField] Button enhanceBtn = null;
+    [SerializeField] Button RankingBtn = null;
+    [SerializeField] Button gameStartBtn = null;
 
     private int mapMaxCount = 0;
     private void Awake()
     {
-        gameStartButton.onClick.AddListener(OnClickGameStartButton);
-        nextBtn.onClick.AddListener(OnClickNextButton);
-        prevBtn.onClick.AddListener(OnClickPrevButton);
-        chapterMap = MapTable.getInstance.GetMapInfoByIndex(chapterIndex);
-        chapterNumber.text = $"{chapterIndex + 1}";
-        mapImage.sprite = GetMapSprite(chapterMap.MapImage);
+        gameStartBtn.onClick.AddListener(OnClickDungeonButton);
         mapMaxCount = MapTable.getInstance.GetMapCount();
     }
     private void Start()
@@ -28,30 +23,29 @@ public class LobbySceneController : BaseSceneController
         
     }
 
+    public async void OnClickDungeonButton()
+    {
+        await UIManager.getInstance.Show<WeaponSelectPopupController>("WeaponSelectPopup");
+    }
+
+    public void OnClickEnhanceButton()
+    {
+
+    }
+
+    public void OnClickShopButton()
+    {
+
+    }
+
+    public void OnClickRankingButton()
+    {
+
+    }
+
+    // TODO :: 착용 무기 정보 GameScene으로 넘겨줘야함.
     public void OnClickGameStartButton()
     {
         SceneHelper.getInstance.ChangeScene(typeof(GameScene));
-    }
-
-    public void OnClickNextButton()
-    {
-        if (chapterIndex + 1 < mapMaxCount) // 챕터 넘버 + 1이 maptable index보다 작을때만..
-        {
-            chapterIndex++;
-            chapterMap = MapTable.getInstance.GetMapInfoByIndex(chapterIndex);
-            chapterNumber.text = $"{chapterIndex + 1}";
-            mapImage.sprite = GetMapSprite(chapterMap.MapImage);
-        }
-    }
-
-    public void OnClickPrevButton()
-    {
-        if (chapterIndex - 1 >= 0) // 0 = 1챕터
-        {
-            chapterIndex--;
-            chapterMap = MapTable.getInstance.GetMapInfoByIndex(chapterIndex);
-            chapterNumber.text = $"{chapterIndex + 1}";
-            mapImage.sprite = GetMapSprite(chapterMap.MapImage);
-        }
-    }
+    }    
 }

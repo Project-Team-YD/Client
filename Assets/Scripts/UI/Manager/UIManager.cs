@@ -20,6 +20,8 @@ namespace HSMLibrary.Manager
 
         private int curOrder = 0;
 
+        private const int POPUP_SORTING_ORDER = 100;
+
         public UIManager()
         {
             cachedPanelDict = new Dictionary<Type, UIBaseController>();
@@ -28,7 +30,7 @@ namespace HSMLibrary.Manager
             panelList = new LinkedList<UIBaseController>();
             panelList.Clear();
 
-            curOrder = 0;
+            //curOrder = 0;
         }
 
         ~UIManager()
@@ -41,13 +43,14 @@ namespace HSMLibrary.Manager
 
         public async UniTask<T> Show<T>(string _panelName = "", int _order = 0) where T : UIBaseController
         {
-            curOrder += (1 + _order);
-
-            var panel = await GetCachedPanel<T>(_panelName);        
-            panel.SetSortingOrder(curOrder);
-            panel.Show();
-
+            //curOrder += (1 + _order);
+            var panel = await GetCachedPanel<T>(_panelName);
+            if(!panel.IsShow())
+            {
+                panel.Show();
+            }
             panelList.AddLast(panel);
+            panel.SetSortingOrder(POPUP_SORTING_ORDER + panelList.Count);
 
             return panel;
         }
@@ -120,7 +123,7 @@ namespace HSMLibrary.Manager
 
         private async UniTask<T> CreatePanel<T>(string _prefabPath = "") where T : UIBaseController
         {
-            var prefab = await Resources.LoadAsync(_prefabPath, typeof(GameObject)) as GameObject;
+            var prefab = await Resources.LoadAsync($"Prefabs/Popup/{_prefabPath}", typeof(GameObject)) as GameObject;
             var panelObject = GameObject.Instantiate(prefab);
 
             return panelObject.GetComponent<T>();
@@ -131,7 +134,8 @@ namespace HSMLibrary.Manager
             GameObject panelObj = UnityExtension.Find(_panelName);
             if(panelObj == null)
             {
-                throw new NullReferenceException();
+                //throw new NullReferenceException();
+                return null;
             }
 
             return panelObj.GetComponent<T>();
