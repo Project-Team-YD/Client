@@ -688,6 +688,7 @@ MonoBehaviour:
   infinityBtn: {fileID: 8182788641000595239}
   timeAttackBtn: {fileID: 7419720154348308131}
   closeBtn: {fileID: 8293922198858056055}
+  modeSelectText: {fileID: 8057922352813866140}
 --- !u!1 &3990390738601279198
 GameObject:
   m_ObjectHideFlags: 0

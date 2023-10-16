@@ -191,7 +191,7 @@ MonoBehaviour:
   m_text: Button
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -448,7 +448,7 @@ MonoBehaviour:
   m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -657,7 +657,7 @@ MonoBehaviour:
   m_text: New Text
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1033,6 +1033,9 @@ MonoBehaviour:
   equipBtn: {fileID: 1889924294860290299}
   joinBtn: {fileID: 699792441633938777}
   closeBtn: {fileID: 8293922198858056055}
+  dungeonJoinText: {fileID: 4465674116371585038}
+  equipText: {fileID: 3487173864975639667}
+  enhanceText: {fileID: 1991716181978784973}
 --- !u!1 &3936875671056138672
 GameObject:
   m_ObjectHideFlags: 0
@@ -1270,7 +1273,7 @@ MonoBehaviour:
   m_text: +1
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1890,7 +1893,7 @@ MonoBehaviour:
   m_text: Button
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
