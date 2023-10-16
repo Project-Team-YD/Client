@@ -13,11 +13,12 @@ public class IntroSceneController : BaseSceneController
     private void Awake()
     {
         gameStartButton.onClick.AddListener(OnClickGameStart);
-        TransitionManager.getInstance.Play(TransitionManager.TransitionType.Fade, gameStartImage, 0.4f);
+        TransitionManager.getInstance.Play(TransitionManager.TransitionType.Fade, 0.4f, Vector3.zero, gameStartImage);
     }
     
     public void OnClickGameStart()
     {
         SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
+        TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Fade);
     }
 }

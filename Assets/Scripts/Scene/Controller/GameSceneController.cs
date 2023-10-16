@@ -30,15 +30,24 @@ public class GameSceneController : BaseSceneController
     private float height;
     #endregion
 
+    #region Bullet
+    [SerializeField] private Transform BulletPoolRoot;
+    private ObjectPool<IPoolable> bulletPool = null;
+    private readonly int BULLET_COUNT = 30;
+    private readonly float BULLET_ROTATE_SPEED = 0.15f;
+    #endregion
+
     #region UniTask
     private CancellationToken monsterCreateCancel = new CancellationToken();
     private CancellationToken monsterRegenCancel = new CancellationToken();
     private CancellationToken monsterMoveCancel = new CancellationToken();
+    private CancellationToken getTargetEnemyCancel = new CancellationToken();
     #endregion
 
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
+        PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
     }
 
     private async void Start()
@@ -48,6 +57,9 @@ public class GameSceneController : BaseSceneController
 
         monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
         monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot);
+
+        bulletPool = PoolManager.getInstance.GetObjectPool<Bullet>();
+        bulletPool.Initialize("Prefabs/Bullet", BULLET_COUNT, BulletPoolRoot);
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -299,4 +311,34 @@ public class GameSceneController : BaseSceneController
         }
     }
 
+    public EnemyObject GetTargetEnemy(float _range)
+    {
+        int count = monsterList.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if ((monsterList[i].transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
+            {
+                return monsterList[i];
+            }
+        }
+        return null;
+    }
+    //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
+    public async void FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
+    {
+        var obj = (Bullet)bulletPool.GetObject();
+        if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+        {
+            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), null, obj.gameObject);
+        }
+        obj.transform.position = _transform.position;
+        var direction = _enemy.transform.position - obj.transform.position;
+        obj.SetBulletSprite(_type, _enemy.transform);
+        obj.OnActivate();
+        while (true)
+        {
+            obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
+            await UniTask.Yield();
+        }
+    }
 }

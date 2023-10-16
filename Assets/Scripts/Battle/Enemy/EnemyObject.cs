@@ -5,13 +5,13 @@ using UnityEngine;
 public class EnemyObject : MonoBehaviour, IPoolable
 {
     private MonsterType type;
+    private MonsterState nowState;
     private float hp;
     private float moveSpeed;
     private float attackDistance;
     private float attackPower;
-    private SpriteRenderer spriteRenderer;
-    private MonsterState nowState;
-    private Animator monsterAnim;
+    private SpriteRenderer spriteRenderer = null;
+    private Animator monsterAnim = null;
 
     private AABB curAABB;
 
@@ -20,6 +20,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private void Awake()
     {
         monsterAnim = gameObject.GetComponent<Animator>();
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
 
     public void Init(EnemyInfo _info)
@@ -30,7 +31,6 @@ public class EnemyObject : MonoBehaviour, IPoolable
         moveSpeed = _info.moveSpeed;
         attackDistance = _info.attackDistance;
         attackPower = _info.attackPower;
-        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
         spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/{type}/{type}_0");
         nowState = MonsterState.Chase;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];

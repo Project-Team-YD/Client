@@ -1,0 +1,30 @@
+[
+	{
+		"weaponId": 0,
+		"weaponName": "ShortSword",
+		"attackPower": 10,
+		"attackSpeed": 1.5,
+		"attackRange": 0
+	},
+	{
+		"weaponId": 1,
+		"weaponName": "LongSword",
+		"attackPower": 20,
+		"attackSpeed": 2.5,
+		"attackRange": 0
+	},
+	{
+		"weaponId": 2,
+		"weaponName": "Gun",
+		"attackPower": 40,
+		"attackSpeed": 3,
+		"attackRange": 5
+	},
+	{
+		"weaponId": 3,
+		"weaponName": "NinjaStar",
+		"attackPower": 15,
+		"attackSpeed": 1.5,
+		"attackRange": 5
+	}
+]
