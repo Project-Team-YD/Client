@@ -53,7 +53,7 @@ public class GameSceneController : BaseSceneController
     private async void Start()
     {
         createCount = EnemyTable.getInstance.GetCreateCount();
-        regenCount =  EnemyTable.getInstance.GetRegenCount();
+        regenCount = EnemyTable.getInstance.GetRegenCount();
 
         monsterPool = PoolManager.getInstance.GetObjectPool<EnemyObject>();
         monsterPool.Initialize("Prefabs/EnemyObject", MAX_WAVE_MONSTER, monsterPoolRoot);
@@ -153,26 +153,30 @@ public class GameSceneController : BaseSceneController
     /// <returns></returns>
     private async UniTaskVoid RegenMonster()
     {
-        await UniTask.Delay(5000, cancellationToken: monsterRegenCancel);
-
-        for (int i = 0; i < regenCount; i++)
+        // TODO:: 나중에 변경 필요 임시로 
+        while (true)
         {
-            var obj = (EnemyObject)monsterPool.GetObject();
-            var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
-            if (summonPosition.Contains(monsterPosition))
+            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel);
+
+            for (int i = 0; i < regenCount; i++)
             {
-                monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                var obj = (EnemyObject)monsterPool.GetObject();
+                var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                if (summonPosition.Contains(monsterPosition))
+                {
+                    monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                }
+                else
+                {
+                    summonPosition.Add(monsterPosition);
+                }
+                obj.transform.localPosition = monsterPosition;
+                obj.OnActivate();
+                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+                monsterList.Add(obj);
             }
-            else
-            {
-                summonPosition.Add(monsterPosition);
-            }
-            obj.transform.localPosition = monsterPosition;
-            obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
-            monsterList.Add(obj);
+            summonPosition.Clear();
         }
-        summonPosition.Clear();
     }
 
     private async void StartMoveMonster()
@@ -304,6 +308,13 @@ public class GameSceneController : BaseSceneController
                 if (isCollision)
                 {
                     Debug.Log($"충돌 / {i}번");
+
+                    // 데미지 주다가
+                    // hp가 0이면 죽임
+                    monsterList[i].SetState(MonsterState.Die);
+
+                    monsterPool.EnqueueObject(monsterList[i]);
+                    monsterList.RemoveAt(i);
                 }
             }
 
@@ -323,6 +334,7 @@ public class GameSceneController : BaseSceneController
         }
         return null;
     }
+
     //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
     public async void FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
     {
@@ -338,6 +350,9 @@ public class GameSceneController : BaseSceneController
         while (true)
         {
             obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
+
+            // 충돌체크 필요
+
             await UniTask.Yield();
         }
     }
