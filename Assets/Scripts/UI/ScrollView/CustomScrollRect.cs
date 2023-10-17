@@ -178,7 +178,7 @@ public class CustomScrollRect : ScrollViewBase, IPointerDownHandler, IPointerUpH
     }
     private void OnValidate()
     {                
-        if(gameObject != null && gameObject.activeSelf)
+        if(this.gameObject.activeInHierarchy && gameObject.activeSelf)
             StartCoroutine(CoValueChangeUpdate());
     }
 #endif

@@ -14,7 +14,8 @@ namespace HSMLibrary.Manager
     {
         private Dictionary<Type, UIBaseController> cachedPanelDict = null;
 
-        private LinkedList<UIBaseController> panelList = null;
+        //private LinkedList<UIBaseController> panelList = null;
+        private Stack<UIBaseController> panelStack = null;
 
         public event Action OnHideCallback;
 
@@ -27,8 +28,11 @@ namespace HSMLibrary.Manager
             cachedPanelDict = new Dictionary<Type, UIBaseController>();
             cachedPanelDict.Clear();
 
-            panelList = new LinkedList<UIBaseController>();
-            panelList.Clear();
+            //panelList = new LinkedList<UIBaseController>();
+            //panelList.Clear();
+
+            panelStack = new Stack<UIBaseController>();
+            panelStack.Clear();
 
             //curOrder = 0;
         }
@@ -38,7 +42,8 @@ namespace HSMLibrary.Manager
             ClearPanels();
 
             cachedPanelDict = null;
-            panelList = null;
+            //panelList = null;
+            panelStack = null;
         }
 
         public async UniTask<T> Show<T>(string _panelName = "", int _order = 0) where T : UIBaseController
@@ -49,53 +54,58 @@ namespace HSMLibrary.Manager
             {
                 panel.Show();
             }
-            panelList.AddLast(panel);
-            panel.SetSortingOrder(POPUP_SORTING_ORDER + panelList.Count);
+            panelStack.Push(panel);
+            //panelList.AddLast(panel);
+            panel.SetSortingOrder(POPUP_SORTING_ORDER + panelStack.Count);
 
             return panel;
         }
 
         public void Hide()
         {
-            if(panelList.Count > 0)
+            if(panelStack.Count > 0)
             {
-                var panel = panelList.Last.Value;
+                //var panel = panelList.Last.Value;
+                var panel = panelStack.Pop();
                 panel.Hide();
-                panelList.RemoveLast();
+                OnHideCallback?.Invoke();
+                //panelList.RemoveLast();
             }
             else
             {
-                OnHideCallback?.Invoke();
+#if UNITY_EDITOR
+                Debug.Log("panelStack Count 0!!!!");
+#endif
             }
         }
 
-        public void Hide<T>()
-        {
-            if (panelList.Count > 0)
-            {
-                Type targetType = typeof(T);
+        //public void Hide<T>()
+        //{
+        //    if (panelList.Count > 0)
+        //    {
+        //        Type targetType = typeof(T);
 
-                var node = panelList.First;
-                while (node.Next != null)
-                {
-                    var panel = node.Value;
-                    if (targetType == panel.GetType())
-                    {
-                        panel.Hide();
-                        panelList.Remove(panel);
-                        return;
-                    }
+        //        var node = panelList.First;
+        //        while (node.Next != null)
+        //        {
+        //            var panel = node.Value;
+        //            if (targetType == panel.GetType())
+        //            {
+        //                panel.Hide();
+        //                panelList.Remove(panel);
+        //                return;
+        //            }
 
-                    node = node.Next;
-                }
+        //            node = node.Next;
+        //        }
 
-                throw new NullReferenceException();
-            }
-            else
-            {
-                OnHideCallback?.Invoke();
-            }
-        }
+        //        throw new NullReferenceException();
+        //    }
+        //    else
+        //    {
+        //        OnHideCallback?.Invoke();
+        //    }
+        //}
 
         public async UniTask<T> GetCachedPanel<T>(string _panelName = "") where T : UIBaseController
         {
@@ -141,12 +151,23 @@ namespace HSMLibrary.Manager
             return panelObj.GetComponent<T>();
         }
 
+        public void ClearAllCachedPanel()
+        {
+            cachedPanelDict.Clear();
+        }
+
+        public void ClearAllPanelStack()
+        {
+            panelStack.Clear();
+        }
+
         public void ClearPanels()
         {
             curOrder = 0;
 
             cachedPanelDict.Clear();
-            panelList.Clear();
+            panelStack.Clear();
+            //panelList.Clear();
         }
     }
 }

@@ -22,4 +22,9 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
             _index = weaponInfos.Length - 1;
         return weaponInfos[_index];
     }
+
+    public WeaponInfo[] GetWeaponInfos()
+    {
+        return weaponInfos;
+    }
 }

@@ -13,10 +13,10 @@ using TMPro;
 
 public class DungeonSelectPopupController : UIBaseController , IPopup
 {
-    [SerializeField] Button infinityBtn = null;
-    [SerializeField] Button timeAttackBtn = null;
-    [SerializeField] Button closeBtn = null;
-    [SerializeField] TextMeshProUGUI modeSelectText = null;
+    [SerializeField] private Button infinityBtn = null;
+    [SerializeField] private Button timeAttackBtn = null;
+    [SerializeField] private Button closeBtn = null;
+    [SerializeField] private TextMeshProUGUI modeSelectText = null;
 
     private TextMeshProUGUI infinityText = null;
     private TextMeshProUGUI timeAttackText = null;
@@ -51,6 +51,8 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
 
     public void OnClickTimeAttackButton()
     {
+        uiMgr.ClearAllCachedPanel();
+        uiMgr.ClearAllPanelStack();
         SceneHelper.getInstance.ChangeScene(typeof(GameScene));
     }
 

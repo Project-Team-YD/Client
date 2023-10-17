@@ -9,14 +9,18 @@ public class LobbySceneController : BaseSceneController
 {
     [SerializeField] Button shoptBtn = null;
     [SerializeField] Button enhanceBtn = null;
-    [SerializeField] Button RankingBtn = null;
+    [SerializeField] Button rankingBtn = null;
     [SerializeField] Button gameStartBtn = null;
 
-    private int mapMaxCount = 0;
+    private UIManager uiMgr = null;
+
     private void Awake()
     {
+        uiMgr = UIManager.getInstance;
+        shoptBtn.onClick.AddListener(OnClickShopButton);
+        enhanceBtn.onClick.AddListener(OnClickEnhanceButton);
+        rankingBtn.onClick.AddListener(OnClickRankingButton);
         gameStartBtn.onClick.AddListener(OnClickDungeonButton);
-        mapMaxCount = MapTable.getInstance.GetMapCount();
     }
     private void Start()
     {
@@ -25,27 +29,21 @@ public class LobbySceneController : BaseSceneController
 
     public async void OnClickDungeonButton()
     {
-        await UIManager.getInstance.Show<WeaponSelectPopupController>("WeaponSelectPopup");
+        await uiMgr.Show<WeaponSelectPopupController>("WeaponSelectPopup");
     }
 
-    public void OnClickEnhanceButton()
+    public async void OnClickEnhanceButton()
+    {
+        await uiMgr.Show<WeaponEnhancePopupController>("WeaponEnhancePopup");
+    }
+
+    public async void OnClickShopButton()
     {
 
     }
 
-    public void OnClickShopButton()
+    public async void OnClickRankingButton()
     {
 
     }
-
-    public void OnClickRankingButton()
-    {
-
-    }
-
-    // TODO :: 착용 무기 정보 GameScene으로 넘겨줘야함.
-    public void OnClickGameStartButton()
-    {
-        SceneHelper.getInstance.ChangeScene(typeof(GameScene));
-    }    
 }

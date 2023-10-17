@@ -10,36 +10,31 @@ using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
 
-public class WeaponSelectPopupController : UIBaseController, IPopup
+public class WeaponEnhancePopupController : UIBaseController, IPopup
 {
     [SerializeField] private GameObject inventorySlot = null;
     [SerializeField] private Transform slotRootTransform = null;
-    [SerializeField] private Button equipBtn = null;
-    [SerializeField] private Button joinBtn = null;
+    [SerializeField] private Button enhanceBtn = null;
     [SerializeField] private Button closeBtn = null;
     [SerializeField] private Image weaponImage = null;
-    [SerializeField] private TextMeshProUGUI dungeonJoinText = null;
-    [SerializeField] private TextMeshProUGUI equipText = null;
+    [SerializeField] private TextMeshProUGUI enhancePopupText = null;
     [SerializeField] private TextMeshProUGUI enhanceText = null;
+    [SerializeField] private TextMeshProUGUI enhanceButtonText = null;
+    [SerializeField] private TextMeshProUGUI costText = null;
 
-    private TextMeshProUGUI equipmentText = null;
-    private TextMeshProUGUI joinText = null;
     private UIManager uiMgr = null;
+    private int costValue = 100000000;
     private WeaponInfo[] weaponInfos = null;
 
-    private const string DUNGEON_JOIN_TEXT = "던전입장";
-    private const string EQUIP_TEXT = "착용중";
-    private const string EQUIPMENT_TEXT = "착용하기";
-    private const string JOIN_TEXT = "입장하기";
-
+    private const string ENHANCE_POPUP_TEXT = "장비강화";
+    private const string ENHANCE_TEXT = "강화하기";
+    
     protected override void Awake()
     {
         base.Awake();
         uiMgr = UIManager.getInstance;
-        joinBtn.onClick.AddListener(OnClickJoinButton);
+        enhanceBtn.onClick.AddListener(OnClickEnhanceButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
-        equipmentText = equipBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        joinText = joinBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
         weaponImage.enabled = false;
         enhanceText.enabled = false;
@@ -48,21 +43,19 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
 
     protected override void Initialize()
     {
-        int weaponCount = weaponInfos.Length;
+        int weaponCount = weaponInfos.Length;        
         for (int i = 0; i < weaponCount; i++)
         {
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
-            var componenet = newObject.GetComponent<InventorySlotView>();
+            var componenet = newObject.GetComponent<InventorySlotView>();            
             componenet.InitWeaponInfo(weaponInfos[i]);
             componenet.SetWeaponImage();
-            componenet.SetWeaponSelectController(this);
+            componenet.SetWeaponEnhanceController(this);
         }
-        dungeonJoinText.text = DUNGEON_JOIN_TEXT;
-        equipText.text = EQUIP_TEXT;
-        equipmentText.text = EQUIPMENT_TEXT;
-        joinText.text = JOIN_TEXT;
+        enhancePopupText.text = ENHANCE_POPUP_TEXT;
+        enhanceButtonText.text = ENHANCE_TEXT;
+        costText.text = string.Format("비용 : {0:0,0}", costValue);
     }
-
     public void DataInitialization()
     {
         weaponImage.enabled = false;
@@ -77,19 +70,18 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
     }
 
-    public T Show<T>() where T : IPopup
+    public void OnClickEnhanceButton()
     {
-        throw new NotImplementedException();
-    }
 
-    public async void OnClickJoinButton()
-    {
-        await uiMgr.Show<DungeonSelectPopupController>("DungeonSelectPopup");
     }
-
     public void OnClickCloseButton()
     {
         DataInitialization();
         uiMgr.Hide();
+    }
+
+    public T Show<T>() where T : IPopup
+    {
+        throw new NotImplementedException();
     }
 }

@@ -786,7 +786,7 @@ MonoBehaviour:
   m_text: "\uB7AD\uD0B9"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -921,7 +921,7 @@ MonoBehaviour:
   m_text: 100,000,000
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1312,7 +1312,7 @@ MonoBehaviour:
   playerTransform: {fileID: 0}
   shoptBtn: {fileID: 1983803731}
   enhanceBtn: {fileID: 1888928357}
-  RankingBtn: {fileID: 1196124897}
+  rankingBtn: {fileID: 1196124897}
   gameStartBtn: {fileID: 298179574}
 --- !u!1 &1650332635
 GameObject:
@@ -1375,7 +1375,7 @@ MonoBehaviour:
   m_text: "\uAC15\uD654"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1698,7 +1698,7 @@ MonoBehaviour:
   m_text: "\uC0C1\uC810"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -2401,7 +2401,7 @@ MonoBehaviour:
   m_text: "\uB358\uC804"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
-  m_sharedMaterial: {fileID: -1146388911947152126, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
+  m_sharedMaterial: {fileID: 7337269828158381827, guid: 2b2c3cc92c9b8b04ea32e57ec84b8ea8, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
