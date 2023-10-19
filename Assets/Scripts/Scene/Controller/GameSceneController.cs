@@ -320,6 +320,8 @@ public class GameSceneController : BaseSceneController
 
     public EnemyObject GetTargetEnemy(float _range)
     {
+        if (playerTransform == null)
+            return null;
         int count = monsterList.Count;
         for (int i = 0; i < count; i++)
         {
@@ -358,6 +360,7 @@ public class GameSceneController : BaseSceneController
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
+                TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
                 isMove = false;
             }
 

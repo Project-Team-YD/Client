@@ -39,11 +39,11 @@ public class LobbySceneController : BaseSceneController
 
     public async void OnClickShopButton()
     {
-
+        await uiMgr.Show<ShopPopupController>("ShopPopup");
     }
 
     public async void OnClickRankingButton()
     {
-
+        await uiMgr.Show<RankingPopupController>("RankingPopup");
     }
 }
