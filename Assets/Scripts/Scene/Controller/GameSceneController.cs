@@ -44,6 +44,8 @@ public class GameSceneController : BaseSceneController
     private CancellationToken getTargetEnemyCancel = new CancellationToken();
     #endregion
 
+    public List<EnemyObject> GetEnemyList { get { return monsterList; } }
+
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
@@ -290,7 +292,6 @@ public class GameSceneController : BaseSceneController
         }
     }
 
-
     private async void StartCheckMonster()
     {
         await CheckCollisionMonster();
@@ -309,8 +310,9 @@ public class GameSceneController : BaseSceneController
                 {
                     Debug.Log($"충돌 / {i}번");
 
+                    // 몬스터 공격하는 대신 플레이어 데미지 받게 하기
                     // 데미지 주다가
-                    AttackMonster(i);
+                    //AttackMonster(i);
                 }
             }
 
@@ -356,6 +358,7 @@ public class GameSceneController : BaseSceneController
             obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
 
             // 원거리 무기의 경우 여기서 AABB 적용
+            // 충돌체크
             var isCheck = CheckMonsterAttack(obj);
             if (isCheck)
             {
@@ -364,7 +367,6 @@ public class GameSceneController : BaseSceneController
                 isMove = false;
             }
 
-            // 충돌체크 필요
             await UniTask.Yield();
 
             if (obj == null)
@@ -387,6 +389,21 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
+    public bool CheckMonsterAttack(AABB _aabb)
+    {
+        for (int i = 0; i < monsterList.Count; i++)
+        {
+            var isCollision = monsterList[i].OnCheckCollision(_aabb);
+            if (isCollision)
+            {
+                AttackMonster(i);
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private void AttackMonster(int _index)
     {
         // hp가 0이면 죽임
@@ -394,5 +411,30 @@ public class GameSceneController : BaseSceneController
 
         monsterPool.EnqueueObject(monsterList[_index]);
         monsterList.RemoveAt(_index);
+    }
+}
+
+
+// mono 상속 ??
+// 여기에 time 추가해야하는건가?
+public class TimeManeger
+{
+    private float time;
+
+    public float SetTime { get { return time; } set { time = value; } }
+
+    public void ResetTime()
+    {
+        time = 0;
+    }
+
+    public async UniTask UpdateTime()
+    {
+        while (true)
+        {
+            time += Time.deltaTime;
+
+            await UniTask.Yield();
+        }
     }
 }

@@ -22,6 +22,22 @@ public class WeaponSlot : MonoBehaviour
     private float coolTime;
     private bool isRightWeapon;
     
+    private AABB curAABB;
+
+    public AABB GetWeaponAABB
+    {
+        get
+        {
+            if (curAABB == null)
+            {
+                var size = gameObject.GetComponent<SpriteRenderer>().size;
+                curAABB = new AABB(this.transform, size);
+            }
+
+            return curAABB;
+        }
+    }
+
     public void InitWeapon(WeaponInfo _info, GameSceneController _controller, bool _isRight)
     {
         weaponId = _info.weaponId;
@@ -66,18 +82,44 @@ public class WeaponSlot : MonoBehaviour
             switch (_type)
             {
                 case WeaponType.dagger:
+                    // 조건 AABB null 아닐때
+                    // 조건 공격 중일때
                     while (true)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
+                        // 여기에 충돌체크 메서드 추가
+                        // 게임씬에서 적을 가져와야하나?
+                        var enemyList = gameSceneController.GetEnemyList;
+
+                        var isAttack = gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
+
+                        if (isAttack)
+                        {
+                            Debug.Log("Dagger 맞음");
+                        }
+
                         await UniTask.Yield();
                     }
                 //break;
                 case WeaponType.sword:
+                    // 조건 AABB null 아닐때
+                    // 조건 공격 중일때
                     while (true)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
+                        // 여기에 충돌체크 메서드 추가
+                        // 게임씬에서 적을 가져와야하나?
+                        var enemyList = gameSceneController.GetEnemyList;
+
+                        var isAttack = gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
+
+                        if(isAttack)
+                        {
+                            Debug.Log("Sword 맞음");
+                        }
+
                         await UniTask.Yield();
                     }
                 //break;
