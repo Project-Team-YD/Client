@@ -21,7 +21,7 @@ public class WeaponSlot : MonoBehaviour
 
     private float coolTime;
     private bool isRightWeapon;
-    
+
     private AABB curAABB;
 
     public AABB GetWeaponAABB
@@ -92,7 +92,8 @@ public class WeaponSlot : MonoBehaviour
                         // 게임씬에서 적을 가져와야하나?
                         var enemyList = gameSceneController.GetEnemyList;
 
-                        var isAttack = gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
+                        // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
+                        var isAttack = await gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
 
                         if (isAttack)
                         {
@@ -113,9 +114,10 @@ public class WeaponSlot : MonoBehaviour
                         // 게임씬에서 적을 가져와야하나?
                         var enemyList = gameSceneController.GetEnemyList;
 
-                        var isAttack = gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
+                        // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
+                        var isAttack = await gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
 
-                        if(isAttack)
+                        if (isAttack)
                         {
                             Debug.Log("Sword 맞음");
                         }

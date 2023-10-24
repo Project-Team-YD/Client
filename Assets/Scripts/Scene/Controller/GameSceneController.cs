@@ -42,7 +42,10 @@ public class GameSceneController : BaseSceneController
     private CancellationToken monsterRegenCancel = new CancellationToken();
     private CancellationToken monsterMoveCancel = new CancellationToken();
     private CancellationToken getTargetEnemyCancel = new CancellationToken();
+    private CancellationToken timeManagerCancel = new CancellationToken();
     #endregion
+
+    private TimeManeger timeManeger = null;
 
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
@@ -92,6 +95,11 @@ public class GameSceneController : BaseSceneController
         StartMoveMonster();
 
         StartCheckMonster();
+
+        timeManeger = TimeManeger.GetInstance;
+
+        timeManeger.ResetTime();
+        timeManeger.UpdateTime(timeManagerCancel).Forget();
     }
 
     private void LateUpdate()
@@ -389,8 +397,10 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
-    public bool CheckMonsterAttack(AABB _aabb)
+    public async UniTask<bool> CheckMonsterAttack(AABB _aabb)
     {
+        await UniTask.Yield();
+
         for (int i = 0; i < monsterList.Count; i++)
         {
             var isCollision = monsterList[i].OnCheckCollision(_aabb);
@@ -419,6 +429,19 @@ public class GameSceneController : BaseSceneController
 // 여기에 time 추가해야하는건가?
 public class TimeManeger
 {
+    private static TimeManeger instance;
+    public static TimeManeger GetInstance
+    {
+        get
+        {
+            if (instance == null)
+            {
+                instance = new TimeManeger();
+            }
+            return instance;
+        }
+    }
+
     private float time;
 
     public float SetTime { get { return time; } set { time = value; } }
@@ -428,13 +451,14 @@ public class TimeManeger
         time = 0;
     }
 
-    public async UniTask UpdateTime()
+    public async UniTaskVoid UpdateTime(CancellationToken _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             time += Time.deltaTime;
 
             await UniTask.Yield();
+            Debug.Log($"시간 {time}");
         }
     }
 }

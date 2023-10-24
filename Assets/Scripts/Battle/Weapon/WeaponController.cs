@@ -31,8 +31,6 @@ public class WeaponController : MonoBehaviour
                 {
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, -rotate);
                 }
-
-                // 근접무기의 경우 여기서 AABB 적용
             }
         }
     }
