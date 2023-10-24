@@ -144,7 +144,7 @@ public class WeaponSlot : MonoBehaviour
                                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                                 transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
                             }
-                            gameSceneController.FireBullet(enemy, type, _transform).Forget();
+                            gameSceneController.FireBullet(enemy, _type, _transform).Forget();
 
                             await UniTask.Delay((int)attackSpeed * 1000, cancellationToken: getTargetEnemyCancel);
 
@@ -160,7 +160,7 @@ public class WeaponSlot : MonoBehaviour
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
                         if (enemy != null)
                         {
-                            gameSceneController.FireBullet(enemy, type, _transform).Forget();
+                            gameSceneController.FireBullet(enemy, _type, _transform).Forget();
 
                             await UniTask.Delay((int)attackSpeed * 1000, cancellationToken: getTargetEnemyCancel);
 

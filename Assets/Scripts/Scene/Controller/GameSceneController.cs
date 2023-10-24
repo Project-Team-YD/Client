@@ -371,7 +371,10 @@ public class GameSceneController : BaseSceneController
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
-                TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
+                if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
                 isMove = false;
             }
 
