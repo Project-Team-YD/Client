@@ -45,7 +45,7 @@ public class GameSceneController : BaseSceneController
     private CancellationToken timeManagerCancel = new CancellationToken();
     #endregion
 
-    private TimeManager timeManeger = null;
+    private TimeManager timeManager = null;
 
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
@@ -96,10 +96,10 @@ public class GameSceneController : BaseSceneController
 
         StartCheckMonster();
 
-        timeManeger = TimeManager.getInstance;
+        timeManager = TimeManager.getInstance;
 
-        timeManeger.ResetTime();
-        timeManeger.UpdateTime(timeManagerCancel).Forget();
+        timeManager.ResetTime();
+        timeManager.UpdateTime(timeManagerCancel).Forget();
     }
 
     private void LateUpdate()
@@ -344,7 +344,7 @@ public class GameSceneController : BaseSceneController
     }
 
     //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
-    public async void FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
+    public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
     {
         var obj = (Bullet)bulletPool.GetObject();
         if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
@@ -374,6 +374,8 @@ public class GameSceneController : BaseSceneController
                 TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
                 isMove = false;
             }
+
+            // 플레이어와 거리체크 소멸
 
             await UniTask.Yield();
 

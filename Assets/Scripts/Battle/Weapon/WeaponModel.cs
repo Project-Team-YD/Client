@@ -132,7 +132,6 @@ public class WeaponSlot : MonoBehaviour
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
                         if (enemy != null)
                         {
-                            await UniTask.Delay((int)attackSpeed * 1000, cancellationToken: getTargetEnemyCancel);
                             if (isRightWeapon)
                             {
                                 var direction = enemy.transform.position - transform.position;
@@ -145,7 +144,10 @@ public class WeaponSlot : MonoBehaviour
                                 float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                                 transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
                             }
-                            gameSceneController.FireBullet(enemy, type, _transform);
+                            gameSceneController.FireBullet(enemy, type, _transform).Forget();
+
+                            await UniTask.Delay((int)attackSpeed * 1000, cancellationToken: getTargetEnemyCancel);
+
                             enemy = null;
                         }
                         await UniTask.Yield();
@@ -158,8 +160,10 @@ public class WeaponSlot : MonoBehaviour
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
                         if (enemy != null)
                         {
+                            gameSceneController.FireBullet(enemy, type, _transform).Forget();
+
                             await UniTask.Delay((int)attackSpeed * 1000, cancellationToken: getTargetEnemyCancel);
-                            gameSceneController.FireBullet(enemy, type, _transform);
+
                             enemy = null;
                         }
                         await UniTask.Yield();
