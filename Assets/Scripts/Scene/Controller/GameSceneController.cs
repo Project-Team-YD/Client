@@ -45,7 +45,7 @@ public class GameSceneController : BaseSceneController
     private CancellationToken timeManagerCancel = new CancellationToken();
     #endregion
 
-    private TimeManeger timeManeger = null;
+    private TimeManager timeManeger = null;
 
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
@@ -96,7 +96,7 @@ public class GameSceneController : BaseSceneController
 
         StartCheckMonster();
 
-        timeManeger = TimeManeger.GetInstance;
+        timeManeger = TimeManager.getInstance;
 
         timeManeger.ResetTime();
         timeManeger.UpdateTime(timeManagerCancel).Forget();
@@ -421,44 +421,5 @@ public class GameSceneController : BaseSceneController
 
         monsterPool.EnqueueObject(monsterList[_index]);
         monsterList.RemoveAt(_index);
-    }
-}
-
-
-// mono 상속 ??
-// 여기에 time 추가해야하는건가?
-public class TimeManeger
-{
-    private static TimeManeger instance;
-    public static TimeManeger GetInstance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = new TimeManeger();
-            }
-            return instance;
-        }
-    }
-
-    private float time;
-
-    public float SetTime { get { return time; } set { time = value; } }
-
-    public void ResetTime()
-    {
-        time = 0;
-    }
-
-    public async UniTaskVoid UpdateTime(CancellationToken _cancellationToken)
-    {
-        while (!_cancellationToken.IsCancellationRequested)
-        {
-            time += Time.deltaTime;
-
-            await UniTask.Yield();
-            Debug.Log($"시간 {time}");
-        }
     }
 }
