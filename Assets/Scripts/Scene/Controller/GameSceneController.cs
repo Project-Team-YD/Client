@@ -2,8 +2,11 @@ using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Threading;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameSceneController : BaseSceneController
 {
@@ -45,6 +48,16 @@ public class GameSceneController : BaseSceneController
     private CancellationToken timeManagerCancel = new CancellationToken();
     #endregion
 
+    #region
+    [SerializeField] Image playerHpBar = null;
+    [SerializeField] Button gameStopButton = null;
+    [SerializeField] TextMeshProUGUI timeText = null;
+    [SerializeField] GameObject bossHp = null;
+    [SerializeField] Image bossHpBar = null;
+
+    private StringBuilder sb = new StringBuilder();
+    #endregion
+
     private TimeManager timeManager = null;
 
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
@@ -53,6 +66,12 @@ public class GameSceneController : BaseSceneController
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
         PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
+        timeManager = TimeManager.getInstance;
+        timeManager.ResetTime();
+        timeManager.UpdateTime(timeManagerCancel).Forget();
+        gameStopButton.onClick.AddListener(OnClickGameStopButton);
+        bossHp.SetActive(false);
+        sb.Clear();
     }
 
     private async void Start()
@@ -94,12 +113,7 @@ public class GameSceneController : BaseSceneController
 
         StartMoveMonster();
 
-        StartCheckMonster();
-
-        timeManager = TimeManager.getInstance;
-
-        timeManager.ResetTime();
-        timeManager.UpdateTime(timeManagerCancel).Forget();
+        StartCheckMonster();        
     }
 
     private void LateUpdate()
@@ -129,6 +143,19 @@ public class GameSceneController : BaseSceneController
 
         // 조이패드 임시
         OnClickJoypad();
+        SetPlayTime();
+    }
+
+    public void OnClickGameStopButton()
+    {
+
+    }
+
+    private void SetPlayTime()
+    {
+        sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.SetTime / 60, timeManager.SetTime % 60));
+        timeText.text = sb.ToString(); // GC생성 위험...뭐가 좋을지...
+        sb.Clear();
     }
     /// <summary>
     /// 몬스터 생성 함수(중복 포지션 생성이 안되도록 난수 중복 제거 로직 사용)
