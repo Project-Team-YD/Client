@@ -24,6 +24,9 @@ public class WeaponSlot : MonoBehaviour
 
     private AABB curAABB;
 
+    /// <summary>
+    /// ê·¼ì ‘ë¬´ê¸°ìš© AABB
+    /// </summary>
     public AABB GetWeaponAABB
     {
         get
@@ -73,8 +76,8 @@ public class WeaponSlot : MonoBehaviour
         return attackSpeed;
     }
 
-    // TODO :: ¿©±â¼­ AABB Ã¼Å©µµ °°ÀÌÇØ¼­ µ¥¹ÌÁö¸¦ ÁÖ´Â°Ô ¸ÂÀ»µíÇÑµ¥ ÀÇ°ß ¿©Âåº¸±â..ÀÓ½Ã Controller Update¹® ÇÔ¼ö 
-    // TODO :: ¿ø°Å¸® ¹«±â´Â Bullet°°Àº ½ºÅ©¸³Æ®¸¦ ÇÏ³ª ÆÄ¼­ °Å±â¼­ ÄÁÆ®·ÑÇØÁà¾ß..........»ı°¢ÇØº¸±â
+    // TODO :: ì—¬ê¸°ì„œ AABB ì²´í¬ë„ ê°™ì´í•´ì„œ ë°ë¯¸ì§€ë¥¼ ì£¼ëŠ”ê²Œ ë§ì„ë“¯í•œë° ì˜ê²¬ ì—¬ì­¤ë³´ê¸°..ì„ì‹œ Controller Updateë¬¸ í•¨ìˆ˜ 
+    // TODO :: ì›ê±°ë¦¬ ë¬´ê¸°ëŠ” Bulletê°™ì€ ìŠ¤í¬ë¦½íŠ¸ë¥¼ í•˜ë‚˜ íŒŒì„œ ê±°ê¸°ì„œ ì»¨íŠ¸ë¡¤í•´ì¤˜ì•¼..........ìƒê°í•´ë³´ê¸°
     public async void WeaponAttack(WeaponType _type, Transform _transform)
     {
         if (transform != null)
@@ -82,44 +85,44 @@ public class WeaponSlot : MonoBehaviour
             switch (_type)
             {
                 case WeaponType.dagger:
-                    // Á¶°Ç AABB null ¾Æ´Ò¶§
-                    // Á¶°Ç °ø°İ ÁßÀÏ¶§
+                    // ì¡°ê±´ AABB null ì•„ë‹ë•Œ
+                    // ì¡°ê±´ ê³µê²© ì¤‘ì¼ë•Œ
                     while (true)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
-                        // ¿©±â¿¡ Ãæµ¹Ã¼Å© ¸Ş¼­µå Ãß°¡
-                        // °ÔÀÓ¾À¿¡¼­ ÀûÀ» °¡Á®¿Í¾ßÇÏ³ª?
+                        // ì—¬ê¸°ì— ì¶©ëŒì²´í¬ ë©”ì„œë“œ ì¶”ê°€
+                        // ê²Œì„ì”¬ì—ì„œ ì ì„ ê°€ì ¸ì™€ì•¼í•˜ë‚˜?
                         var enemyList = gameSceneController.GetEnemyList;
 
-                        // TODO:: °¡¸¸È÷ÀÖÀ»¶© ¹®Á¦ ¾øÀ½ ÀÌµ¿ÇÒ¶§ ¹®Á¦ ÀÖÀ½ È®ÀÎÁß
+                        // TODO:: ê°€ë§Œíˆìˆì„ë• ë¬¸ì œ ì—†ìŒ ì´ë™í• ë•Œ ë¬¸ì œ ìˆìŒ í™•ì¸ì¤‘
                         var isAttack = await gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
 
                         if (isAttack)
                         {
-                            Debug.Log("Dagger ¸ÂÀ½");
+                            Debug.Log("Dagger ë§ìŒ");
                         }
 
                         await UniTask.Yield();
                     }
                 //break;
                 case WeaponType.sword:
-                    // Á¶°Ç AABB null ¾Æ´Ò¶§
-                    // Á¶°Ç °ø°İ ÁßÀÏ¶§
+                    // ì¡°ê±´ AABB null ì•„ë‹ë•Œ
+                    // ì¡°ê±´ ê³µê²© ì¤‘ì¼ë•Œ
                     while (true)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
-                        // ¿©±â¿¡ Ãæµ¹Ã¼Å© ¸Ş¼­µå Ãß°¡
-                        // °ÔÀÓ¾À¿¡¼­ ÀûÀ» °¡Á®¿Í¾ßÇÏ³ª?
+                        // ì—¬ê¸°ì— ì¶©ëŒì²´í¬ ë©”ì„œë“œ ì¶”ê°€
+                        // ê²Œì„ì”¬ì—ì„œ ì ì„ ê°€ì ¸ì™€ì•¼í•˜ë‚˜?
                         var enemyList = gameSceneController.GetEnemyList;
 
-                        // TODO:: °¡¸¸È÷ÀÖÀ»¶© ¹®Á¦ ¾øÀ½ ÀÌµ¿ÇÒ¶§ ¹®Á¦ ÀÖÀ½ È®ÀÎÁß
+                        // TODO:: ê°€ë§Œíˆìˆì„ë• ë¬¸ì œ ì—†ìŒ ì´ë™í• ë•Œ ë¬¸ì œ ìˆìŒ í™•ì¸ì¤‘
                         var isAttack = await gameSceneController.CheckMonsterAttack(this.GetWeaponAABB);
 
                         if (isAttack)
                         {
-                            Debug.Log("Sword ¸ÂÀ½");
+                            Debug.Log("Sword ë§ìŒ");
                         }
 
                         await UniTask.Yield();

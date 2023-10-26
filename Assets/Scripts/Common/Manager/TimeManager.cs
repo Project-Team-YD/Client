@@ -16,6 +16,11 @@ public class TimeManager : Singleton<TimeManager>
         time = 0;
     }
 
+    /// <summary>
+    /// 시간 정지 조건문 추가 예정
+    /// </summary>
+    /// <param name="_cancellationToken"></param>
+    /// <returns></returns>
     public async UniTaskVoid UpdateTime(CancellationTokenSource _cancellationToken)
     {
         while (!_cancellationToken.IsCancellationRequested)

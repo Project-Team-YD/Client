@@ -444,6 +444,11 @@ public class GameSceneController : BaseSceneController
         }
     }
 
+    /// <summary>
+    /// 원거리 무기 AABB
+    /// </summary>
+    /// <param name="_bullet"></param>
+    /// <returns></returns>
     private bool CheckMonsterAttack(Bullet _bullet)
     {
         for (int i = 0; i < monsterList.Count; i++)
@@ -459,6 +464,11 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
+    /// <summary>
+    /// 근접무기 용 충돌 체크
+    /// </summary>
+    /// <param name="_aabb"></param>
+    /// <returns></returns>
     public async UniTask<bool> CheckMonsterAttack(AABB _aabb)
     {
         await UniTask.Yield();
@@ -476,6 +486,11 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
+    /// <summary>
+    /// 충돌된 몬스터
+    /// hp 적용필요
+    /// </summary>
+    /// <param name="_index"></param>
     private void AttackMonster(int _index)
     {
         // hp가 0이면 죽임
