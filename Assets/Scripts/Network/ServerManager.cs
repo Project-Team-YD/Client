@@ -11,13 +11,14 @@ namespace Server
         private static ServerManager instance = null;
         private Channel channel;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcClient;
+        public string uuid;
 
         private ServerManager()
         {
         }
         ~ServerManager()
         {
-            // gRPC Ã¤³Î Á¾·á
+            // gRPC Ã¤ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
             if (channel != null)
                 channel.ShutdownAsync().Wait();
             if (instance != null)
@@ -36,28 +37,36 @@ namespace Server
             }
         }
 
-
-        private void ConnectToGrpcServer()
+        public void ConnectToGrpcLoginServer()
         {
-            // gRPC ¼­¹öÀÇ ÁÖ¼Ò¿Í Æ÷Æ® ¼³Á¤
-            string serverAddress = "localhost";
-            int serverPort = 19001;
+            // gRPC Ã¤ï¿½ï¿½ ï¿½Ê±ï¿½È­
+            channel = new Channel($"{loginServerIp}:{loginServerPort}", ChannelCredentials.Insecure);
 
-            // gRPC Ã¤³Î ÃÊ±âÈ­
-            channel = new Channel($"{serverAddress}:{serverPort}", ChannelCredentials.Insecure);
-
-            // gRPC Å¬¶óÀÌ¾ðÆ® ÃÊ±âÈ­
+            // gRPC Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½Ê±ï¿½È­
             grpcClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+
         }
-
-
-        public string ip = "localhost";
-        public int port = 19001;
-
-        public void ConnectToServer()
+        
+        public void ConnectToGrpcGameServer()
         {
-            ConnectToGrpcServer();
+
+            // gRPC Ã¤ï¿½ï¿½ ï¿½Ê±ï¿½È­
+            channel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure, new List<ChannelOption>
+            {
+                new ChannelOption("uuid", uuid)
+            });
+
+            // gRPC Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½Ê±ï¿½È­
+            grpcClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+
         }
+
+        public string loginServerIp = "localhost";
+        public int loginServerPort = 19001;
+        public string gameServerIp = "localhost";
+        public int gameServerPort = 19001;
+
+        
     }
 }
 

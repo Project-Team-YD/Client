@@ -19,8 +19,19 @@ public class Test : MonoBehaviour
 
         Debug.Log(result);
 
+        ResponseTest responseTest2 = await GrpcManager.GetInstance.RpcStreamTest(requestTest);
+
+        result = $"MessageCode:{responseTest.code}/{responseTest.message}/{responseTest.seconds}";
+
+        Debug.Log(result);
+
 
     }
 
+    private async void Update()
+    {
+
+        await GrpcManager.GetInstance.ReceiveRpcStreamAsync();
+    }
 
 }
