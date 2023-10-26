@@ -8,7 +8,7 @@ public class Test : MonoBehaviour
 
     private async void Start()
     {
-        ServerManager.GetInstance.ConnectToServer();
+        //ServerManager.GetInstance.ConnectToServer();
 
         RequestTest requestTest = new RequestTest();
         requestTest.id = "testId";
