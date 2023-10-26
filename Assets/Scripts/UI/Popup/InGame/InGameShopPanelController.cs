@@ -12,14 +12,55 @@ using TMPro;
 
 public class InGameShopPanelController : UIBaseController
 {
-    [SerializeField] private InGameShopPanel inGameShopPanel = null;
-    // ���� ������ ���� ����
+    #region Const
+    private const string goldStoreTextKey = "골드상점";
+    private const string buyTextKey = "구매완료!!";
+    private const string selectedItemTextKey = "선택 아이템";
+    private const string purchaseTextKey = "구매하기";
+    private const string mountingSlotTextKey = "장착슬롯";
+    private const string checkTextKey = "확인";
+    #endregion
+
+    #region Text
+    [SerializeField] private TextMeshProUGUI goldStoreText = null;
+    [SerializeField] private TextMeshProUGUI buyText = null;
+    [SerializeField] private TextMeshProUGUI selectedItemText = null;
+    [SerializeField] private TextMeshProUGUI purchaseText = null;
+    [SerializeField] private TextMeshProUGUI mountingSlotText = null;
+    [SerializeField] private TextMeshProUGUI checkText = null;
+    #endregion
+
+    /// <summary>
+    /// 동적 생성후 관리 예정
+    /// 슬롯이 없을경우에 한해서만 생성
+    /// 슬롯이 존제 할경우 재사용 권장
+    /// 버튼 연결해줄 콜백 함수 추가 필요
+    /// </summary>
     [SerializeField] private InGameShopItemController shopItemController = null;
 
-    [SerializeField] Transform itemSlotTransform = null;
+    [SerializeField] private TextMeshProUGUI possessionGoldText = null;
 
-    [SerializeField] Button RefreshButton = null;
-    [SerializeField] Button NextButton = null;
+    /// <summary>
+    /// 상점 아이템
+    /// 왼쪽(위) 장착
+    /// 오른쪽(아래) 장착
+    /// </summary>
+    [SerializeField] private Transform itemShopSlotTransform = null;
+    [SerializeField] private Transform itemLeftSlotTransform = null;
+    [SerializeField] private Transform itemRightSlotTransform = null;
+
+    [SerializeField] private Button refreshButton = null;
+    [SerializeField] private Button buyButton = null;
+
+    [SerializeField] private TextMeshProUGUI descriptionText = null;
+    [SerializeField] private TextMeshProUGUI priceText = null;
+
+    /// <summary>
+    /// 구매완료 팝업
+    /// 일단 스크립트 따로 안만들고 여기서 관리를 해줘야할지 생각 필요
+    /// </summary>
+    [SerializeField] private GameObject buyGroup = null;
+    [SerializeField] private Button nextButton = null;
 
     private UIManager uiManager = null;
 
@@ -28,22 +69,57 @@ public class InGameShopPanelController : UIBaseController
         base.Awake();
 
         uiManager = UIManager.getInstance;
-        RefreshButton.onClick.AddListener(OnClickRefreshButton);
-        NextButton.onClick.AddListener(OnClickNextButton);
+
+        refreshButton.onClick.AddListener(OnClickRefreshButton);
+        buyButton.onClick.AddListener(OnClickBuyButton);
+        nextButton.onClick.AddListener(OnClickNextButton);
+
+        Initialized();
+
+        buyGroup.SetActive(false);
     }
 
+    private void Initialized()
+    {
+        goldStoreText.text = goldStoreTextKey;
+        buyText.text = buyTextKey;
+        selectedItemText.text = selectedItemTextKey;
+        purchaseText.text = purchaseTextKey;
+        mountingSlotText.text = mountingSlotTextKey;
+        checkText.text = checkTextKey;
+    }
+
+    /// <summary>
+    /// 초기화
+    /// </summary>
     private void ResetInGameShop()
     {
-
+        buyGroup.SetActive(false);
     }
 
+    /// <summary>
+    /// 새로고침 버튼 추가시 필요
+    /// </summary>
     private void OnClickRefreshButton()
     {
 
     }
 
+    /// <summary>
+    /// 구매 버튼
+    /// </summary>
+    private void OnClickBuyButton()
+    {
+
+    }
+
+    #region 구매완료 팝업
+    /// <summary>
+    ///  NEXT 버튼
+    /// </summary>
     private void OnClickNextButton()
     {
 
     }
+    #endregion
 }
