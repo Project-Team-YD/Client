@@ -36,12 +36,12 @@ public class ShopPopupController : UIBaseController, IPopup
         buyText.text = BUY_TEXT;
     }
 
-    public void OnClickBuyButton()
+    private void OnClickBuyButton()
     {
 
     }
 
-    public void OnClickCloseButton()
+    private void OnClickCloseButton()
     {        
         uiMgr.Hide();
     }

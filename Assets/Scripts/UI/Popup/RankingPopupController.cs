@@ -19,8 +19,8 @@ public class RankingPopupController : UIBaseController, IPopup
 
     private UIManager uiMgr = null;
 
-    private const string RANKING_POPUP_TEXT = "��ŷ���";
-    private const string TIMEATTACK_TEXT = "Ÿ�Ӿ���";
+    private const string RANKING_POPUP_TEXT = "랭킹목록";
+    private const string TIMEATTACK_TEXT = "타임어택";
 
     protected override void Awake()
     {
@@ -36,13 +36,15 @@ public class RankingPopupController : UIBaseController, IPopup
         rankingPopupText.text = RANKING_POPUP_TEXT;
         timeAttackText.text = TIMEATTACK_TEXT;
     }
-
-    public void OnClicktimeAttackTypeButton()
+    /// <summary>
+    /// 게임 타입 버튼 클릭 함수
+    /// </summary>
+    private void OnClicktimeAttackTypeButton()
     {
 
     }
 
-    public void OnClickCloseButton()
+    private void OnClickCloseButton()
     {
         uiMgr.Hide();
     }

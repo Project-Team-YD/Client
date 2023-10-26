@@ -27,10 +27,10 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private UIManager uiMgr = null;
     private WeaponInfo[] weaponInfos = null;
 
-    private const string DUNGEON_JOIN_TEXT = "��������";
-    private const string EQUIP_TEXT = "������";
-    private const string EQUIPMENT_TEXT = "�����ϱ�";
-    private const string JOIN_TEXT = "�����ϱ�";
+    private const string DUNGEON_JOIN_TEXT = "던전입장";
+    private const string EQUIP_TEXT = "착용중";
+    private const string EQUIPMENT_TEXT = "착용하기";
+    private const string JOIN_TEXT = "입장하기";
 
     protected override void Awake()
     {
@@ -63,31 +63,38 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         joinText.text = JOIN_TEXT;
     }
 
-    public void DataInitialization()
+    public T Show<T>() where T : IPopup
     {
-        weaponImage.enabled = false;
-        enhanceText.enabled = false;
-        weaponImage.sprite = null;
+        throw new NotImplementedException();
     }
-
+    /// <summary>
+    /// 게임 입장 전 들고 갈 무기 선택시 슬릇에 선택 무기 이미지 설정 및 정보 가져오는 함수.
+    /// </summary>
+    /// <param name="_slotIndex">인벤토리 무기 슬릇 인덱스</param>
     public void SetSelectSlotWeaponImage(int _slotIndex)
     {
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
-    }
-
-    public T Show<T>() where T : IPopup
+    }    
+    /// <summary>
+    /// 팝업 데이터 초기화.
+    /// </summary>
+    private void DataInitialization()
     {
-        throw new NotImplementedException();
+        weaponImage.enabled = false;
+        enhanceText.enabled = false;
+        weaponImage.sprite = null;
     }
-
-    public async void OnClickJoinButton()
+    /// <summary>
+    /// 무기 선택 완료후 입장하기 버튼 클릭 호출 함수.
+    /// </summary>
+    private async void OnClickJoinButton()
     {
         await uiMgr.Show<DungeonSelectPopupController>("DungeonSelectPopup");
     }
 
-    public void OnClickCloseButton()
+    private void OnClickCloseButton()
     {
         DataInitialization();
         uiMgr.Hide();

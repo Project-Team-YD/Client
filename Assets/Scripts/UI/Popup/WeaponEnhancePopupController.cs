@@ -26,8 +26,8 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     private int costValue = 100000000;
     private WeaponInfo[] weaponInfos = null;
 
-    private const string ENHANCE_POPUP_TEXT = "���ȭ";
-    private const string ENHANCE_TEXT = "��ȭ�ϱ�";
+    private const string ENHANCE_POPUP_TEXT = "장비강화";
+    private const string ENHANCE_TEXT = "강화하기";
     
     protected override void Awake()
     {
@@ -54,27 +54,36 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         }
         enhancePopupText.text = ENHANCE_POPUP_TEXT;
         enhanceButtonText.text = ENHANCE_TEXT;
-        costText.text = string.Format("��� : {0:0,0}", costValue);
+        costText.text = string.Format("비용 : {0:0,0}", costValue);
     }
-    public void DataInitialization()
-    {
-        weaponImage.enabled = false;
-        enhanceText.enabled = false;
-        weaponImage.sprite = null;
-    }
-
+    /// <summary>
+    /// 무기강화 팝업 인벤토리에서 무기 선택시 해당 무기의 이미지셋팅과 정보를 가져오는 함수.
+    /// </summary>
+    /// <param name="_slotIndex">인벤토리 무기 슬릇의 인덱스</param>
     public void SetSelectSlotWeaponImage(int _slotIndex)
     {
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
     }
-
-    public void OnClickEnhanceButton()
+    /// <summary>
+    /// 팝업정보들 초기상태도 되돌림.
+    /// </summary>
+    private void DataInitialization()
+    {
+        weaponImage.enabled = false;
+        enhanceText.enabled = false;
+        weaponImage.sprite = null;
+    }
+    /// <summary>
+    /// 무기 강화 버튼 클릭시 호출되는 함수.
+    /// </summary>
+    private void OnClickEnhanceButton()
     {
 
     }
-    public void OnClickCloseButton()
+
+    private void OnClickCloseButton()
     {
         DataInitialization();
         uiMgr.Hide();

@@ -22,9 +22,9 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
     private TextMeshProUGUI timeAttackText = null;
     private UIManager uiMgr = null;
 
-    private const string MODE_SELECT_TEXT = "��弱��";
-    private const string INFINITY_TEXT = "���Ѹ��";
-    private const string TIMEATTACK_TEXT = "Ÿ�Ӿ���";
+    private const string MODE_SELECT_TEXT = "모드선택";
+    private const string INFINITY_TEXT = "무한모드";
+    private const string TIMEATTACK_TEXT = "타임어택";
     protected override void Awake()
     {
         base.Awake();
@@ -48,15 +48,19 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
     {
         throw new NotImplementedException();
     }
-
-    public void OnClickTimeAttackButton()
+    /// <summary>
+    /// 타입어택 모드 버튼 클릭시 호출..게임 진입
+    /// </summary>
+    private void OnClickTimeAttackButton()
     {
         uiMgr.ClearAllCachedPanel();
         uiMgr.ClearAllPanelStack();
         SceneHelper.getInstance.ChangeScene(typeof(GameScene));
     }
-
-    public void OnClickInfinityButton()
+    /// <summary>
+    /// 무한모드 버튼 클릭시 호출..게임 진입
+    /// </summary>
+    private void OnClickInfinityButton()
     {
 
     }
