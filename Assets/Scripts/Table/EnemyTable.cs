@@ -10,9 +10,9 @@ public class EnemyTable : Singleton<EnemyTable>, ITable
 {
     private EnemyInfo[] enemyInfos = null;
     #region MonsterCount
-    // TODO :: ¿©±â¼­ Á÷Á¢ ³Ö¾î¼­ ÇÏÁö ¸»°í ½ºÅ×ÀÌÁöTable ¶Ç´Â ´Ù¸¥°÷¿¡¼­ ºÒ·¯¿Ã ¼ö ÀÖµµ·Ï ¹Ù²ÙÀÚ ³ªÁß¿¡..
-    private int createCount = 30; // ½ÃÀÛ½Ã ¸®Á¨ µÉ ¸ó½ºÅÍÀÇ ¼ö..
-    private int regenCount = 20; // ÁÖ±âÀûÀ¸·Î ¸®Á¨ µÉ ¸ó½ºÅÍÀÇ ¼ö..
+    // TODO :: ì—¬ê¸°ì„œ ì§ì ‘ ë„£ì–´ì„œ í•˜ì§€ ë§ê³  ìŠ¤í…Œì´ì§€Table ë˜ëŠ” ë‹¤ë¥¸ê³³ì—ì„œ ë¶ˆëŸ¬ì˜¬ ìˆ˜ ìˆë„ë¡ ë°”ê¾¸ì ë‚˜ì¤‘ì—..
+    private int createCount = 10; // ì‹œì‘ì‹œ ë¦¬ì   ë  ëª¬ìŠ¤í„°ì˜ ìˆ˜..
+    private int regenCount = 10; // ì£¼ê¸°ì ìœ¼ë¡œ ë¦¬ì   ë  ëª¬ìŠ¤í„°ì˜ ìˆ˜..
     #endregion
     public async UniTask<bool> Initialize()
     {

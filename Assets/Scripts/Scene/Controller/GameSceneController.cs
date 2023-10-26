@@ -17,7 +17,9 @@ public class GameSceneController : BaseSceneController
     private int createCount;
     private int regenCount;
     private List<Vector2> summonPosition = new List<Vector2>();
-    private readonly int MAX_WAVE_MONSTER = 100;
+    private readonly int MAX_WAVE_MONSTER = 20;
+    private int deathCount = 0;
+    private int monsterCount = 0;
     #endregion
 
     #region Map
@@ -41,14 +43,14 @@ public class GameSceneController : BaseSceneController
     #endregion
 
     #region UniTask
-    private CancellationToken monsterCreateCancel = new CancellationToken();
-    private CancellationToken monsterRegenCancel = new CancellationToken();
-    private CancellationToken monsterMoveCancel = new CancellationToken();
-    private CancellationToken getTargetEnemyCancel = new CancellationToken();
-    private CancellationToken timeManagerCancel = new CancellationToken();
+    private CancellationTokenSource monsterCreateCancel = new CancellationTokenSource();
+    private CancellationTokenSource monsterRegenCancel = new CancellationTokenSource();
+    private CancellationTokenSource monsterMoveCancel = new CancellationTokenSource();
+    private CancellationTokenSource getTargetEnemyCancel = new CancellationTokenSource();
+    private CancellationTokenSource timeManagerCancel = new CancellationTokenSource();
     #endregion
 
-    #region
+    #region InGameUI
     [SerializeField] Image playerHpBar = null;
     [SerializeField] Button gameStopButton = null;
     [SerializeField] TextMeshProUGUI timeText = null;
@@ -59,13 +61,16 @@ public class GameSceneController : BaseSceneController
     #endregion
 
     private TimeManager timeManager = null;
-
+    private int gameWave;
+    private UIManager uIManager = null;
+    
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
         PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
+        uIManager = UIManager.getInstance;
         timeManager = TimeManager.getInstance;
         timeManager.ResetTime();
         timeManager.UpdateTime(timeManagerCancel).Forget();
@@ -109,11 +114,10 @@ public class GameSceneController : BaseSceneController
         }
 
         await CreateMonster();
-        RegenMonster().Forget();
-
+        RegenMonster().Forget();        
         StartMoveMonster();
-
-        StartCheckMonster();        
+        
+        StartCheckMonster();
     }
 
     private void LateUpdate()
@@ -141,29 +145,45 @@ public class GameSceneController : BaseSceneController
         //    monsterPool.EnqueueObject(monsterList[0]);
         //}
 
-        // Á¶ÀÌÆĞµå ÀÓ½Ã
+        // ì¡°ì´íŒ¨ë“œ ì„ì‹œ
+        if(deathCount >= MAX_WAVE_MONSTER)
+        {
+            EndGameWave();
+        }
+        if(monsterCount >= MAX_WAVE_MONSTER)
+        {
+            monsterRegenCancel.Cancel();
+        }
         OnClickJoypad();
         SetPlayTime();
     }
 
-    public void OnClickGameStopButton()
+    private void OnClickGameStopButton()
     {
-
+        
     }
 
+    private async void EndGameWave()
+    {
+       await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
+       Time.timeScale = 0f;
+    }
+    /// <summary>
+    /// ì¸ê²Œì„ ì‹œê°„ ì²´í¬ ë° Textì ìš© í•¨ìˆ˜.
+    /// </summary>
     private void SetPlayTime()
     {
         sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.SetTime / 60, timeManager.SetTime % 60));
-        timeText.text = sb.ToString(); // GC»ı¼º À§Çè...¹¹°¡ ÁÁÀ»Áö...
+        timeText.text = sb.ToString(); // TODO :: GCìƒì„± ìœ„í—˜..ì´ê²Œë§ë‚˜....
         sb.Clear();
     }
     /// <summary>
-    /// ¸ó½ºÅÍ »ı¼º ÇÔ¼ö(Áßº¹ Æ÷Áö¼Ç »ı¼ºÀÌ ¾ÈµÇµµ·Ï ³­¼ö Áßº¹ Á¦°Å ·ÎÁ÷ »ç¿ë)
+    /// ëª¬ìŠ¤í„° ìƒì„± í•¨ìˆ˜(ì¤‘ë³µ í¬ì§€ì…˜ ìƒì„±ì´ ì•ˆë˜ë„ë¡ ë‚œìˆ˜ ì¤‘ë³µ ì œê±° ë¡œì§ ì‚¬ìš©)
     /// </summary>
     /// <returns></returns>
     private async UniTask CreateMonster()
     {
-        await UniTask.Delay(1500, cancellationToken: monsterCreateCancel);
+        await UniTask.Delay(1500, cancellationToken: monsterCreateCancel.Token);
 
         for (int i = 0; i < createCount; i++)
         {
@@ -179,21 +199,25 @@ public class GameSceneController : BaseSceneController
             }
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // ÀÏ´Ü ±Ù°Å¸® ÇÑÁ¾·ù..ÃßÈÄ ¸ó½ºÅÍ Ãß°¡ µÉ¼ö·Ï RandomÇÔ¼ö¸¦ ÀÌ¿ëÇØ ³­¼ö·Î ¸ó½ºÅÍ Á¾·ùº° ·£´ı »ı¼ºµÇ°Ô..
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // ì¼ë‹¨ ê·¼ê±°ë¦¬ í•œì¢…ë¥˜..ì¶”í›„ ëª¬ìŠ¤í„° ì¶”ê°€ ë ìˆ˜ë¡ Randomí•¨ìˆ˜ë¥¼ ì´ìš©í•´ ë‚œìˆ˜ë¡œ ëª¬ìŠ¤í„° ì¢…ë¥˜ë³„ ëœë¤ ìƒì„±ë˜ê²Œ..
             monsterList.Add(obj);
+            monsterCount++;
         }
         summonPosition.Clear();
     }
     /// <summary>
-    /// ¸ó½ºÅÍ ¸®Á¨ ÇÔ¼ö..¸®Á¨ ½Ã°£ÀÌ µÉ¶§¸¶´Ù È£Ãâ.
+    /// ëª¬ìŠ¤í„° ë¦¬ì   í•¨ìˆ˜..ë¦¬ì   ì‹œê°„ì´ ë ë•Œë§ˆë‹¤ í˜¸ì¶œ.
     /// </summary>
     /// <returns></returns>
     private async UniTaskVoid RegenMonster()
-    {
-        // TODO:: ³ªÁß¿¡ º¯°æ ÇÊ¿ä ÀÓ½Ã·Î 
+    {        
         while (true)
         {
-            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel);
+            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
+            if(monsterRegenCancel.IsCancellationRequested)
+            {
+                break;
+            }
 
             for (int i = 0; i < regenCount; i++)
             {
@@ -209,8 +233,9 @@ public class GameSceneController : BaseSceneController
                 }
                 obj.transform.localPosition = monsterPosition;
                 obj.OnActivate();
-                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // ÀÏ´Ü ±Ù°Å¸® ÇÑÁ¾·ù..ÃßÈÄ ¸ó½ºÅÍ Ãß°¡ µÉ¼ö·Ï RandomÇÔ¼ö¸¦ ÀÌ¿ëÇØ ³­¼ö·Î ¸ó½ºÅÍ Á¾·ùº° ·£´ı »ı¼ºµÇ°Ô..
+                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // ì¼ë‹¨ ê·¼ê±°ë¦¬ í•œì¢…ë¥˜..ì¶”í›„ ëª¬ìŠ¤í„° ì¶”ê°€ ë ìˆ˜ë¡ Randomí•¨ìˆ˜ë¥¼ ì´ìš©í•´ ë‚œìˆ˜ë¡œ ëª¬ìŠ¤í„° ì¢…ë¥˜ë³„ ëœë¤ ìƒì„±ë˜ê²Œ..
                 monsterList.Add(obj);
+                monsterCount++;
             }
             summonPosition.Clear();
         }
@@ -221,7 +246,7 @@ public class GameSceneController : BaseSceneController
         await MoveMonster();
     }
 
-    // ¸ó½ºÅÍ ½Ç½Ã°£ ÇÃ·¹ÀÌ¾î À§Ä¡·Î ÀÌµ¿..ÃßÈÄ ¼öÁ¤ÇØ¾ßÇÔ.
+    // ëª¬ìŠ¤í„° ì‹¤ì‹œê°„ í”Œë ˆì´ì–´ ìœ„ì¹˜ë¡œ ì´ë™..ì¶”í›„ ìˆ˜ì •í•´ì•¼í•¨.
     private async UniTask MoveMonster()
     {
         while (true)
@@ -229,14 +254,19 @@ public class GameSceneController : BaseSceneController
             for (int i = 0; i < monsterList.Count; i++)
             {
                 if (monsterList[i].GetState() == MonsterState.Chase)
-                    // playerTarget »ı¼º¶§ ³Ö¾îÁÖ´Â ¹æ¹ı »ı°¢ÇØº¸±â
+                    // playerTarget ìƒì„±ë•Œ ë„£ì–´ì£¼ëŠ” ë°©ë²• ìƒê°í•´ë³´ê¸°
                     monsterList[i].OnMoveTarget(playerTransform);
             }
 
             await UniTask.Yield();
         }
     }
-
+    /// <summary>
+    /// ëª¬ìŠ¤í„° ìƒì„± í¬ì§€ì…˜ ëœë¤ìœ¼ë¡œ ë½‘ê¸°(ì¤‘ë³µë‚œìˆ˜X)
+    /// </summary>
+    /// <param name="_x">xì¢Œí‘œ</param>
+    /// <param name="_y">yì¢Œí‘œ</param>
+    /// <returns>Vector2(ëœë¤X,ëœë¤Y)</returns>
     private Vector2 RandomSummonPosition(float _x, float _y)
     {
         float randomX = Random.Range(-(_x / 2) + 1f, (_x / 2) - 1f);
@@ -282,7 +312,7 @@ public class GameSceneController : BaseSceneController
         float sizeX = _info.obstructionWidth;
         float sizeY = _info.obstructionHeight;
         obstructionspriteRenderer.drawMode = SpriteDrawMode.Tiled;
-        #region Map ¿µ¿ª ¹ş¾î³ª´ÂÁö Ã¼Å© ÈÄ Æ÷Áö¼Ç Á¶Á¤..
+        #region Map ì˜ì—­ ë²—ì–´ë‚˜ëŠ”ì§€ ì²´í¬ í›„ í¬ì§€ì…˜ ì¡°ì •..
         if (positionX >= ((width / 2) - (sizeX / 2)))
         {
             positionX = (width / 2) - (sizeX / 2);
@@ -332,7 +362,7 @@ public class GameSceneController : BaseSceneController
         await CheckCollisionMonster();
     }
 
-    // ¸ó½ºÅÍ ½Ç½Ã°£ ÇÃ·¹ÀÌ¾î À§Ä¡·Î ÀÌµ¿..ÃßÈÄ ¼öÁ¤ÇØ¾ßÇÔ.
+    // ëª¬ìŠ¤í„° ì‹¤ì‹œê°„ í”Œë ˆì´ì–´ ìœ„ì¹˜ë¡œ ì´ë™..ì¶”í›„ ìˆ˜ì •í•´ì•¼í•¨.
     private async UniTask CheckCollisionMonster()
     {
         while (true)
@@ -343,10 +373,10 @@ public class GameSceneController : BaseSceneController
 
                 if (isCollision)
                 {
-                    Debug.Log($"Ãæµ¹ / {i}¹ø");
+                    Debug.Log($"ì¶©ëŒ / {i}ë²ˆ");
 
-                    // ¸ó½ºÅÍ °ø°İÇÏ´Â ´ë½Å ÇÃ·¹ÀÌ¾î µ¥¹ÌÁö ¹Ş°Ô ÇÏ±â
-                    // µ¥¹ÌÁö ÁÖ´Ù°¡
+                    // ëª¬ìŠ¤í„° ê³µê²©í•˜ëŠ” ëŒ€ì‹  í”Œë ˆì´ì–´ ë°ë¯¸ì§€ ë°›ê²Œ í•˜ê¸°
+                    // ë°ë¯¸ì§€ ì£¼ë‹¤ê°€
                     //AttackMonster(i);
                 }
             }
@@ -370,7 +400,7 @@ public class GameSceneController : BaseSceneController
         return null;
     }
 
-    //TODO :: ¸ó½ºÅÍ Ãæµ¹ Ã³¸® ÈÄ DeActive + bulletpool·Î ¹ß»çÃ¼ Enqueue Ã³¸®ÇØÁà¾ßÇÔ..¼ö¸®°ËÀº ¶ÇÇÑ DoTween killÇØÁà¾ßÇÔ.
+    //TODO :: ëª¬ìŠ¤í„° ì¶©ëŒ ì²˜ë¦¬ í›„ DeActive + bulletpoolë¡œ ë°œì‚¬ì²´ Enqueue ì²˜ë¦¬í•´ì¤˜ì•¼í•¨..ìˆ˜ë¦¬ê²€ì€ ë˜í•œ DoTween killí•´ì¤˜ì•¼í•¨.
     public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
     {
         var obj = (Bullet)bulletPool.GetObject();
@@ -392,8 +422,8 @@ public class GameSceneController : BaseSceneController
 
             obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
 
-            // ¿ø°Å¸® ¹«±âÀÇ °æ¿ì ¿©±â¼­ AABB Àû¿ë
-            // Ãæµ¹Ã¼Å©
+            // ì›ê±°ë¦¬ ë¬´ê¸°ì˜ ê²½ìš° ì—¬ê¸°ì„œ AABB ì ìš©
+            // ì¶©ëŒì²´í¬
             var isCheck = CheckMonsterAttack(obj);
             if (isCheck)
             {
@@ -405,7 +435,7 @@ public class GameSceneController : BaseSceneController
                 isMove = false;
             }
 
-            // ÇÃ·¹ÀÌ¾î¿Í °Å¸®Ã¼Å© ¼Ò¸ê
+            // í”Œë ˆì´ì–´ì™€ ê±°ë¦¬ì²´í¬ ì†Œë©¸
 
             await UniTask.Yield();
 
@@ -448,10 +478,11 @@ public class GameSceneController : BaseSceneController
 
     private void AttackMonster(int _index)
     {
-        // hp°¡ 0ÀÌ¸é Á×ÀÓ
+        // hpê°€ 0ì´ë©´ ì£½ì„
         monsterList[_index].SetState(MonsterState.Die);
 
         monsterPool.EnqueueObject(monsterList[_index]);
         monsterList.RemoveAt(_index);
+        deathCount++;
     }
 }

@@ -16,14 +16,13 @@ public class TimeManager : Singleton<TimeManager>
         time = 0;
     }
 
-    public async UniTaskVoid UpdateTime(CancellationToken _cancellationToken)
+    public async UniTaskVoid UpdateTime(CancellationTokenSource _cancellationToken)
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
             time += Time.deltaTime;
 
-            await UniTask.Yield();
-            Debug.Log($"½Ã°£ {time}");
+            await UniTask.Yield();            
         }
     }
 }
