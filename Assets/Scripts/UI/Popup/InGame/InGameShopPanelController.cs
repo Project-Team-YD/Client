@@ -19,6 +19,8 @@ public class InGameShopPanelController : UIBaseController
     private const string purchaseTextKey = "구매하기";
     private const string mountingSlotTextKey = "장착슬롯";
     private const string checkTextKey = "확인";
+
+    private const int MAX_SHOP_ITEM_COUNT = 4;
     #endregion
 
     #region Text
@@ -62,7 +64,10 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private GameObject buyGroup = null;
     [SerializeField] private Button nextButton = null;
 
+    private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
+
+    private List<InGameShopItemController> shopItemList = null;
 
     protected override void Awake()
     {
@@ -70,9 +75,11 @@ public class InGameShopPanelController : UIBaseController
 
         uiManager = UIManager.getInstance;
 
-        refreshButton.onClick.AddListener(OnClickRefreshButton);
+        refreshButton?.onClick.AddListener(OnClickRefreshButton);
         buyButton.onClick.AddListener(OnClickBuyButton);
         nextButton.onClick.AddListener(OnClickNextButton);
+
+        weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
 
         Initialized();
 
@@ -87,6 +94,42 @@ public class InGameShopPanelController : UIBaseController
         purchaseText.text = purchaseTextKey;
         mountingSlotText.text = mountingSlotTextKey;
         checkText.text = checkTextKey;
+    }
+
+    /// <summary>
+    /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
+    /// 서버에서 데이터 받는 메서드 따로 만들 필요 있음
+    /// </summary>
+    public void SetData()
+    {
+        // 임시
+        if (shopItemList == null)
+        {
+            shopItemList = new List<InGameShopItemController>(MAX_SHOP_ITEM_COUNT);
+
+            var count = weaponInfos.Length;
+
+            for (int i = 0; i < MAX_SHOP_ITEM_COUNT; i++)
+            {
+                var item = GameObject.Instantiate(shopItemController, itemShopSlotTransform);
+                item.SetWeaponInfo = weaponInfos[i];
+                item.UpdateItemData();
+                var idx = i;
+                item.SetItemExplanation = $"{idx}번 아이템 설명";
+                item.SetItemPrice = idx * 1000;
+                item.SetIndex = idx;
+                item.SetShopItemData(OnClickItem);
+
+                shopItemList.Add(item);
+            }
+        }
+
+        OnClickItem(0);
+    }
+
+    private void UpdateMyWeaponData()
+    {
+        // 내가 장착중인 아이템 불러오기
     }
 
     /// <summary>
@@ -122,4 +165,17 @@ public class InGameShopPanelController : UIBaseController
 
     }
     #endregion
+
+    private void OnClickItem(int _idx)
+    {
+        var data = shopItemList[_idx];
+
+        descriptionText.text = data.SetItemExplanation;
+        priceText.text = $"{data.SetItemPrice}";
+
+        // 선택된 아이템 기억하기
+        // 선택된 아이템 표시
+
+
+    }
 }

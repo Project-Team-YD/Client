@@ -63,7 +63,7 @@ public class GameSceneController : BaseSceneController
     private TimeManager timeManager = null;
     private int gameWave;
     private UIManager uIManager = null;
-    
+
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
     private void Awake()
@@ -114,9 +114,9 @@ public class GameSceneController : BaseSceneController
         }
 
         await CreateMonster();
-        RegenMonster().Forget();        
+        RegenMonster().Forget();
         StartMoveMonster();
-        
+
         StartCheckMonster();
     }
 
@@ -146,11 +146,11 @@ public class GameSceneController : BaseSceneController
         //}
 
         // 조이패드 임시
-        if(deathCount >= MAX_WAVE_MONSTER)
+        if (deathCount >= MAX_WAVE_MONSTER)
         {
             EndGameWave();
         }
-        if(monsterCount >= MAX_WAVE_MONSTER)
+        if (monsterCount >= MAX_WAVE_MONSTER)
         {
             monsterRegenCancel.Cancel();
         }
@@ -160,13 +160,14 @@ public class GameSceneController : BaseSceneController
 
     private void OnClickGameStopButton()
     {
-        
+
     }
 
     private async void EndGameWave()
     {
-       await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-       Time.timeScale = 0f;
+        var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
+        popup.SetData();
+        Time.timeScale = 0f;
     }
     /// <summary>
     /// 인게임 시간 체크 및 Text적용 함수.
@@ -210,11 +211,11 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <returns></returns>
     private async UniTaskVoid RegenMonster()
-    {        
+    {
         while (true)
         {
             await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
-            if(monsterRegenCancel.IsCancellationRequested)
+            if (monsterRegenCancel.IsCancellationRequested)
             {
                 break;
             }
