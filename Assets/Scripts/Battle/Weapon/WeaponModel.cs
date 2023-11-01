@@ -24,6 +24,8 @@ public class WeaponSlot : MonoBehaviour
 
     private AABB curAABB;
 
+    public int GetWeaponID { get { return weaponId; } }
+
     /// <summary>
     /// 근접무기용 AABB
     /// </summary>

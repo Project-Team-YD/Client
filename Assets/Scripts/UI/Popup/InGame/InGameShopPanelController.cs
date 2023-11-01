@@ -68,12 +68,17 @@ public class InGameShopPanelController : UIBaseController
     private UIManager uiManager = null;
 
     private List<InGameShopItemController> shopItemList = null;
+    private List<InGameShopItemController> leftItemList = null;
+    private List<InGameShopItemController> rightItemList = null;
+
+    private PlayerManager playerManager = null;
 
     protected override void Awake()
     {
         base.Awake();
 
         uiManager = UIManager.getInstance;
+        playerManager = PlayerManager.getInstance;
 
         refreshButton?.onClick.AddListener(OnClickRefreshButton);
         buyButton.onClick.AddListener(OnClickBuyButton);
@@ -102,6 +107,8 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     public void SetData()
     {
+        UpdateMyWeaponData();
+
         // 임시
         if (shopItemList == null)
         {
@@ -130,6 +137,39 @@ public class InGameShopPanelController : UIBaseController
     private void UpdateMyWeaponData()
     {
         // 내가 장착중인 아이템 불러오기
+        var items = playerManager.SetPlayerWeapon.GetWeapons;
+        // 나중에 왼쪽 오른쪽 나눠야할꺼같음
+        int count = items.Length;
+
+        for (int i = 0; i < count; i++)
+        {
+            if (i < 1)
+            {
+                leftItemList = new List<InGameShopItemController>(1);
+                var item = GameObject.Instantiate(shopItemController, itemLeftSlotTransform);
+                item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
+                item.UpdateItemData();
+                var idx = i;
+                item.SetItemExplanation = $"{idx}번 아이템 설명";
+                item.SetItemPrice = idx * 1000;
+                item.SetIndex = idx;
+                // item.SetShopItemData(OnClickItem);
+                leftItemList.Add(item);
+            }
+            else
+            {
+                rightItemList = new List<InGameShopItemController>(1);
+                var item = GameObject.Instantiate(shopItemController, itemRightSlotTransform);
+                item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
+                item.UpdateItemData();
+                var idx = i;
+                item.SetItemExplanation = $"{idx}번 아이템 설명";
+                item.SetItemPrice = idx * 1000;
+                item.SetIndex = idx;
+                //item.SetShopItemData(OnClickItem);
+                rightItemList.Add(item);
+            }
+        }
     }
 
     /// <summary>
@@ -154,6 +194,8 @@ public class InGameShopPanelController : UIBaseController
     private void OnClickBuyButton()
     {
 
+
+        uiManager.Hide();
     }
 
     #region 구매완료 팝업
@@ -177,5 +219,11 @@ public class InGameShopPanelController : UIBaseController
         // 선택된 아이템 표시
 
 
+    }
+
+    private WeaponInfo GetWeapon(int _id)
+    {
+        var item = Array.Find(weaponInfos, x => x.weaponId == _id);
+        return item;
     }
 }

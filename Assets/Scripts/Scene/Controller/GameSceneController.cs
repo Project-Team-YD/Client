@@ -149,11 +149,14 @@ public class GameSceneController : BaseSceneController
         if (deathCount >= MAX_WAVE_MONSTER)
         {
             EndGameWave();
+            // 초기화 필요
+            deathCount = 0;
         }
         if (monsterCount >= MAX_WAVE_MONSTER)
         {
             monsterRegenCancel.Cancel();
         }
+        // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
         OnClickJoypad();
         SetPlayTime();
     }

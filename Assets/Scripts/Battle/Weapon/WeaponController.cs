@@ -6,17 +6,24 @@ public class WeaponController : MonoBehaviour
 {
     [SerializeField] private WeaponSlot[] slot;
     [SerializeField] private GameSceneController gameSceneController;
+
+    private PlayerManager playerManager = null;
+
     private readonly float rotate = 45f;
     private Transform playerTransform = null;
     private bool isRight = false;
 
+    public WeaponSlot[] GetWeapons { get { return slot; } }
+
     private void Awake()
     {
+        playerManager = PlayerManager.getInstance;
+
         playerTransform = gameObject.transform.parent.transform;
         int slotCount = slot.Length;
-        for (int i = 0; i < slotCount; i++) // ½½¸© µÎ°³¿¡ ±ÙÁ¢¹«±â ³Ö¾îµÎ°í È¸ÀüÅ×½ºÆ®.
+        for (int i = 0; i < slotCount; i++) // ìŠ¬ë¦‡ ë‘ê°œì— ê·¼ì ‘ë¬´ê¸° ë„£ì–´ë‘ê³  íšŒì „í…ŒìŠ¤íŠ¸.
         {
-            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(i + 2); // ÀÓ½Ã..Å×½ºÆ®¿ë
+            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(i + 2); // ìž„ì‹œ..í…ŒìŠ¤íŠ¸ìš©
             isRight = i == 0 ? false : true;
             slot[i].InitWeapon(info, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
@@ -33,6 +40,8 @@ public class WeaponController : MonoBehaviour
                 }
             }
         }
+
+        playerManager.SetPlayerWeapon = this;
     }
 
     private void Start()
