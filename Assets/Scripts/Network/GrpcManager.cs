@@ -55,7 +55,7 @@ public partial class GrpcManager
         }
         catch (System.Exception e)
         {
-            Debug.LogError("gRPC Error: " + e.Message);
+            Debug.LogError("Login gRPC Error: " + e.Message);
         }
 
         return null;
@@ -73,12 +73,12 @@ public partial class GrpcManager
                 Message = message
             };
 
-            GlobalGrpcResponse response = await ServerManager.GetInstance.grpcLoginServerClient.GlobalGRpcAsync(request);
+            GlobalGrpcResponse response = await ServerManager.GetInstance.grpcGameServerClient.GlobalGRpcAsync(request);
             return response.Message;
         }
         catch (System.Exception e)
         {
-            Debug.LogError("gRPC Error: " + e.Message);
+            Debug.LogError("Game gRPC Error: " + e.Message);
         }
 
         return null;
@@ -108,7 +108,30 @@ public partial class GrpcManager
 
         return null;
     }
+    public async Task<string> SendRpcStreamBroadcastAsync(string rpcKey, string message)
+    {
+        try
+        {
+            var requestStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStreamBroadcast();
 
+            // 보낼 요청 메시지 설정
+            var request = new GlobalGrpcRequest
+            {
+                RpcKey = rpcKey,
+                Message = message
+            };
+
+            // 요청 메시지 보내기
+            await requestStream.RequestStream.WriteAsync(request);
+
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("gRPC Error: " + e.Message);
+        }
+
+        return null;
+    }
     public async void ReceiveBroadcastFromGameServer()
     {
         try
@@ -123,6 +146,9 @@ public partial class GrpcManager
                 Debug.Log($"Broadcast Message : {message}");
                 switch (response.Opcode)
                 {
+                    case (int)Opcode.PINGPONG:
+                        await SendRpcStreamBroadcastAsync("ping", "");
+                        break;
                     case (int)Opcode.HEARTBEAT:
                         //-- 하트비트 값들어오면 하트비트에 저장
                         Response resHeartBeat = GetHeartBeat(message);

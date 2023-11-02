@@ -20,16 +20,18 @@ public class Test : MonoBehaviour
         string result = $"MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
 
         Debug.Log(result);
-
+        
         if (loginResponse.code == (int)MessageCode.Success)
         {
             ServerManager.GetInstance.UUID = loginResponse.UUID;
             ServerManager.GetInstance.ConnectToGrpcGameServer();
+            await GrpcManager.GetInstance.SendRpcStreamBroadcastAsync("ping", "Test");
             StartCoroutine(Receive());
         }
+        
     }
 
-    private async void Update()
+    private void Update()
     {
 
      
@@ -38,6 +40,7 @@ public class Test : MonoBehaviour
 
     public IEnumerator Receive()
     {
+        
         GrpcManager.GetInstance.ReceiveBroadcastFromGameServer();
 
         yield return null;

@@ -9,7 +9,8 @@ namespace Server
     public class ServerManager
     {
         private static ServerManager instance = null;
-        private Channel channel;
+        private Channel loginChannel;
+        private Channel gameChannel;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcLoginServerClient;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcGameServerClient;
         public string UUID;
@@ -19,9 +20,11 @@ namespace Server
         }
         ~ServerManager()
         {
-            // gRPC 연결해챛
-            if (channel != null)
-                channel.ShutdownAsync().Wait();
+            // gRPC 연결해제
+            if (loginChannel != null)
+                loginChannel.ShutdownAsync().Wait();
+            if (gameChannel != null)
+                gameChannel.ShutdownAsync().Wait();
             if (instance != null)
                 instance = null;
         }
@@ -41,10 +44,10 @@ namespace Server
         public void ConnectToGrpcLoginServer()
         {
             // gRPC 채널 연결
-            channel = new Channel($"{loginServerIp}:{loginServerPort}", ChannelCredentials.Insecure);
+            loginChannel = new Channel($"{loginServerIp}:{loginServerPort}", ChannelCredentials.Insecure);
 
             // gRPC 연결
-            grpcLoginServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+            grpcLoginServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(loginChannel);
 
         }
         
@@ -52,13 +55,13 @@ namespace Server
         {
 
             // gRPC 채널 연결 
-            channel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure, new List<ChannelOption>
+            gameChannel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure, new List<ChannelOption>
             {
                 new ChannelOption("UUID", UUID)
             });
 
             // gRPC 연
-            grpcGameServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+            grpcGameServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(gameChannel);
 
         }
 
