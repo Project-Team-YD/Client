@@ -38,25 +38,37 @@ public class EnemyObject : MonoBehaviour, IPoolable
 
     public void OnMoveTarget(Transform _target)
     {
-        if (nowState != MonsterState.Die && _target != null)
-        {
-            var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
-            bool isLeft = direction.x < 0f;
-            //if (direction.x < 0f)
-            //{
-            //    spriteRenderer.flipX = true;
-            //}
-            //else
-            //{
-            //    spriteRenderer.flipX = false;
-            //}
-            spriteRenderer.flipX = isLeft;
-            if (type == MonsterType.Long)
+        if (nowState != MonsterState.Die)
+        {           
+            if (nowState != MonsterState.Hit && _target != null)
             {
-                spriteRenderer.flipX = !isLeft;
+                var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
+                bool isLeft = direction.x < 0f;                
+                spriteRenderer.flipX = isLeft;
+                if (type == MonsterType.Long)
+                {
+                    spriteRenderer.flipX = !isLeft;
+                }
+                transform.localPosition += (moveSpeed * direction) * Time.deltaTime;
             }
-            transform.localPosition += (moveSpeed * direction) * Time.deltaTime;
         }
+    }
+
+    public void SetAttack(Transform _target)
+    {
+        var direction = -(_target.localPosition - gameObject.transform.localPosition).normalized;
+        transform.localPosition += (direction * 100f) * Time.deltaTime;
+        nowState = MonsterState.Chase;
+    }
+
+    public void SetDamage(float _power)
+    {
+        hp -= _power;
+    }
+
+    public bool IsDie()
+    {
+        return hp <= 0;
     }
 
     public MonsterState GetState()
