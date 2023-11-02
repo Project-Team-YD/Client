@@ -10,15 +10,16 @@ namespace Server
     {
         private static ServerManager instance = null;
         private Channel channel;
-        public GlobalGRpcService.GlobalGRpcServiceClient grpcClient;
-        public string uuid;
+        public GlobalGRpcService.GlobalGRpcServiceClient grpcLoginServerClient;
+        public GlobalGRpcService.GlobalGRpcServiceClient grpcGameServerClient;
+        public string UUID;
 
         private ServerManager()
         {
         }
         ~ServerManager()
         {
-            // gRPC ä�� ����
+            // gRPC 연결해챛
             if (channel != null)
                 channel.ShutdownAsync().Wait();
             if (instance != null)
@@ -39,32 +40,32 @@ namespace Server
 
         public void ConnectToGrpcLoginServer()
         {
-            // gRPC ä�� �ʱ�ȭ
+            // gRPC 채널 연결
             channel = new Channel($"{loginServerIp}:{loginServerPort}", ChannelCredentials.Insecure);
 
-            // gRPC Ŭ���̾�Ʈ �ʱ�ȭ
-            grpcClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+            // gRPC 연결
+            grpcLoginServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
 
         }
         
         public void ConnectToGrpcGameServer()
         {
 
-            // gRPC ä�� �ʱ�ȭ
+            // gRPC 채널 연결 
             channel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure, new List<ChannelOption>
             {
-                new ChannelOption("uuid", uuid)
+                new ChannelOption("UUID", UUID)
             });
 
-            // gRPC Ŭ���̾�Ʈ �ʱ�ȭ
-            grpcClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
+            // gRPC 연
+            grpcGameServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(channel);
 
         }
 
-        public string loginServerIp = "localhost";
-        public int loginServerPort = 19001;
-        public string gameServerIp = "localhost";
-        public int gameServerPort = 19001;
+        public string loginServerIp = "13.125.254.231";
+        public int loginServerPort = 8081;
+        public string gameServerIp = "13.125.254.231";
+        public int gameServerPort = 8080;
 
         
     }

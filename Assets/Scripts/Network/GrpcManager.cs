@@ -10,7 +10,7 @@ using Server;
 using System;
 using UnityEditor.VersionControl;
 
-public class GrpcManager
+public partial class GrpcManager
 {
     private GrpcManager() 
     {
@@ -38,19 +38,19 @@ public class GrpcManager
     #endregion
 
 
-    public async Task<string> SendRpcAsync(string rpcKey, string message)
+    public async Task<string> SendLoginRpcAsync(string rpcKey, string message)
     {
         
         try
         {
-            // gRPC ��û ����
+            // gRPC 패킷 전
             GlobalGrpcRequest request = new GlobalGrpcRequest
             {
                 RpcKey = rpcKey,
                 Message = message
             };
            
-            GlobalGrpcResponse response = await ServerManager.GetInstance.grpcClient.GlobalGRpcAsync(request);
+            GlobalGrpcResponse response = await ServerManager.GetInstance.grpcLoginServerClient.GlobalGRpcAsync(request);
             return response.Message;
         }
         catch (System.Exception e)
@@ -61,12 +61,34 @@ public class GrpcManager
         return null;
     }
 
+    public async Task<string> SendRpcAsync(string rpcKey, string message)
+    {
+
+        try
+        {
+            // gRPC 패킷 전
+            GlobalGrpcRequest request = new GlobalGrpcRequest
+            {
+                RpcKey = rpcKey,
+                Message = message
+            };
+
+            GlobalGrpcResponse response = await ServerManager.GetInstance.grpcLoginServerClient.GlobalGRpcAsync(request);
+            return response.Message;
+        }
+        catch (System.Exception e)
+        {
+            Debug.LogError("gRPC Error: " + e.Message);
+        }
+
+        return null;
+    }
 
     public async Task<string> SendRpcStreamAsync(string rpcKey, string message)
     {
         try
         {
-            var requestStream = ServerManager.GetInstance.grpcClient.GlobalGrpcStream();
+            var requestStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStream();
 
             // 보낼 요청 메시지 설정
             var request = new GlobalGrpcRequest
@@ -87,19 +109,43 @@ public class GrpcManager
         return null;
     }
 
-    public async Task<string> ReceiveRpcStreamAsync()
+    public async void ReceiveBroadcastFromGameServer()
     {
         try
         {
-            var responseStream = ServerManager.GetInstance.grpcClient.GlobalGrpcStream();
+            var responseStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStreamBroadcast();
 
             // 서버에서 오는 응답 메시지 처리
             while (await responseStream.ResponseStream.MoveNext())
             {
                 var response = responseStream.ResponseStream.Current;
+                string message = response.Message;
+                Debug.Log($"Broadcast Message : {message}");
+                switch (response.Opcode)
+                {
+                    case (int)Opcode.HEARTBEAT:
+                        //-- 하트비트 값들어오면 하트비트에 저장
+                        Response resHeartBeat = GetHeartBeat(message);
+                        RequestHeartBeat heartBeat = new RequestHeartBeat();
+                        resHeartBeat = await HeartBeat(heartBeat);
+                        if (resHeartBeat.code != (int)MessageCode.Success)
+                        {
+                            //-- 하트비트 처리 제대로 안됬을경우
+                        }
+                        break;
+                    case (int)Opcode.DUPLICATE_LOGIN:
+                        //-- 중복 로그인 처리
+                        Response resDuplicateLogin = GetDuplicateLogin(message);
+                        
+                        break;
+                }
+
+
+                /*
                 Debug.Log("Received response from server: " + response.Message);
                 string result = response.Message;
-                return result; 
+                return result;
+                */
             }
         }
         catch (Exception e)
@@ -107,34 +153,8 @@ public class GrpcManager
             Debug.LogError("Error handling server responses: " + e.Message);
         }
 
-        return null;
+        //return null;
     }
 
-
-
-
-
-
-    public async Task<ResponseTest> RpcTest(RequestTest requestPacket)
-    {
-        string rpcKey = "rpcTest";
-        string jsonData = JsonConvert.SerializeObject(requestPacket);
-        
-        string result = await SendRpcAsync(rpcKey, jsonData);
-
-        var response = JsonConvert.DeserializeObject<ResponseTest>(result);
-        return response;
-    }
-
-    public async Task<ResponseTest> RpcStreamTest(RequestTest requestPacket)
-    {
-        string rpcKey = "rpcTest";
-        string jsonData = JsonConvert.SerializeObject(requestPacket);
-
-        string result = await SendRpcStreamAsync(rpcKey, jsonData);
-
-        var response = JsonConvert.DeserializeObject<ResponseTest>(result);
-        return response;
-    }
 
 }

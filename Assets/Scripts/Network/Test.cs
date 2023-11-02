@@ -3,35 +3,44 @@ using Grpc.Core;
 using MainGrpcClient;
 using Server;
 using Packet;
+using System.Collections;
+using System.Collections.Generic;
+
 public class Test : MonoBehaviour
 {
 
     private async void Start()
     {
-        //ServerManager.GetInstance.ConnectToServer();
+        ServerManager.GetInstance.ConnectToGrpcLoginServer();
 
-        RequestTest requestTest = new RequestTest();
-        requestTest.id = "testId";
-        requestTest.password = "testPassword";
-        ResponseTest responseTest = await GrpcManager.GetInstance.RpcTest(requestTest);
+        RequestLogin login = new RequestLogin();
+        login.id = "test";
+        ResponseLogin loginResponse = await GrpcManager.GetInstance.Login(login);
 
-        string result = $"MessageCode:{responseTest.code}/{responseTest.message}/{responseTest.seconds}";
-
-        Debug.Log(result);
-
-        ResponseTest responseTest2 = await GrpcManager.GetInstance.RpcStreamTest(requestTest);
-
-        result = $"MessageCode:{responseTest.code}/{responseTest.message}/{responseTest.seconds}";
+        string result = $"MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
 
         Debug.Log(result);
 
-
+        if (loginResponse.code == (int)MessageCode.Success)
+        {
+            ServerManager.GetInstance.UUID = loginResponse.UUID;
+            ServerManager.GetInstance.ConnectToGrpcGameServer();
+            StartCoroutine(Receive());
+        }
     }
 
     private async void Update()
     {
 
-        await GrpcManager.GetInstance.ReceiveRpcStreamAsync();
+     
     }
 
+
+    public IEnumerator Receive()
+    {
+        GrpcManager.GetInstance.ReceiveBroadcastFromGameServer();
+
+        yield return null;
+    }
 }
+

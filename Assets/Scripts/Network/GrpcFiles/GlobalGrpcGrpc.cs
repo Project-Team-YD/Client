@@ -49,6 +49,8 @@ namespace MainGrpcClient {
     static readonly grpc::Marshaller<global::MainGrpcClient.GlobalGrpcRequest> __Marshaller_main_grpc_GlobalGrpcRequest = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::MainGrpcClient.GlobalGrpcRequest.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::MainGrpcClient.GlobalGrpcResponse> __Marshaller_main_grpc_GlobalGrpcResponse = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::MainGrpcClient.GlobalGrpcResponse.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::MainGrpcClient.GlobalGrpcBroadcast> __Marshaller_main_grpc_GlobalGrpcBroadcast = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::MainGrpcClient.GlobalGrpcBroadcast.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse> __Method_GlobalGRpc = new grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(
@@ -65,6 +67,14 @@ namespace MainGrpcClient {
         "GlobalGrpcStream",
         __Marshaller_main_grpc_GlobalGrpcRequest,
         __Marshaller_main_grpc_GlobalGrpcResponse);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcBroadcast> __Method_GlobalGrpcStreamBroadcast = new grpc::Method<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcBroadcast>(
+        grpc::MethodType.DuplexStreaming,
+        __ServiceName,
+        "GlobalGrpcStreamBroadcast",
+        __Marshaller_main_grpc_GlobalGrpcRequest,
+        __Marshaller_main_grpc_GlobalGrpcBroadcast);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -84,6 +94,12 @@ namespace MainGrpcClient {
 
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       public virtual global::System.Threading.Tasks.Task GlobalGrpcStream(grpc::IAsyncStreamReader<global::MainGrpcClient.GlobalGrpcRequest> requestStream, grpc::IServerStreamWriter<global::MainGrpcClient.GlobalGrpcResponse> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task GlobalGrpcStreamBroadcast(grpc::IAsyncStreamReader<global::MainGrpcClient.GlobalGrpcRequest> requestStream, grpc::IServerStreamWriter<global::MainGrpcClient.GlobalGrpcBroadcast> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -147,6 +163,16 @@ namespace MainGrpcClient {
       {
         return CallInvoker.AsyncDuplexStreamingCall(__Method_GlobalGrpcStream, null, options);
       }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncDuplexStreamingCall<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcBroadcast> GlobalGrpcStreamBroadcast(grpc::Metadata headers = null, global::System.DateTime? deadline = null, global::System.Threading.CancellationToken cancellationToken = default(global::System.Threading.CancellationToken))
+      {
+        return GlobalGrpcStreamBroadcast(new grpc::CallOptions(headers, deadline, cancellationToken));
+      }
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual grpc::AsyncDuplexStreamingCall<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcBroadcast> GlobalGrpcStreamBroadcast(grpc::CallOptions options)
+      {
+        return CallInvoker.AsyncDuplexStreamingCall(__Method_GlobalGrpcStreamBroadcast, null, options);
+      }
       /// <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
       protected override GlobalGRpcServiceClient NewInstance(ClientBaseConfiguration configuration)
@@ -162,7 +188,8 @@ namespace MainGrpcClient {
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
           .AddMethod(__Method_GlobalGRpc, serviceImpl.GlobalGRpc)
-          .AddMethod(__Method_GlobalGrpcStream, serviceImpl.GlobalGrpcStream).Build();
+          .AddMethod(__Method_GlobalGrpcStream, serviceImpl.GlobalGrpcStream)
+          .AddMethod(__Method_GlobalGrpcStreamBroadcast, serviceImpl.GlobalGrpcStreamBroadcast).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -174,6 +201,7 @@ namespace MainGrpcClient {
     {
       serviceBinder.AddMethod(__Method_GlobalGRpc, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(serviceImpl.GlobalGRpc));
       serviceBinder.AddMethod(__Method_GlobalGrpcStream, serviceImpl == null ? null : new grpc::DuplexStreamingServerMethod<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcResponse>(serviceImpl.GlobalGrpcStream));
+      serviceBinder.AddMethod(__Method_GlobalGrpcStreamBroadcast, serviceImpl == null ? null : new grpc::DuplexStreamingServerMethod<global::MainGrpcClient.GlobalGrpcRequest, global::MainGrpcClient.GlobalGrpcBroadcast>(serviceImpl.GlobalGrpcStreamBroadcast));
     }
 
   }

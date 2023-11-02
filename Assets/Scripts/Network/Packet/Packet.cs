@@ -14,14 +14,26 @@ namespace Packet
         public string message; 
     }
 
-    public class RequestTest
+
+    public class RequestLogin
     {
         public string id;
-        public string password;
     }
-    public class ResponseTest : Response
+
+    public class ResponseLogin : Response
     {
-        public string seconds;
+        public string UUID;
+    }
+
+
+    public class RequestHeartBeat
+    {
+        public string heartBeat;
+    }
+
+    public class ResponseHeartBeat : Response
+    {
+        public string heartBeat;
     }
 }
 
