@@ -67,6 +67,10 @@ public class WeaponSlot : MonoBehaviour
     {
         return type;
     }
+    public float SetDamage()
+    {
+        return attackPower;
+    }
 
     public float GetAttackRange()
     {

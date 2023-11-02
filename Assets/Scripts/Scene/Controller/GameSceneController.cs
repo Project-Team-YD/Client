@@ -40,6 +40,7 @@ public class GameSceneController : BaseSceneController
     private ObjectPool<IPoolable> bulletPool = null;
     private readonly int BULLET_COUNT = 30;
     private readonly float BULLET_ROTATE_SPEED = 0.15f;
+    private readonly float BULLET_SPEED = 5f;
     #endregion
 
     #region UniTask
@@ -63,7 +64,8 @@ public class GameSceneController : BaseSceneController
     private TimeManager timeManager = null;
     private int gameWave;
     private UIManager uIManager = null;
-
+    private PlayerManager playerManager = null;
+    private WeaponSlot[] weapons = null;
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
     private void Awake()
@@ -72,6 +74,7 @@ public class GameSceneController : BaseSceneController
         PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
         uIManager = UIManager.getInstance;
         timeManager = TimeManager.getInstance;
+        playerManager = PlayerManager.getInstance;
         timeManager.ResetTime();
         timeManager.UpdateTime(timeManagerCancel).Forget();
         gameStopButton.onClick.AddListener(OnClickGameStopButton);
@@ -79,7 +82,7 @@ public class GameSceneController : BaseSceneController
         sb.Clear();
     }
 
-    private async void Start()
+    private void Start()
     {
         createCount = EnemyTable.getInstance.GetCreateCount();
         regenCount = EnemyTable.getInstance.GetRegenCount();
@@ -112,12 +115,7 @@ public class GameSceneController : BaseSceneController
 
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
         }
-
-        await CreateMonster();
-        RegenMonster().Forget();
-        StartMoveMonster();
-
-        StartCheckMonster();
+        StartGameWave();
     }
 
     private void LateUpdate()
@@ -165,7 +163,14 @@ public class GameSceneController : BaseSceneController
     {
 
     }
-
+    private async void StartGameWave()
+    {
+        await CreateMonster();
+        RegenMonster().Forget();
+        StartMoveMonster();
+        StartCheckMonster();
+        weapons = playerManager.SetPlayerWeapon.GetWeapons;
+    }
     private async void EndGameWave()
     {
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
@@ -178,7 +183,7 @@ public class GameSceneController : BaseSceneController
     private void SetPlayTime()
     {
         sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.SetTime / 60, timeManager.SetTime % 60));
-        timeText.text = sb.ToString(); // TODO :: GC생성 위험..이게맞나....
+        timeText.text = sb.ToString();
         sb.Clear();
     }
     /// <summary>
@@ -424,7 +429,7 @@ public class GameSceneController : BaseSceneController
             if (obj == null)
                 isMove = false;
 
-            obj.transform.position += (direction.normalized * 5f) * Time.deltaTime;
+            obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
 
             // 원거리 무기의 경우 여기서 AABB 적용
             // 충돌체크
@@ -497,9 +502,14 @@ public class GameSceneController : BaseSceneController
     /// <param name="_index"></param>
     private void AttackMonster(int _index)
     {
-        // hp가 0이면 죽임
-        monsterList[_index].SetState(MonsterState.Die);
+        if (weapons == null)
+            return;
+        monsterList[_index].SetState(MonsterState.Hit);
+        monsterList[_index].SetAttack(playerTransform);
+        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        // hp가 0이하면 죽임
 
+        monsterList[_index].SetState(MonsterState.Die);
         monsterPool.EnqueueObject(monsterList[_index]);
         monsterList.RemoveAt(_index);
         deathCount++;
