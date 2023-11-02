@@ -509,9 +509,9 @@ public class GameSceneController : BaseSceneController
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         // hp가 0이하면 죽임
 
-        //monsterList[_index].SetState(MonsterState.Die);
-        //monsterPool.EnqueueObject(monsterList[_index]);
-        //monsterList.RemoveAt(_index);
-        //deathCount++;
+        monsterList[_index].SetState(MonsterState.Die);
+        monsterPool.EnqueueObject(monsterList[_index]);
+        monsterList.RemoveAt(_index);
+        deathCount++;
     }
 }
