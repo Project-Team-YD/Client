@@ -45,10 +45,11 @@ public class GameSceneController : BaseSceneController
 
     #region UniTask
     private CancellationTokenSource monsterCreateCancel = new CancellationTokenSource();
-    private CancellationTokenSource monsterRegenCancel = new CancellationTokenSource();
-    private CancellationTokenSource monsterMoveCancel = new CancellationTokenSource();
+    private CancellationTokenSource monsterRegenCancel;
+    private CancellationTokenSource monsterMoveCancel;
+    private CancellationTokenSource monsterCheckCollisionCancel;
     private CancellationTokenSource getTargetEnemyCancel = new CancellationTokenSource();
-    private CancellationTokenSource timeManagerCancel = new CancellationTokenSource();
+    private CancellationTokenSource timeManagerCancel;
     #endregion
 
     #region InGameUI
@@ -76,7 +77,7 @@ public class GameSceneController : BaseSceneController
         timeManager = TimeManager.getInstance;
         playerManager = PlayerManager.getInstance;
         timeManager.ResetTime();
-        timeManager.UpdateTime(timeManagerCancel).Forget();
+        timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
         gameStopButton.onClick.AddListener(OnClickGameStopButton);
         bossHp.SetActive(false);
         sb.Clear();
@@ -143,10 +144,14 @@ public class GameSceneController : BaseSceneController
         //    monsterPool.EnqueueObject(monsterList[0]);
         //}
 
-        // 조이패드 임시
         if (deathCount >= MAX_WAVE_MONSTER)
         {
+            timeManagerCancel.Cancel();
+            monsterMoveCancel.Cancel();
+            monsterCheckCollisionCancel.Cancel();
+
             EndGameWave();
+
             // 초기화 필요
             deathCount = 0;
         }
@@ -155,6 +160,7 @@ public class GameSceneController : BaseSceneController
             monsterRegenCancel.Cancel();
         }
         // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
+        // 조이패드 임시
         OnClickJoypad();
         SetPlayTime();
     }
@@ -163,20 +169,47 @@ public class GameSceneController : BaseSceneController
     {
 
     }
+
     private async void StartGameWave()
     {
         await CreateMonster();
-        RegenMonster().Forget();
+        RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeapon.GetWeapons;
     }
+
+    /// <summary>
+    /// 상점 팝업 닫을때 실행할 것
+    /// 시간은 이어서 할지 or 0부터 시작할지 고민
+    /// update에 필요한 변수 초기화
+    /// StartGameWave를 실행하려하는데 다음 웨이브확인할 방법이?
+    /// StartGameWave안에 createmonster가 있는데 어떻게 할지 확인 필요
+    /// 3,2,1 이라는 큰 텍스트를 보여줘서 다음 웨이브라는것을 표현할지
+    /// startnextwave 실행하면 다음 웨이브 시작임
+    /// </summary>
+    private void StartNextWave()
+    {
+        RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
+        StartMoveMonster();
+        StartCheckMonster();
+        weapons = playerManager.SetPlayerWeapon.GetWeapons;
+
+        timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
+
+        Time.timeScale = 1;
+        // 몬스터 숫자 생각 필요
+        monsterCount = 0;
+        deathCount = 0;
+    }
+
     private async void EndGameWave()
     {
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-        popup.SetData();
+        popup.SetData(StartNextWave);
         Time.timeScale = 0f;
     }
+
     /// <summary>
     /// 인게임 시간 체크 및 Text적용 함수.
     /// </summary>
@@ -214,19 +247,16 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
+
     /// <summary>
     /// 몬스터 리젠 함수..리젠 시간이 될때마다 호출.
     /// </summary>
     /// <returns></returns>
-    private async UniTaskVoid RegenMonster()
+    private async UniTaskVoid RegenMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
-            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
-            if (monsterRegenCancel.IsCancellationRequested)
-            {
-                break;
-            }
+            await UniTask.Delay(5000);
 
             for (int i = 0; i < regenCount; i++)
             {
@@ -252,13 +282,13 @@ public class GameSceneController : BaseSceneController
 
     private async void StartMoveMonster()
     {
-        await MoveMonster();
+        await MoveMonster(monsterMoveCancel = new CancellationTokenSource());
     }
 
     // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
-    private async UniTask MoveMonster()
+    private async UniTask MoveMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
@@ -368,13 +398,13 @@ public class GameSceneController : BaseSceneController
 
     private async void StartCheckMonster()
     {
-        await CheckCollisionMonster();
+        await CheckCollisionMonster(monsterCheckCollisionCancel = new CancellationTokenSource());
     }
 
     // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
-    private async UniTask CheckCollisionMonster()
+    private async UniTask CheckCollisionMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
@@ -445,6 +475,16 @@ public class GameSceneController : BaseSceneController
             }
 
             // 플레이어와 거리체크 소멸
+            float distance = Vector3.Distance(playerTransform.position, obj.transform.position);
+            if(distance > 100)
+            {
+                bulletPool.EnqueueObject(obj);
+
+                if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
+                isMove = false;
+            }
 
             await UniTask.Yield();
 

@@ -1333,8 +1333,8 @@ MonoBehaviour:
   shopItemController: {fileID: 1938302143888740661, guid: 5b43c547c815bdf499e41946fd7f06c6, type: 3}
   possessionGoldText: {fileID: 8030748519551446340}
   itemShopSlotTransform: {fileID: 8782563951594310728}
-  itemLeftSlotTransform: {fileID: 487761034967504778}
-  itemRightSlotTransform: {fileID: 2588997486349162194}
+  weaponItemSlotTransform: {fileID: 487761034967504778}
+  itemSlotTransform: {fileID: 2588997486349162194}
   refreshButton: {fileID: 0}
   buyButton: {fileID: 4364789569257636935}
   descriptionText: {fileID: 1012156010423122652}
@@ -1894,7 +1894,7 @@ GameObject:
   - component: {fileID: 3015505557008791484}
   - component: {fileID: 7408192296028388305}
   m_Layer: 5
-  m_Name: RightItemGroup
+  m_Name: ItemGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1971,8 +1971,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Padding:
-    m_Left: 50
-    m_Right: 50
+    m_Left: 75
+    m_Right: 75
     m_Top: 0
     m_Bottom: 0
   m_ChildAlignment: 3
@@ -2248,7 +2248,7 @@ GameObject:
   - component: {fileID: 8715495454221668323}
   - component: {fileID: 6969777435956686799}
   m_Layer: 5
-  m_Name: LeftItemGroup
+  m_Name: WeaponItemGroup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2329,8 +2329,8 @@ MonoBehaviour:
     m_Right: 50
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 3
-  m_Spacing: 50
+  m_ChildAlignment: 4
+  m_Spacing: 200
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 0
