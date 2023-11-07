@@ -49,7 +49,7 @@ public class WeaponController : MonoBehaviour
         int slotCount = slot.Length;
         for (int i = 0; i < slotCount; i++)
         {
-            slot[i].WeaponAttack(slot[i].GetWeaponType(), slot[i].transform);
+            slot[i].WeaponAttack();
         }
     }
 }

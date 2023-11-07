@@ -69,6 +69,8 @@ public class GameSceneController : BaseSceneController
     private WeaponSlot[] weapons = null;
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
+    private bool isPlaying;
+
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
@@ -161,7 +163,11 @@ public class GameSceneController : BaseSceneController
         }
         // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
         // 조이패드 임시
-        OnClickJoypad();
+        if (isPlaying)
+        {
+            OnClickJoypad();
+        }
+
         SetPlayTime();
     }
 
@@ -177,6 +183,8 @@ public class GameSceneController : BaseSceneController
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeapon.GetWeapons;
+
+        isPlaying = true;
     }
 
     /// <summary>
@@ -205,6 +213,7 @@ public class GameSceneController : BaseSceneController
 
     private async void EndGameWave()
     {
+        isPlaying = false;
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
         Time.timeScale = 0f;
@@ -256,8 +265,9 @@ public class GameSceneController : BaseSceneController
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
-            await UniTask.Delay(5000);
+            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
 
+            Debug.Log("리젠");
             for (int i = 0; i < regenCount; i++)
             {
                 var obj = (EnemyObject)monsterPool.GetObject();
@@ -440,16 +450,17 @@ public class GameSceneController : BaseSceneController
     }
 
     //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
-    public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
+    public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponSlot _weapon)
     {
         var obj = (Bullet)bulletPool.GetObject();
-        if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+        var type = _weapon.GetWeaponType();
+        if (type == WeaponType.ninjastar && type != WeaponType.gun)
         {
             TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), null, obj.gameObject);
         }
-        obj.transform.position = _transform.position;
+        obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
-        obj.SetBulletSprite(_type, _enemy.transform);
+        obj.SetBulletSprite(type, _enemy.transform);
         obj.OnActivate();
 
         bool isMove = true;
@@ -463,12 +474,12 @@ public class GameSceneController : BaseSceneController
 
             // 원거리 무기의 경우 여기서 AABB 적용
             // 충돌체크
-            var isCheck = CheckMonsterAttack(obj);
+            var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
 
-                if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+                if (type == WeaponType.ninjastar && type != WeaponType.gun)
                     TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
                 isMove = false;
@@ -476,11 +487,11 @@ public class GameSceneController : BaseSceneController
 
             // 플레이어와 거리체크 소멸
             float distance = Vector3.Distance(playerTransform.position, obj.transform.position);
-            if(distance > 100)
+            if (distance >= 25)
             {
                 bulletPool.EnqueueObject(obj);
 
-                if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+                if (type == WeaponType.ninjastar && type != WeaponType.gun)
                     TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
                 isMove = false;
@@ -498,14 +509,14 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_bullet"></param>
     /// <returns></returns>
-    private bool CheckMonsterAttack(Bullet _bullet)
+    private bool CheckMonsterAttack(WeaponSlot _weapon, Bullet _bullet)
     {
         for (int i = 0; i < monsterList.Count; i++)
         {
             var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
             if (isCollision)
             {
-                AttackMonster(i);
+                AttackMonster(_weapon, i);
                 return true;
             }
         }
@@ -518,7 +529,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_aabb"></param>
     /// <returns></returns>
-    public async UniTask<bool> CheckMonsterAttack(AABB _aabb)
+    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon, AABB _aabb)
     {
         await UniTask.Yield();
 
@@ -527,7 +538,7 @@ public class GameSceneController : BaseSceneController
             var isCollision = monsterList[i].OnCheckCollision(_aabb);
             if (isCollision)
             {
-                AttackMonster(i);
+                AttackMonster(_weapon, i);
                 return true;
             }
         }
@@ -540,7 +551,7 @@ public class GameSceneController : BaseSceneController
     /// hp 적용필요
     /// </summary>
     /// <param name="_index"></param>
-    private void AttackMonster(int _index)
+    private void AttackMonster(WeaponSlot _weapon, int _index)
     {
         if (weapons == null)
             return;
