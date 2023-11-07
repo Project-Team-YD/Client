@@ -265,9 +265,7 @@ public class GameSceneController : BaseSceneController
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
-            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
-
-            Debug.Log("리젠");
+            await UniTask.Delay(5000); // 몬스터 리젠 주기..5초
             for (int i = 0; i < regenCount; i++)
             {
                 var obj = (EnemyObject)monsterPool.GetObject();
@@ -287,6 +285,7 @@ public class GameSceneController : BaseSceneController
                 monsterCount++;
             }
             summonPosition.Clear();
+            await UniTask.Delay(100, cancellationToken: monsterRegenCancel.Token);
         }
     }
 
