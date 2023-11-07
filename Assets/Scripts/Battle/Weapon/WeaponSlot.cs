@@ -11,6 +11,7 @@ public class WeaponSlot : MonoBehaviour
     private GameSceneController gameSceneController = null;
     private EnemyObject enemy = null;
     private WeaponType type;
+    private WeaponInfo info;
     private CancellationToken getTargetEnemyCancel = new CancellationToken();
 
     private int weaponId;
@@ -42,9 +43,15 @@ public class WeaponSlot : MonoBehaviour
             return curAABB;
         }
     }
-
+    /// <summary>
+    /// 무기 객체 초기화 함수.
+    /// </summary>
+    /// <param name="_info">무기 객체정보</param>
+    /// <param name="_controller"></param>
+    /// <param name="_isRight">캐릭터 기준 오른쪽 슬릇인지의 대한 값</param>
     public void InitWeapon(WeaponInfo _info, GameSceneController _controller, bool _isRight)
     {
+        info = _info;
         weaponId = _info.weaponId;
         weaponName = _info.weaponName;
         attackPower = _info.attackPower;
@@ -57,33 +64,36 @@ public class WeaponSlot : MonoBehaviour
         gameSceneController = _controller;
         isRightWeapon = _isRight;
     }
-
+    /// <summary>
+    /// 플레이어 Transform 저장함수.
+    /// </summary>
+    /// <param name="_targetTransform">PlayerTransform</param>
     public void SetTarget(Transform _targetTransform)
     {
         playerTransform = _targetTransform;
     }
-
+    /// <summary>
+    /// 해당 슬릇의 무기 타입 반환 함수.
+    /// </summary>
+    /// <returns></returns>
     public WeaponType GetWeaponType()
     {
         return type;
     }
-    public float SetDamage()
+    /// <summary>
+    /// 해당 슬릇의 무기 객체 정보 반환 함수.
+    /// </summary>
+    /// <returns></returns>
+    public WeaponInfo GetWeaponInfo()
     {
-        return attackPower;
-    }
-
-    public float GetAttackRange()
-    {
-        return attackRange;
-    }
-
-    public float GetAttackCoolTime()
-    {
-        return attackSpeed;
-    }
+        return info;
+    }    
 
     // TODO :: 여기서 AABB 체크도 같이해서 데미지를 주는게 맞을듯한데 의견 여쭤보기..임시 Controller Update문 함수 
     // TODO :: 원거리 무기는 Bullet같은 스크립트를 하나 파서 거기서 컨트롤해줘야..........생각해보기
+    /// <summary>
+    /// 무기 타입별 공격 로직 함수.
+    /// </summary>
     public async void WeaponAttack()
     {
         if (transform != null)

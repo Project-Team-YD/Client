@@ -15,7 +15,9 @@ public class IntroSceneController : BaseSceneController
         gameStartButton.onClick.AddListener(OnClickGameStart);
         TransitionManager.getInstance.Play(TransitionManager.TransitionType.Fade, 0.4f, Vector3.zero, gameStartImage);
     }
-    
+    /// <summary>
+    /// 게임 시작 버튼 클릭 함수.
+    /// </summary>
     public void OnClickGameStart()
     {
         SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
