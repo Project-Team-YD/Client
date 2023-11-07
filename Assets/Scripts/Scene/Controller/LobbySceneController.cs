@@ -26,22 +26,30 @@ public class LobbySceneController : BaseSceneController
     {
         
     }
-
+    /// <summary>
+    /// 던전 입장 버튼 이벤트.
+    /// </summary>
     public async void OnClickDungeonButton()
     {
         await uiMgr.Show<WeaponSelectPopupController>("WeaponSelectPopup");
     }
-
+    /// <summary>
+    /// 강화 버튼 이벤트.
+    /// </summary>
     public async void OnClickEnhanceButton()
     {
         await uiMgr.Show<WeaponEnhancePopupController>("WeaponEnhancePopup");
     }
-
+    /// <summary>
+    /// 상점 버튼 이벤트.
+    /// </summary>
     public async void OnClickShopButton()
     {
         await uiMgr.Show<ShopPopupController>("ShopPopup");
     }
-
+    /// <summary>
+    /// 랭킹 버튼 이벤트.
+    /// </summary>
     public async void OnClickRankingButton()
     {
         await uiMgr.Show<RankingPopupController>("RankingPopup");

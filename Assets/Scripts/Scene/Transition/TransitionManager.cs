@@ -18,15 +18,25 @@ public class TransitionManager : Singleton<TransitionManager>
     private Sequence sequencePositionMove;
     private Sequence sequenceRotate;
 
+    /// <summary>
+    /// FadeInOut 초기화 함수.
+    /// </summary>
+    /// <param name="_image">적용시킬 이미지</param>
+    /// <param name="_time">적용시간</param>
     private void InitFadeInOut(Image _image, float _time)
     {
         sequenceFadeInOut = DOTween.Sequence()
-            .SetAutoKill(false) // DoTween Sequence�� �⺻ ��ȸ��..����� �ʼ�.
-            .Append(_image.DOFade(1.0f, _time)) // Alpha�� 1.0���� _time�ð�����
-            .Append(_image.DOFade(0.0f, _time)) // Alpha�� 0���� _time�ð�����
-            .SetLoops(-1, LoopType.Yoyo); // YoyoŸ������ ���� ����.
+            .SetAutoKill(false) // DoTween Sequence는 기본 일회용..재사용시 필수.
+            .Append(_image.DOFade(1.0f, _time)) // Alpha값 1.0까지 _time시간동안
+            .Append(_image.DOFade(0.0f, _time)) // Alpha값 0까지 _time시간동안
+            .SetLoops(-1, LoopType.Yoyo); // Yoyo타입으로 무한 루프.
     }
-
+    /// <summary>
+    /// PositionMove 초기화 함수.
+    /// </summary>
+    /// <param name="_object">적용시킬 오브젝트</param>
+    /// <param name="_direction">적용시킬 방향</param>
+    /// <param name="_time">적용시간</param>
     private void InitPositionMove(GameObject _object, Vector3 _direction, float _time)
     {
         sequencePositionMove = DOTween.Sequence()
@@ -34,8 +44,13 @@ public class TransitionManager : Singleton<TransitionManager>
             .Append(_object.transform.DOMove(_direction, _time))                        
             .SetLoops(-1, LoopType.Incremental);
     }
-
-    private void InitRotate(GameObject _object, Vector3 _rotate, float _time)
+    /// <summary>
+    /// Rotate 초기화 함수(무한 반복)
+    /// </summary>
+    /// <param name="_object">적용시킬 오브젝트</param>
+    /// <param name="_rotate">적용시킬 Vector3 값</param>
+    /// <param name="_time">적용시간</param>
+    private void InitRotateInfinity(GameObject _object, Vector3 _rotate, float _time)
     {
         sequenceRotate = DOTween.Sequence()
             .SetAutoKill(false)
@@ -46,13 +61,13 @@ public class TransitionManager : Singleton<TransitionManager>
     }
 
     /// <summary>
-    /// ������ DoTween Sequence Play.
+    /// 만들어둔 DoTween Sequence Play.
     /// </summary>
-    /// <param name="_type">ȿ�� Ÿ��</param>
-    /// <param name="_time">���� �ð�</param>
-    /// <param name="_vector"></param>
-    /// <param name="_image"></param>
-    /// <param name="_object"></param>
+    /// <param name="_type">효과 타입</param>
+    /// <param name="_time">적용 시간</param>
+    /// <param name="_vector">적용시킬 Vector값</param>
+    /// <param name="_image">적용시킬 이미지</param>
+    /// <param name="_object">적용시킬 오브젝트</param>
     public void Play(TransitionType _type, float _time, Vector3 _vector, Image _image = null, GameObject _object = null)
     {
         switch (_type)
@@ -66,14 +81,17 @@ public class TransitionManager : Singleton<TransitionManager>
                 sequencePositionMove.Play();
                 break;
             case TransitionType.Rotate:
-                InitRotate(_object, _vector, _time);
+                InitRotateInfinity(_object, _vector, _time);
                 sequenceRotate.Play();
                 break;
             default:
                 break;
         }
     }
-
+    /// <summary>
+    /// 현재 적용된 DoTweenSequence Kiil함수.(효과 완료 or Active(false) or Scene 이동 or Destroy 상황시 kill 목적.)
+    /// </summary>
+    /// <param name="_type">Kill 시킬 DoTween타입</param>
     public void KillSequence(TransitionType _type)
     {
         switch (_type)
