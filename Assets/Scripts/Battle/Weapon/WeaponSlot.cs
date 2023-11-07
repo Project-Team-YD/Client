@@ -102,7 +102,7 @@ public class WeaponSlot : MonoBehaviour
                         var enemyList = gameSceneController.GetEnemyList;
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        var isAttack = await gameSceneController.CheckMonsterAttack(this, this.GetWeaponAABB);
+                        var isAttack = await gameSceneController.CheckMonsterAttack(this);
 
                         if (isAttack)
                         {
@@ -124,7 +124,7 @@ public class WeaponSlot : MonoBehaviour
                         var enemyList = gameSceneController.GetEnemyList;
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        var isAttack = await gameSceneController.CheckMonsterAttack(this, this.GetWeaponAABB);
+                        var isAttack = await gameSceneController.CheckMonsterAttack(this);
 
                         if (isAttack)
                         {

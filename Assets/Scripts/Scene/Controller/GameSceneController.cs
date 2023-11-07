@@ -529,13 +529,13 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_aabb"></param>
     /// <returns></returns>
-    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon, AABB _aabb)
+    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon)
     {
         await UniTask.Yield();
 
         for (int i = 0; i < monsterList.Count; i++)
         {
-            var isCollision = monsterList[i].OnCheckCollision(_aabb);
+            var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
             if (isCollision)
             {
                 AttackMonster(_weapon, i);
