@@ -70,6 +70,8 @@ public class GameSceneController : BaseSceneController
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
     private bool isPlaying;
+    private bool isTouch;
+    private float topPanel;
 
     private void Awake()
     {
@@ -118,6 +120,17 @@ public class GameSceneController : BaseSceneController
 
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
         }
+
+        // 화면 크기에서의 퍼센트
+        topPanel = Screen.height * 0.75f;
+        var bossHpHeight = bossHp.GetComponent<RectTransform>().rect.height;
+        // 상단 ui 위치부터의 범위
+        topPanel = bossHp.transform.position.y - (bossHpHeight * 2);
+
+        Debug.Log($"topPanel 범위 : {topPanel}");
+
+        isTouch = false;
+
         StartGameWave();
     }
 
@@ -162,6 +175,7 @@ public class GameSceneController : BaseSceneController
             monsterRegenCancel.Cancel();
         }
         // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
+        // 조이패드 상단 간섭 금지
         // 조이패드 임시
         if (isPlaying)
         {
@@ -185,6 +199,7 @@ public class GameSceneController : BaseSceneController
         weapons = playerManager.SetPlayerWeapon.GetWeapons;
 
         isPlaying = true;
+        isTouch = false;
     }
 
     /// <summary>
@@ -386,9 +401,15 @@ public class GameSceneController : BaseSceneController
 
     private void OnClickJoypad()
     {
+        if (TopTouch() && !isTouch)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             joypadController.OnJoypadDown(Input.mousePosition);
+            isTouch = true;
         }
 
         if (Input.GetMouseButton(0))
@@ -399,6 +420,7 @@ public class GameSceneController : BaseSceneController
         if (Input.GetMouseButtonUp(0))
         {
             joypadController.OnJoypadUp();
+            isTouch = false;
         }
     }
 
@@ -570,5 +592,15 @@ public class GameSceneController : BaseSceneController
             monsterList.RemoveAt(_index);
             deathCount++;
         }
+    }
+
+    private bool TopTouch()
+    {
+        if (topPanel < Input.mousePosition.y)
+        {
+            return true;
+        }
+
+        return false;
     }
 }
