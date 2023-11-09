@@ -218,7 +218,7 @@ public class GameSceneController : BaseSceneController
 
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
-        Time.timeScale = 1;
+        timeManager.PlayTime();
         // 몬스터 숫자 생각 필요
         monsterCount = 0;
         deathCount = 0;
@@ -229,7 +229,7 @@ public class GameSceneController : BaseSceneController
         isPlaying = false;
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
-        Time.timeScale = 0f;
+        timeManager.PauseTime();
     }
 
     /// <summary>
