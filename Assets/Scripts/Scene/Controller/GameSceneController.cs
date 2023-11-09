@@ -185,9 +185,10 @@ public class GameSceneController : BaseSceneController
         SetPlayTime();
     }
 
-    private void OnClickGameStopButton()
+    private async void OnClickGameStopButton()
     {
-
+        timeManager.PauseTime();        
+        await uIManager.Show<PausePopupController>("PausePopup");
     }
 
     private async void StartGameWave()

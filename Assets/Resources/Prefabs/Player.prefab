@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6664491077332243768}
   - component: {fileID: 6664491077332243767}
-  - component: {fileID: 6664491077332243766}
+  - component: {fileID: 2317438471341350899}
   m_Layer: 0
   m_Name: Slot2
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6664491077332243766
+--- !u!114 &2317438471341350899
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -107,7 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6664491077846993866}
   - component: {fileID: 6664491077846993865}
-  - component: {fileID: 6664491077846993864}
+  - component: {fileID: 8768339372028928909}
   m_Layer: 0
   m_Name: Slot1
   m_TagString: Untagged
@@ -182,7 +182,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6664491077846993864
+--- !u!114 &8768339372028928909
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -348,6 +348,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slot:
-  - {fileID: 6664491077846993864}
-  - {fileID: 6664491077332243766}
+  - {fileID: 8768339372028928909}
+  - {fileID: 2317438471341350899}
   gameSceneController: {fileID: 0}
