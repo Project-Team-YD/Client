@@ -187,8 +187,10 @@ public class GameSceneController : BaseSceneController
 
     private async void OnClickGameStopButton()
     {
+        SetPlaying(false);
         timeManager.PauseTime();        
-        await uIManager.Show<PausePopupController>("PausePopup");
+        var popup = await uIManager.Show<PausePopupController>("PausePopup");
+        popup.SetCallback(SetPlaying);
     }
 
     private async void StartGameWave()
@@ -199,7 +201,7 @@ public class GameSceneController : BaseSceneController
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeapon.GetWeapons;
 
-        isPlaying = true;
+        SetPlaying(true);
         isTouch = false;
     }
 
@@ -226,12 +228,16 @@ public class GameSceneController : BaseSceneController
 
     private async void EndGameWave()
     {
-        isPlaying = false;
+        SetPlaying(false);
+        timeManager.PauseTime();
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
-        timeManager.PauseTime();
     }
 
+    private void SetPlaying(bool _value)
+    {
+        isPlaying = _value;
+    }
     /// <summary>
     /// 인게임 시간 체크 및 Text적용 함수.
     /// </summary>

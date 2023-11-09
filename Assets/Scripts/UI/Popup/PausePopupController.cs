@@ -20,6 +20,8 @@ public class PausePopupController : UIBaseController, IPopup
     private const string PLAY_TEXT = "Play";
     private UIManager uiMgr = null;
     private TimeManager timeMgr = null;
+    private Action<bool> callback = null;
+
     protected override void Awake()
     {
         base.Awake();
@@ -39,8 +41,13 @@ public class PausePopupController : UIBaseController, IPopup
     {
         uiMgr.Hide();
         timeMgr.PlayTime();
+        callback?.Invoke(true);
     }
 
+    public void SetCallback(Action<bool> _callback)
+    {
+        callback = _callback;
+    }
     public T Show<T>() where T : IPopup
     {
         throw new NotImplementedException();

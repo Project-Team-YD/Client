@@ -107,7 +107,7 @@ public class InGameShopPanelController : UIBaseController
     {
         base.Hide();
 
-        callBack.Invoke();
+        callBack?.Invoke();
 
         callBack = null;
     }
