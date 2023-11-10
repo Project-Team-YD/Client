@@ -13,7 +13,7 @@ public class IntroSceneController : BaseSceneController
     private void Awake()
     {
         gameStartButton.onClick.AddListener(OnClickGameStart);
-        TransitionManager.getInstance.Play(TransitionManager.TransitionType.Fade, 0.4f, Vector3.zero, gameStartImage);
+        TransitionManager.getInstance.Play(TransitionManager.TransitionType.Fade, 0.4f, Vector3.zero, gameStartImage.gameObject);
     }
     /// <summary>
     /// 게임 시작 버튼 클릭 함수.

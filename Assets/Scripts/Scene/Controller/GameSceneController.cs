@@ -481,7 +481,7 @@ public class GameSceneController : BaseSceneController
         var type = _weapon.GetWeaponType();
         if (type == WeaponType.ninjastar && type != WeaponType.gun)
         {
-            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), null, obj.gameObject);
+            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), obj.gameObject);
         }
         obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
