@@ -15,12 +15,20 @@ public class EnemyObject : MonoBehaviour, IPoolable
 
     private AABB curAABB;
 
-    [SerializeField]
-    private RuntimeAnimatorController[] Anim;
+    [SerializeField] private RuntimeAnimatorController[] Anim;
+    [SerializeField] private Transform HUDTransform;
     private void Awake()
     {
         monsterAnim = gameObject.GetComponent<Animator>();
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+    }
+    /// <summary>
+    /// 몬스터객체의 HUD Transform 반환 함수.
+    /// </summary>
+    /// <returns></returns>
+    public Transform GetHUDTransform()
+    {
+        return HUDTransform;
     }
     /// <summary>
     /// 몬스터 초기화 함수.

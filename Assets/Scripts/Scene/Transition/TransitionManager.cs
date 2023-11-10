@@ -121,7 +121,7 @@ public class TransitionManager : Singleton<TransitionManager>
     /// 현재 적용된 DoTweenSequence Kiil함수.(효과 완료 or Active(false) or Scene 이동 or Destroy 상황시 kill 목적.)
     /// </summary>
     /// <param name="_type">Kill 시킬 DoTween타입</param>
-    public void KillSequence(TransitionType _type, GameObject _object = null)
+    public void KillSequence(TransitionType _type)
     {
         switch (_type)
         {
@@ -131,8 +131,7 @@ public class TransitionManager : Singleton<TransitionManager>
             case TransitionType.PositionMove:
                 sequencePositionMove.Kill(true);
                 break;
-            case TransitionType.Invisible:
-                _object.SetActive(false);
+            case TransitionType.Invisible:                
                 sequenceInvisible.Kill(true);
                 break;
             case TransitionType.Rotate:

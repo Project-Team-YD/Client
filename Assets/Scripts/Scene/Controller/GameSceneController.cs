@@ -62,6 +62,10 @@ public class GameSceneController : BaseSceneController
     private StringBuilder sb = new StringBuilder();
     #endregion
 
+    [SerializeField] private Transform damageTextRoot = null;
+    private ObjectPool<IPoolable> damageTextPool = null;
+    private readonly int DAMAGE_TEXT_COUNT = 30;
+
     private TimeManager timeManager = null;
     private int gameWave;
     private UIManager uIManager = null;
@@ -97,6 +101,9 @@ public class GameSceneController : BaseSceneController
 
         bulletPool = PoolManager.getInstance.GetObjectPool<Bullet>();
         bulletPool.Initialize("Prefabs/Bullet", BULLET_COUNT, BulletPoolRoot);
+
+        damageTextPool = PoolManager.getInstance.GetObjectPool<DamageText>();
+        damageTextPool.Initialize("Prefabs/DamageText", DAMAGE_TEXT_COUNT, damageTextRoot);
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -563,7 +570,7 @@ public class GameSceneController : BaseSceneController
             var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
             if (isCollision)
             {
-                AttackMonster(_weapon, i);
+                AttackMonster(_weapon, i);                                
                 return true;
             }
         }
@@ -576,13 +583,12 @@ public class GameSceneController : BaseSceneController
     /// hp 적용필요
     /// </summary>
     /// <param name="_index"></param>
-    private void AttackMonster(WeaponSlot _weapon, int _index)
+    private async UniTaskVoid AttackMonster(WeaponSlot _weapon, int _index)
     {
         if (weapons == null)
             return;
 
         var monster = monsterList[_index];
-
         // 몬스터 충격 이펙트
         monster.SetState(MonsterState.Hit);
         monster.SetAttack(playerTransform);
@@ -590,8 +596,6 @@ public class GameSceneController : BaseSceneController
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
         monster.SetDamage(weapon.attackPower);
-
-        // hp가 0이하면 죽임
         if (monster.IsDie())
         {
             monster.SetState(MonsterState.Die);
@@ -599,6 +603,13 @@ public class GameSceneController : BaseSceneController
             monsterList.RemoveAt(_index);
             deathCount++;
         }
+        var text = (DamageText)damageTextPool.GetObject();
+        var transform = Camera.main.WorldToScreenPoint(monster.GetHUDTransform().position);
+        text.SetDamage(weapon.attackPower, transform);
+        await UniTask.Delay(500);
+        text.ResetText();
+        damageTextPool.EnqueueObject(text);
+        // hp가 0이하면 죽임
     }
 
     private bool TopTouch()
