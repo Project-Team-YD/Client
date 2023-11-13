@@ -14,7 +14,7 @@ namespace Server
         public GlobalGRpcService.GlobalGRpcServiceClient grpcLoginServerClient;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcGameServerClient;
         public string UUID;
-
+        public string heartBeat;
         private ServerManager()
         {
         }
@@ -53,12 +53,10 @@ namespace Server
 
         public void ConnectToGrpcGameServer()
         {
-
-
             // gRPC 채널 연결 
             gameChannel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure);
 
-            // gRPC 연
+            // gRPC 연결
             grpcGameServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(gameChannel);
             cancellationTokenSource = new CancellationTokenSource();
 
@@ -69,7 +67,6 @@ namespace Server
             Debug.Log("uuid::" + UUID);
             CallOptions callOptions = new CallOptions(metaData);
 
-            //var request = "connect_to_game_server";
             var response = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);
         }
         public CancellationTokenSource cancellationTokenSource;

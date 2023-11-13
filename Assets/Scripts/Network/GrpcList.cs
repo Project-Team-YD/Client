@@ -18,20 +18,14 @@ public partial class GrpcManager
         return response;
     }
     
-    public async Task<Response> HeartBeat(RequestHeartBeat requestPacket)
+    public async Task<ResponseHeartBeat> CheckHeartBeat(RequestHeartBeat requestPacket)
     {
         string rpcKey = "check_heartbeat";
         string jsonData = JsonConvert.SerializeObject(requestPacket);
 
         string result = await SendRpcAsync(rpcKey, jsonData);
 
-        var response = JsonConvert.DeserializeObject<Response>(result);
-        return response;
-    }
-
-    public Response GetHeartBeat(string message)
-    {
-        var response = JsonConvert.DeserializeObject<Response>(message);
+        var response = JsonConvert.DeserializeObject<ResponseHeartBeat>(result);
         return response;
     }
 

@@ -13,6 +13,7 @@ public class Test : MonoBehaviour
     {
         ServerManager.GetInstance.ConnectToGrpcLoginServer();
 
+        //-- 로그인서버 접근하여 로그인 요청
         RequestLogin login = new RequestLogin();
         login.id = "test";
         ResponseLogin loginResponse = await GrpcManager.GetInstance.Login(login);
@@ -24,6 +25,8 @@ public class Test : MonoBehaviour
         if (loginResponse.code == (int)MessageCode.Success)
         {
             ServerManager.GetInstance.UUID = loginResponse.UUID;
+            ServerManager.GetInstance.heartBeat = loginResponse.heartBeat;
+
             ServerManager.GetInstance.ConnectToGrpcGameServer();
             
             try
