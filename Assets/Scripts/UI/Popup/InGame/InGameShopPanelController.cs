@@ -64,6 +64,8 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private GameObject buyObjectGroup = null;
     [SerializeField] private Button nextButton = null;
 
+    private int MAX_PLAYER_WEAPON_COUNT;
+
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
 
@@ -74,6 +76,8 @@ public class InGameShopPanelController : UIBaseController
     private PlayerManager playerManager = null;
 
     private Action callBack = null;
+
+    private int selectItemIndex;
 
     protected override void Awake()
     {
@@ -89,6 +93,18 @@ public class InGameShopPanelController : UIBaseController
         weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
 
         Initialized();
+
+        // 플레이어가 가질수있는 최대 무기 개수
+        MAX_PLAYER_WEAPON_COUNT = playerManager.SetPlayerWeaponController.GetWeapons.Length;
+
+        weaponItemList = new List<InGameShopItemController>(MAX_PLAYER_WEAPON_COUNT);
+
+        for (int i = 0; i < MAX_PLAYER_WEAPON_COUNT; i++)
+        {
+            var item = GameObject.Instantiate(shopItemController, weaponItemSlotTransform);
+            item.gameObject.SetActive(false);
+            weaponItemList.Add(item);
+        }
 
         buyObjectGroup.SetActive(false);
     }
@@ -122,7 +138,7 @@ public class InGameShopPanelController : UIBaseController
 
         UpdateMyWeaponData();
 
-        // 임시
+        // MAX_PLAYER_WEAPON_COUNT와 비교해서 무기는 더이상 안나오게 바꿔야함 혹은 구매 못하게 해야함
         if (shopItemList == null)
         {
             shopItemList = new List<InGameShopItemController>(MAX_SHOP_ITEM_COUNT);
@@ -151,47 +167,28 @@ public class InGameShopPanelController : UIBaseController
     /// 충돌처리할때 어떤무기가 충돌됬는지
     /// </summary>
 
+    // 내가 장착중인 아이템 불러오기
     private void UpdateMyWeaponData()
     {
-        if (weaponItemList != null)
-            return;
-
-        // 내가 장착중인 아이템 불러오기
-        var items = playerManager.SetPlayerWeapon.GetWeapons;
-        // 나중에 왼쪽 오른쪽 나눠야할꺼같음
-        int count = items.Length;
-
-        // 임시
-        weaponItemList = new List<InGameShopItemController>(count);
+        var items = playerManager.SetPlayerWeapons;
+        int count = items.Count;
 
         for (int i = 0; i < count; i++)
         {
-            // if (i < 1)
-            // {
-            //   weaponItemList = new List<InGameShopItemController>(1);
-            var item = GameObject.Instantiate(shopItemController, weaponItemSlotTransform);
-            item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
-            item.UpdateItemData();
+            var weapon = weaponItemList[i];
+
+            if (weapon.gameObject.activeSelf == false)
+            {
+                weapon.gameObject.SetActive(true);
+            }
+
+            weapon.SetWeaponInfo = GetWeapon(items[i].weaponId);
+            weapon.UpdateItemData();
             var idx = i;
-            item.SetItemExplanation = $"{idx}번 아이템 설명";
-            item.SetItemPrice = idx * 1000;
-            item.SetIndex = idx;
-            // item.SetShopItemData(OnClickItem);
-            weaponItemList.Add(item);
-            // }
-            // else
-            // {
-            //     itemList = new List<InGameShopItemController>(1);
-            //     var item = GameObject.Instantiate(shopItemController, itemSlotTransform);
-            //     item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
-            //     item.UpdateItemData();
-            //     var idx = i;
-            //     item.SetItemExplanation = $"{idx}번 아이템 설명";
-            //     item.SetItemPrice = idx * 1000;
-            //     item.SetIndex = idx;
-            //     //item.SetShopItemData(OnClickItem);
-            //     itemList.Add(item);
-            // }
+            weapon.SetItemExplanation = $"{idx}번 아이템 설명";
+            // weapon.SetItemPrice = idx * 1000;
+            weapon.SetIndex = idx;
+            // weapon.SetShopItemData(OnClickItem);
         }
     }
 
@@ -201,6 +198,7 @@ public class InGameShopPanelController : UIBaseController
     private void ResetInGameShop()
     {
         // 선택 index 변수
+        selectItemIndex = -1;
         // 버튼 초기화
         buyObjectGroup.SetActive(false);
     }
@@ -218,8 +216,13 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     private void OnClickBuyButton()
     {
+        var addItem = shopItemList[selectItemIndex].SetWeaponInfo;
+        playerManager.AddPlayerWeapon(addItem);
+
         // 구매완료 팝업 애니메이션화 후 
         buyObjectGroup.SetActive(true);
+
+        playerManager.SetPlayerWeaponController.UpdateWeapon();
     }
 
     #region 구매완료 팝업
@@ -243,9 +246,8 @@ public class InGameShopPanelController : UIBaseController
 
         // 토글이 아닌 버튼으로 되어있어서 초기화시 선택된 index를 기억하여 초기버튼선택상태 초기화 해줘야함
         // 선택된 아이템 기억하기
+        selectItemIndex = _idx;
         // 선택된 아이템 표시
-
-
     }
 
     private WeaponInfo GetWeapon(int _id)

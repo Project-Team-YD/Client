@@ -32,6 +32,8 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private const string EQUIPMENT_TEXT = "착용하기";
     private const string JOIN_TEXT = "입장하기";
 
+    private int weaponIndex;
+
     protected override void Awake()
     {
         base.Awake();
@@ -43,6 +45,9 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
         weaponImage.enabled = false;
         enhanceText.enabled = false;
+
+        joinBtn.interactable = false;
+
         Initialize();
     }
 
@@ -67,6 +72,14 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     {
         throw new NotImplementedException();
     }
+
+    public override void Hide()
+    {
+        base.Hide();
+        // 초기화
+        joinBtn.interactable = false;
+    }
+
     /// <summary>
     /// 게임 입장 전 들고 갈 무기 선택시 슬릇에 선택 무기 이미지 설정 및 정보 가져오는 함수.
     /// </summary>
@@ -76,7 +89,11 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
-    }    
+
+        joinBtn.interactable = true;
+
+        weaponIndex = _slotIndex;
+    }
     /// <summary>
     /// 팝업 데이터 초기화.
     /// </summary>
@@ -91,7 +108,9 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     /// </summary>
     private async void OnClickJoinButton()
     {
-        await uiMgr.Show<DungeonSelectPopupController>("DungeonSelectPopup");
+        var panel = await uiMgr.Show<DungeonSelectPopupController>("DungeonSelectPopup");
+        /// 나중에 보유 무기에서 들고와야함(서버 반영 필요)
+        panel.SetWeapon(weaponInfos[weaponIndex]);
     }
 
     private void OnClickCloseButton()

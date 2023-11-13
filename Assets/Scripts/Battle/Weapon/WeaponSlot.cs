@@ -22,10 +22,12 @@ public class WeaponSlot : MonoBehaviour
 
     private float coolTime;
     private bool isRightWeapon;
+    private bool isAttack = false;
 
     private AABB curAABB;
 
     public int GetWeaponID { get { return weaponId; } }
+    public bool SetAttack { get { return isAttack; } set { isAttack = value; } }
 
     /// <summary>
     /// 근접무기용 AABB
@@ -87,12 +89,13 @@ public class WeaponSlot : MonoBehaviour
     public WeaponInfo GetWeaponInfo()
     {
         return info;
-    }    
+    }
 
     // TODO :: 여기서 AABB 체크도 같이해서 데미지를 주는게 맞을듯한데 의견 여쭤보기..임시 Controller Update문 함수 
     // TODO :: 원거리 무기는 Bullet같은 스크립트를 하나 파서 거기서 컨트롤해줘야..........생각해보기
     /// <summary>
     /// 무기 타입별 공격 로직 함수.
+    /// while 조건 변경 필요할듯 다음 웨이브 때 공격하려면
     /// </summary>
     public async void WeaponAttack()
     {
@@ -103,13 +106,10 @@ public class WeaponSlot : MonoBehaviour
                 case WeaponType.dagger:
                     // 조건 AABB null 아닐때
                     // 조건 공격 중일때
-                    while (true)
+                    while (isAttack)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
-                        // 여기에 충돌체크 메서드 추가
-                        // 게임씬에서 적을 가져와야하나?
-                        var enemyList = gameSceneController.GetEnemyList;
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         var isAttack = await gameSceneController.CheckMonsterAttack(this);
@@ -121,17 +121,14 @@ public class WeaponSlot : MonoBehaviour
 
                         await UniTask.Yield();
                     }
-                //break;
+                    break;
                 case WeaponType.sword:
                     // 조건 AABB null 아닐때
                     // 조건 공격 중일때
-                    while (true)
+                    while (isAttack)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
-                        // 여기에 충돌체크 메서드 추가
-                        // 게임씬에서 적을 가져와야하나?
-                        var enemyList = gameSceneController.GetEnemyList;
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         var isAttack = await gameSceneController.CheckMonsterAttack(this);
@@ -143,9 +140,9 @@ public class WeaponSlot : MonoBehaviour
 
                         await UniTask.Yield();
                     }
-                //break;
+                    break;
                 case WeaponType.gun:
-                    while (true)
+                    while (isAttack)
                     {
                         if (enemy == null)
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
@@ -171,9 +168,9 @@ public class WeaponSlot : MonoBehaviour
                         }
                         await UniTask.Yield();
                     }
-                //break;
+                    break;
                 case WeaponType.ninjastar:
-                    while (true)
+                    while (isAttack)
                     {
                         if (enemy == null)
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
@@ -187,7 +184,7 @@ public class WeaponSlot : MonoBehaviour
                         }
                         await UniTask.Yield();
                     }
-                //break;
+                    break;
                 default:
                     break;
             }

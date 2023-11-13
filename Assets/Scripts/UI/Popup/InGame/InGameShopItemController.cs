@@ -16,7 +16,7 @@ public class InGameShopItemController : MonoBehaviour
 
     private Action<int> callBack = null;
 
-    public WeaponInfo SetWeaponInfo { set { info = value; } }
+    public WeaponInfo SetWeaponInfo { get { return info; } set { info = value; } }
     public string SetItemExplanation { get { return explanation; } set { explanation = value; } }
     public int SetItemPrice { get { return price; } set { price = value; } }
     public int SetIndex { get { return idx; } set { idx = value; } }

@@ -140,6 +140,8 @@ public class GameSceneController : BaseSceneController
         isTouch = false;
 
         StartGameWave();
+
+        playerManager.SetPlayerWeaponController.StartAttack();
     }
 
     private void LateUpdate()
@@ -196,7 +198,7 @@ public class GameSceneController : BaseSceneController
     private async void OnClickGameStopButton()
     {
         SetPlaying(false);
-        timeManager.PauseTime();        
+        timeManager.PauseTime();
         var popup = await uIManager.Show<PausePopupController>("PausePopup");
         popup.SetCallback(SetPlaying);
     }
@@ -207,7 +209,7 @@ public class GameSceneController : BaseSceneController
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
         StartMoveMonster();
         StartCheckMonster();
-        weapons = playerManager.SetPlayerWeapon.GetWeapons;
+        weapons = playerManager.SetPlayerWeaponController.GetWeapons;
 
         SetPlaying(true);
         isTouch = false;
@@ -226,6 +228,8 @@ public class GameSceneController : BaseSceneController
     {
         StartGameWave();
 
+        playerManager.SetPlayerWeaponController.StartAttack();
+
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
         timeManager.PlayTime();
@@ -240,6 +244,8 @@ public class GameSceneController : BaseSceneController
         timeManager.PauseTime();
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
+
+        playerManager.SetPlayerWeaponController.StopAttack();
     }
 
     private void SetPlaying(bool _value)
@@ -576,7 +582,7 @@ public class GameSceneController : BaseSceneController
             var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
             if (isCollision)
             {
-                AttackMonster(_weapon, i);                                
+                AttackMonster(_weapon, i);
                 return true;
             }
         }

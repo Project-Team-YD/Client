@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class WeaponController : MonoBehaviour
 {
+    private const int START_WEAPON_NUM = 0;
     [SerializeField] private WeaponSlot[] slot;
     [SerializeField] private GameSceneController gameSceneController;
 
@@ -13,6 +14,8 @@ public class WeaponController : MonoBehaviour
     private Transform playerTransform = null;
     private bool isRight = false;
 
+    private Vector3[] weaponpos;
+
     public WeaponSlot[] GetWeapons { get { return slot; } }
 
     private void Awake()
@@ -20,14 +23,74 @@ public class WeaponController : MonoBehaviour
         playerManager = PlayerManager.getInstance;
 
         playerTransform = gameObject.transform.parent.transform;
-        int slotCount = slot.Length;
-        for (int i = 0; i < slotCount; i++) // 슬릇 두개에 근접무기 넣어두고 회전테스트.
+
+        SetStartWeapon();
+
+        var startWeapon = playerManager.SetPlayerWeapons[START_WEAPON_NUM];
+        WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(startWeapon.weaponId);
+        isRight = false;
+        slot[START_WEAPON_NUM].InitWeapon(info, gameSceneController, isRight);
+        slot[START_WEAPON_NUM].SetTarget(playerTransform);
+        var type = slot[START_WEAPON_NUM].GetWeaponType();
+        if (type == WeaponType.dagger || type == WeaponType.sword)
         {
-            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(i + 2); // 임시..테스트용
+            slot[START_WEAPON_NUM].transform.eulerAngles = new Vector3(0f, 0f, rotate);
+        }
+
+        weaponpos = new Vector3[slot.Length];
+        int count = weaponpos.Length;
+        for (int i = 0; i < count; i++)
+        {
+            var pos = slot[i].transform.position;
+            weaponpos[i] = pos;
+        }
+
+        playerManager.SetPlayerWeaponController = this;
+    }
+
+    public void StartAttack()
+    {
+        int weaponCount = playerManager.SetPlayerWeapons.Count;
+        for (int i = 0; i < weaponCount; i++)
+        {
+            slot[i].SetAttack = true;
+            slot[i].WeaponAttack();
+        }
+    }
+
+    public void StopAttack()
+    {
+        int slotCount = slot.Length;
+        for (int i = 0; i < slotCount; i++)
+        {
+            slot[i].SetAttack = false;
+        }
+    }
+
+    private void SetStartWeapon()
+    {
+        var startWeapon = playerManager.SetStartWeapon;
+        if (playerManager.SetPlayerWeapons.Count <= 0)
+        {
+            playerManager.SetPlayerWeapons.Add(startWeapon);
+        }
+    }
+
+    public void UpdateWeapon()
+    {
+        int weaponCount = playerManager.SetPlayerWeapons.Count;
+        for (int i = 0; i < weaponCount; i++)
+        {
+            var weapons = playerManager.SetPlayerWeapons[i];
+            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(weapons.weaponId);
             isRight = i == 0 ? false : true;
             slot[i].InitWeapon(info, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
             var type = slot[i].GetWeaponType();
+
+            // 근접무기의 경우 위치 틀어지는거 생각해보기
+            slot[i].transform.position = weaponpos[i];
+
             if (type == WeaponType.dagger || type == WeaponType.sword)
             {
                 if (i == 0)
@@ -39,17 +102,6 @@ public class WeaponController : MonoBehaviour
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, -rotate);
                 }
             }
-        }
-
-        playerManager.SetPlayerWeapon = this;
-    }
-
-    private void Start()
-    {
-        int slotCount = slot.Length;
-        for (int i = 0; i < slotCount; i++)
-        {
-            slot[i].WeaponAttack();
         }
     }
 }
