@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Grpc.Core;
 using MainGrpcClient;
-
+using System.Threading;
 namespace Server
 {
     public class ServerManager
@@ -50,27 +50,40 @@ namespace Server
             grpcLoginServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(loginChannel);
 
         }
-        
+
         public void ConnectToGrpcGameServer()
         {
 
+
             // gRPC 채널 연결 
-            gameChannel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure, new List<ChannelOption>
-            {
-                new ChannelOption("UUID", UUID)
-            });
+            gameChannel = new Channel($"{gameServerIp}:{gameServerPort}", ChannelCredentials.Insecure);
 
             // gRPC 연
             grpcGameServerClient = new GlobalGRpcService.GlobalGRpcServiceClient(gameChannel);
+            cancellationTokenSource = new CancellationTokenSource();
 
+            var metaData = new Metadata
+            {
+                { "uuid", UUID }
+            };
+            Debug.Log("uuid::" + UUID);
+            CallOptions callOptions = new CallOptions(metaData);
+
+            //var request = "connect_to_game_server";
+            var response = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);
         }
-
+        public CancellationTokenSource cancellationTokenSource;
         public string loginServerIp = "13.125.254.231";
         public int loginServerPort = 8081;
         public string gameServerIp = "13.125.254.231";
         public int gameServerPort = 8080;
 
-        
+        private void OnDestroy()
+        {
+            cancellationTokenSource?.Cancel();
+            gameChannel?.ShutdownAsync().Wait();
+            loginChannel?.ShutdownAsync().Wait();
+        }
     }
 }
 

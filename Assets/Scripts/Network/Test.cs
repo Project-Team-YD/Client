@@ -20,30 +20,29 @@ public class Test : MonoBehaviour
         string result = $"MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
 
         Debug.Log(result);
-        
+
         if (loginResponse.code == (int)MessageCode.Success)
         {
             ServerManager.GetInstance.UUID = loginResponse.UUID;
             ServerManager.GetInstance.ConnectToGrpcGameServer();
-            await GrpcManager.GetInstance.SendRpcStreamBroadcastAsync("ping", "Test");
-            StartCoroutine(Receive());
+            
+            try
+            {
+                await GrpcManager.GetInstance.ReceiveBroadcastMessages();
+            }
+            catch(System.OperationCanceledException)
+            {
+                Debug.Log("클라이언트에서 루프가 중지 되었습니다.");
+            }
         }
-        
+
     }
 
     private void Update()
     {
+        //GrpcManager.GetInstance.ReceiveBroadcastFromGameServer();
 
-     
     }
 
-
-    public IEnumerator Receive()
-    {
-        
-        GrpcManager.GetInstance.ReceiveBroadcastFromGameServer();
-
-        yield return null;
-    }
 }
 

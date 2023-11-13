@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using Grpc.Core;
 using MainGrpcClient;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Packet;
 using Server;
 using System;
-using UnityEditor.VersionControl;
+using unityTask = UnityEditor.VersionControl.Task;
+
 
 public partial class GrpcManager
 {
@@ -132,15 +134,21 @@ public partial class GrpcManager
 
         return null;
     }
-    public async void ReceiveBroadcastFromGameServer()
+    
+    public async Task ReceiveBroadcastMessages()
     {
+
+        await Task.Yield();
+
         try
         {
+            Debug.Log("TT");
             var responseStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStreamBroadcast();
-
+            var token = ServerManager.GetInstance.cancellationTokenSource.Token;
             // 서버에서 오는 응답 메시지 처리
-            while (await responseStream.ResponseStream.MoveNext())
+            while (await responseStream.ResponseStream.MoveNext() && !token.IsCancellationRequested)
             {
+                Debug.Log("TTTT");
                 var response = responseStream.ResponseStream.Current;
                 string message = response.Message;
                 Debug.Log($"Broadcast Message : {message}");
@@ -178,9 +186,10 @@ public partial class GrpcManager
         {
             Debug.LogError("Error handling server responses: " + e.Message);
         }
-
-        //return null;
     }
 
-
+    private void OnDestroy()
+    {
+        
+    }
 }
