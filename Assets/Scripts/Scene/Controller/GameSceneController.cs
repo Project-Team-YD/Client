@@ -63,6 +63,7 @@ public class GameSceneController : BaseSceneController
     #endregion
 
     [SerializeField] private Transform damageTextRoot = null;
+    [SerializeField] private Transform PlayerHUDTransform = null;
     private ObjectPool<IPoolable> damageTextPool = null;
     private readonly int DAMAGE_TEXT_COUNT = 30;
 
@@ -455,7 +456,12 @@ public class GameSceneController : BaseSceneController
                 if (isCollision)
                 {
                     Debug.Log($"충돌 / {i}번");
-
+                    var text = (DamageText)damageTextPool.GetObject();
+                    var transform = Camera.main.WorldToScreenPoint(PlayerHUDTransform.position);
+                    text.SetDamage(monsterList[i].GetAttackPower(), transform, Color.red);
+                    await UniTask.Delay(500);
+                    text.ResetText();
+                    damageTextPool.EnqueueObject(text);
                     // 몬스터 공격하는 대신 플레이어 데미지 받게 하기
                     // 데미지 주다가
                     //AttackMonster(i);
@@ -605,8 +611,8 @@ public class GameSceneController : BaseSceneController
         }
         var text = (DamageText)damageTextPool.GetObject();
         var transform = Camera.main.WorldToScreenPoint(monster.GetHUDTransform().position);
-        text.SetDamage(weapon.attackPower, transform);
-        await UniTask.Delay(500);
+        text.SetDamage(weapon.attackPower, transform, Color.black);
+        await UniTask.Delay(1500);
         text.ResetText();
         damageTextPool.EnqueueObject(text);
         // hp가 0이하면 죽임

@@ -101,6 +101,10 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         return nowState;
     }
+    public float GetAttackPower()
+    {
+        return attackPower;
+    }
     /// <summary>
     /// 몬스터 현재 상태를 지정하는 함수.
     /// </summary>

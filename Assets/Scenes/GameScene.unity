@@ -573,6 +573,7 @@ MonoBehaviour:
   bossHp: {fileID: 2126072811}
   bossHpBar: {fileID: 1427606520}
   damageTextRoot: {fileID: 1174722326}
+  PlayerHUDTransform: {fileID: 863248912}
 --- !u!4 &482425250
 Transform:
   m_ObjectHideFlags: 0
@@ -785,6 +786,11 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &863248912 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 863248912, guid: 134384629480b1a4a9f48b2fcf462380, type: 3}
+  m_PrefabInstance: {fileID: 6664491078119608111}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &999910088
 GameObject:
   m_ObjectHideFlags: 0

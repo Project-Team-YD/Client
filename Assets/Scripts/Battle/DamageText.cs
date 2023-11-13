@@ -8,6 +8,8 @@ public class DamageText : MonoBehaviour, IPoolable
 {
     TextMeshProUGUI damageText = null;
     TransitionManager transitionManager = null;
+    [SerializeField] Material outlineWhite = null;
+    [SerializeField] Material outlineBlack = null;
 
     private void Awake()
     {
@@ -15,13 +17,21 @@ public class DamageText : MonoBehaviour, IPoolable
         transitionManager = TransitionManager.getInstance;
     }
 
-    public void SetDamage(float _damage, Vector3 _position)
+    public void SetDamage(float _damage, Vector3 _position, Color _color)
     {
         gameObject.transform.position = _position;
         damageText.text = _damage.ToString();
-        damageText.color = Color.red;
+        if(_color == Color.red)
+        {
+            damageText.fontMaterial = outlineWhite;
+        }
+        else
+        {
+            damageText.fontMaterial = outlineBlack;
+        }
+        damageText.color = _color;
         OnActivate();
-        transitionManager.Play(TransitionManager.TransitionType.Invisible, 1f, Vector3.zero, gameObject);                
+        transitionManager.Play(TransitionManager.TransitionType.Invisible, 1.5f, Vector3.zero, gameObject);                
     }
 
     public void ResetText()
