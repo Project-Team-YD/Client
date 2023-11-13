@@ -48,8 +48,8 @@ public class InGameShopPanelController : UIBaseController
     /// 오른쪽(아래) 장착
     /// </summary>
     [SerializeField] private Transform itemShopSlotTransform = null;
-    [SerializeField] private Transform itemLeftSlotTransform = null;
-    [SerializeField] private Transform itemRightSlotTransform = null;
+    [SerializeField] private Transform weaponItemSlotTransform = null;
+    [SerializeField] private Transform itemSlotTransform = null;
 
     [SerializeField] private Button refreshButton = null;
     [SerializeField] private Button buyButton = null;
@@ -61,17 +61,19 @@ public class InGameShopPanelController : UIBaseController
     /// 구매완료 팝업
     /// 일단 스크립트 따로 안만들고 여기서 관리를 해줘야할지 생각 필요
     /// </summary>
-    [SerializeField] private GameObject buyGroup = null;
+    [SerializeField] private GameObject buyObjectGroup = null;
     [SerializeField] private Button nextButton = null;
 
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
 
     private List<InGameShopItemController> shopItemList = null;
-    private List<InGameShopItemController> leftItemList = null;
-    private List<InGameShopItemController> rightItemList = null;
+    private List<InGameShopItemController> weaponItemList = null;
+    private List<InGameShopItemController> itemList = null;
 
     private PlayerManager playerManager = null;
+
+    private Action callBack = null;
 
     protected override void Awake()
     {
@@ -88,7 +90,7 @@ public class InGameShopPanelController : UIBaseController
 
         Initialized();
 
-        buyGroup.SetActive(false);
+        buyObjectGroup.SetActive(false);
     }
 
     private void Initialized()
@@ -101,12 +103,23 @@ public class InGameShopPanelController : UIBaseController
         checkText.text = checkTextKey;
     }
 
+    public override void Hide()
+    {
+        base.Hide();
+
+        callBack?.Invoke();
+
+        callBack = null;
+    }
+
     /// <summary>
     /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
     /// 서버에서 데이터 받는 메서드 따로 만들 필요 있음
     /// </summary>
-    public void SetData()
+    public void SetData(Action _callback)
     {
+        callBack = _callback;
+
         UpdateMyWeaponData();
 
         // 임시
@@ -134,41 +147,51 @@ public class InGameShopPanelController : UIBaseController
         OnClickItem(0);
     }
 
+    /// <summary>
+    /// 충돌처리할때 어떤무기가 충돌됬는지
+    /// </summary>
+
     private void UpdateMyWeaponData()
     {
+        if (weaponItemList != null)
+            return;
+
         // 내가 장착중인 아이템 불러오기
         var items = playerManager.SetPlayerWeapon.GetWeapons;
         // 나중에 왼쪽 오른쪽 나눠야할꺼같음
         int count = items.Length;
 
+        // 임시
+        weaponItemList = new List<InGameShopItemController>(count);
+
         for (int i = 0; i < count; i++)
         {
-            if (i < 1)
-            {
-                leftItemList = new List<InGameShopItemController>(1);
-                var item = GameObject.Instantiate(shopItemController, itemLeftSlotTransform);
-                item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
-                item.UpdateItemData();
-                var idx = i;
-                item.SetItemExplanation = $"{idx}번 아이템 설명";
-                item.SetItemPrice = idx * 1000;
-                item.SetIndex = idx;
-                // item.SetShopItemData(OnClickItem);
-                leftItemList.Add(item);
-            }
-            else
-            {
-                rightItemList = new List<InGameShopItemController>(1);
-                var item = GameObject.Instantiate(shopItemController, itemRightSlotTransform);
-                item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
-                item.UpdateItemData();
-                var idx = i;
-                item.SetItemExplanation = $"{idx}번 아이템 설명";
-                item.SetItemPrice = idx * 1000;
-                item.SetIndex = idx;
-                //item.SetShopItemData(OnClickItem);
-                rightItemList.Add(item);
-            }
+            // if (i < 1)
+            // {
+            //   weaponItemList = new List<InGameShopItemController>(1);
+            var item = GameObject.Instantiate(shopItemController, weaponItemSlotTransform);
+            item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
+            item.UpdateItemData();
+            var idx = i;
+            item.SetItemExplanation = $"{idx}번 아이템 설명";
+            item.SetItemPrice = idx * 1000;
+            item.SetIndex = idx;
+            // item.SetShopItemData(OnClickItem);
+            weaponItemList.Add(item);
+            // }
+            // else
+            // {
+            //     itemList = new List<InGameShopItemController>(1);
+            //     var item = GameObject.Instantiate(shopItemController, itemSlotTransform);
+            //     item.SetWeaponInfo = GetWeapon(items[i].GetWeaponID);
+            //     item.UpdateItemData();
+            //     var idx = i;
+            //     item.SetItemExplanation = $"{idx}번 아이템 설명";
+            //     item.SetItemPrice = idx * 1000;
+            //     item.SetIndex = idx;
+            //     //item.SetShopItemData(OnClickItem);
+            //     itemList.Add(item);
+            // }
         }
     }
 
@@ -177,7 +200,9 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     private void ResetInGameShop()
     {
-        buyGroup.SetActive(false);
+        // 선택 index 변수
+        // 버튼 초기화
+        buyObjectGroup.SetActive(false);
     }
 
     /// <summary>
@@ -193,9 +218,8 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     private void OnClickBuyButton()
     {
-
-
-        uiManager.Hide();
+        // 구매완료 팝업 애니메이션화 후 
+        buyObjectGroup.SetActive(true);
     }
 
     #region 구매완료 팝업
@@ -204,7 +228,9 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     private void OnClickNextButton()
     {
+        uiManager.Hide();
 
+        ResetInGameShop();
     }
     #endregion
 
@@ -215,6 +241,7 @@ public class InGameShopPanelController : UIBaseController
         descriptionText.text = data.SetItemExplanation;
         priceText.text = $"{data.SetItemPrice}";
 
+        // 토글이 아닌 버튼으로 되어있어서 초기화시 선택된 index를 기억하여 초기버튼선택상태 초기화 해줘야함
         // 선택된 아이템 기억하기
         // 선택된 아이템 표시
 

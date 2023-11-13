@@ -45,10 +45,11 @@ public class GameSceneController : BaseSceneController
 
     #region UniTask
     private CancellationTokenSource monsterCreateCancel = new CancellationTokenSource();
-    private CancellationTokenSource monsterRegenCancel = new CancellationTokenSource();
-    private CancellationTokenSource monsterMoveCancel = new CancellationTokenSource();
+    private CancellationTokenSource monsterRegenCancel;
+    private CancellationTokenSource monsterMoveCancel;
+    private CancellationTokenSource monsterCheckCollisionCancel;
     private CancellationTokenSource getTargetEnemyCancel = new CancellationTokenSource();
-    private CancellationTokenSource timeManagerCancel = new CancellationTokenSource();
+    private CancellationTokenSource timeManagerCancel;
     #endregion
 
     #region InGameUI
@@ -61,12 +62,21 @@ public class GameSceneController : BaseSceneController
     private StringBuilder sb = new StringBuilder();
     #endregion
 
+    [SerializeField] private Transform damageTextRoot = null;
+    [SerializeField] private Transform PlayerHUDTransform = null;
+    private ObjectPool<IPoolable> damageTextPool = null;
+    private readonly int DAMAGE_TEXT_COUNT = 30;
+
     private TimeManager timeManager = null;
     private int gameWave;
     private UIManager uIManager = null;
     private PlayerManager playerManager = null;
     private WeaponSlot[] weapons = null;
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
+
+    private bool isPlaying;
+    private bool isTouch;
+    private float topPanel;
 
     private void Awake()
     {
@@ -76,7 +86,7 @@ public class GameSceneController : BaseSceneController
         timeManager = TimeManager.getInstance;
         playerManager = PlayerManager.getInstance;
         timeManager.ResetTime();
-        timeManager.UpdateTime(timeManagerCancel).Forget();
+        timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
         gameStopButton.onClick.AddListener(OnClickGameStopButton);
         bossHp.SetActive(false);
         sb.Clear();
@@ -92,6 +102,9 @@ public class GameSceneController : BaseSceneController
 
         bulletPool = PoolManager.getInstance.GetObjectPool<Bullet>();
         bulletPool.Initialize("Prefabs/Bullet", BULLET_COUNT, BulletPoolRoot);
+
+        damageTextPool = PoolManager.getInstance.GetObjectPool<DamageText>();
+        damageTextPool.Initialize("Prefabs/DamageText", DAMAGE_TEXT_COUNT, damageTextRoot);
 
         prefab = Resources.Load("Prefabs/Map/MapObject", typeof(GameObject)) as GameObject;
         obstructionPrefab = Resources.Load("Prefabs/Map/Obstruction", typeof(GameObject)) as GameObject;
@@ -115,6 +128,17 @@ public class GameSceneController : BaseSceneController
 
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
         }
+
+        // 화면 크기에서의 퍼센트
+        topPanel = Screen.height * 0.75f;
+        var bossHpHeight = bossHp.GetComponent<RectTransform>().rect.height;
+        // 상단 ui 위치부터의 범위
+        topPanel = bossHp.transform.position.y - (bossHpHeight * 2);
+
+        Debug.Log($"topPanel 범위 : {topPanel}");
+
+        isTouch = false;
+
         StartGameWave();
     }
 
@@ -143,10 +167,14 @@ public class GameSceneController : BaseSceneController
         //    monsterPool.EnqueueObject(monsterList[0]);
         //}
 
-        // 조이패드 임시
         if (deathCount >= MAX_WAVE_MONSTER)
         {
+            timeManagerCancel.Cancel();
+            monsterMoveCancel.Cancel();
+            monsterCheckCollisionCancel.Cancel();
+
             EndGameWave();
+
             // 초기화 필요
             deathCount = 0;
         }
@@ -155,27 +183,68 @@ public class GameSceneController : BaseSceneController
             monsterRegenCancel.Cancel();
         }
         // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
-        OnClickJoypad();
+        // 조이패드 상단 간섭 금지
+        // 조이패드 임시
+        if (isPlaying)
+        {
+            OnClickJoypad();
+        }
+
         SetPlayTime();
     }
 
-    private void OnClickGameStopButton()
+    private async void OnClickGameStopButton()
     {
-
+        SetPlaying(false);
+        timeManager.PauseTime();        
+        var popup = await uIManager.Show<PausePopupController>("PausePopup");
+        popup.SetCallback(SetPlaying);
     }
+
     private async void StartGameWave()
     {
         await CreateMonster();
-        RegenMonster().Forget();
+        RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeapon.GetWeapons;
+
+        SetPlaying(true);
+        isTouch = false;
     }
+
+    /// <summary>
+    /// 상점 팝업 닫을때 실행할 것
+    /// 시간은 이어서 할지 or 0부터 시작할지 고민
+    /// update에 필요한 변수 초기화
+    /// StartGameWave를 실행하려하는데 다음 웨이브확인할 방법이?
+    /// StartGameWave안에 createmonster가 있는데 어떻게 할지 확인 필요
+    /// 3,2,1 이라는 큰 텍스트를 보여줘서 다음 웨이브라는것을 표현할지
+    /// startnextwave 실행하면 다음 웨이브 시작임
+    /// </summary>
+    private void StartNextWave()
+    {
+        StartGameWave();
+
+        timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
+
+        timeManager.PlayTime();
+        // 몬스터 숫자 생각 필요
+        monsterCount = 0;
+        deathCount = 0;
+    }
+
     private async void EndGameWave()
     {
+        SetPlaying(false);
+        timeManager.PauseTime();
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-        popup.SetData();
-        Time.timeScale = 0f;
+        popup.SetData(StartNextWave);
+    }
+
+    private void SetPlaying(bool _value)
+    {
+        isPlaying = _value;
     }
     /// <summary>
     /// 인게임 시간 체크 및 Text적용 함수.
@@ -214,20 +283,16 @@ public class GameSceneController : BaseSceneController
         }
         summonPosition.Clear();
     }
+
     /// <summary>
     /// 몬스터 리젠 함수..리젠 시간이 될때마다 호출.
     /// </summary>
     /// <returns></returns>
-    private async UniTaskVoid RegenMonster()
+    private async UniTaskVoid RegenMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
-            await UniTask.Delay(5000, cancellationToken: monsterRegenCancel.Token);
-            if (monsterRegenCancel.IsCancellationRequested)
-            {
-                break;
-            }
-
+            await UniTask.Delay(5000); // 몬스터 리젠 주기..5초
             for (int i = 0; i < regenCount; i++)
             {
                 var obj = (EnemyObject)monsterPool.GetObject();
@@ -247,18 +312,19 @@ public class GameSceneController : BaseSceneController
                 monsterCount++;
             }
             summonPosition.Clear();
+            await UniTask.Delay(100, cancellationToken: monsterRegenCancel.Token);
         }
     }
 
     private async void StartMoveMonster()
     {
-        await MoveMonster();
+        await MoveMonster(monsterMoveCancel = new CancellationTokenSource());
     }
 
     // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
-    private async UniTask MoveMonster()
+    private async UniTask MoveMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
@@ -350,9 +416,15 @@ public class GameSceneController : BaseSceneController
 
     private void OnClickJoypad()
     {
+        if (TopTouch() && !isTouch)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             joypadController.OnJoypadDown(Input.mousePosition);
+            isTouch = true;
         }
 
         if (Input.GetMouseButton(0))
@@ -363,18 +435,19 @@ public class GameSceneController : BaseSceneController
         if (Input.GetMouseButtonUp(0))
         {
             joypadController.OnJoypadUp();
+            isTouch = false;
         }
     }
 
     private async void StartCheckMonster()
     {
-        await CheckCollisionMonster();
+        await CheckCollisionMonster(monsterCheckCollisionCancel = new CancellationTokenSource());
     }
 
     // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
-    private async UniTask CheckCollisionMonster()
+    private async UniTask CheckCollisionMonster(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
@@ -383,7 +456,12 @@ public class GameSceneController : BaseSceneController
                 if (isCollision)
                 {
                     Debug.Log($"충돌 / {i}번");
-
+                    var text = (DamageText)damageTextPool.GetObject();
+                    var transform = Camera.main.WorldToScreenPoint(PlayerHUDTransform.position);
+                    text.SetDamage(monsterList[i].GetAttackPower(), transform, Color.red);
+                    await UniTask.Delay(500);
+                    text.ResetText();
+                    damageTextPool.EnqueueObject(text);
                     // 몬스터 공격하는 대신 플레이어 데미지 받게 하기
                     // 데미지 주다가
                     //AttackMonster(i);
@@ -410,16 +488,17 @@ public class GameSceneController : BaseSceneController
     }
 
     //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
-    public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponType _type, Transform _transform)
+    public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponSlot _weapon)
     {
         var obj = (Bullet)bulletPool.GetObject();
-        if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+        var type = _weapon.GetWeaponType();
+        if (type == WeaponType.ninjastar && type != WeaponType.gun)
         {
-            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), null, obj.gameObject);
+            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), obj.gameObject);
         }
-        obj.transform.position = _transform.position;
+        obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
-        obj.SetBulletSprite(_type, _enemy.transform);
+        obj.SetBulletSprite(type, _enemy.transform);
         obj.OnActivate();
 
         bool isMove = true;
@@ -433,18 +512,28 @@ public class GameSceneController : BaseSceneController
 
             // 원거리 무기의 경우 여기서 AABB 적용
             // 충돌체크
-            var isCheck = CheckMonsterAttack(obj);
+            var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
 
-                if (_type == WeaponType.ninjastar && _type != WeaponType.gun)
+                if (type == WeaponType.ninjastar && type != WeaponType.gun)
                     TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
                 isMove = false;
             }
 
             // 플레이어와 거리체크 소멸
+            float distance = Vector3.Distance(playerTransform.position, obj.transform.position);
+            if (distance >= 25)
+            {
+                bulletPool.EnqueueObject(obj);
+
+                if (type == WeaponType.ninjastar && type != WeaponType.gun)
+                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
+                isMove = false;
+            }
 
             await UniTask.Yield();
 
@@ -458,14 +547,14 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_bullet"></param>
     /// <returns></returns>
-    private bool CheckMonsterAttack(Bullet _bullet)
+    private bool CheckMonsterAttack(WeaponSlot _weapon, Bullet _bullet)
     {
         for (int i = 0; i < monsterList.Count; i++)
         {
             var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
             if (isCollision)
             {
-                AttackMonster(i);
+                AttackMonster(_weapon, i);
                 return true;
             }
         }
@@ -478,16 +567,16 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_aabb"></param>
     /// <returns></returns>
-    public async UniTask<bool> CheckMonsterAttack(AABB _aabb)
+    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon)
     {
         await UniTask.Yield();
 
         for (int i = 0; i < monsterList.Count; i++)
         {
-            var isCollision = monsterList[i].OnCheckCollision(_aabb);
+            var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
             if (isCollision)
             {
-                AttackMonster(i);
+                AttackMonster(_weapon, i);                                
                 return true;
             }
         }
@@ -500,18 +589,42 @@ public class GameSceneController : BaseSceneController
     /// hp 적용필요
     /// </summary>
     /// <param name="_index"></param>
-    private void AttackMonster(int _index)
+    private async UniTaskVoid AttackMonster(WeaponSlot _weapon, int _index)
     {
         if (weapons == null)
             return;
-        monsterList[_index].SetState(MonsterState.Hit);
-        monsterList[_index].SetAttack(playerTransform);
-        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
-        // hp가 0이하면 죽임
 
-        monsterList[_index].SetState(MonsterState.Die);
-        monsterPool.EnqueueObject(monsterList[_index]);
-        monsterList.RemoveAt(_index);
-        deathCount++;
+        var monster = monsterList[_index];
+        // 몬스터 충격 이펙트
+        monster.SetState(MonsterState.Hit);
+        monster.SetAttack(playerTransform);
+
+        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        var weapon = _weapon.GetWeaponInfo();
+        monster.SetDamage(weapon.attackPower);
+        if (monster.IsDie())
+        {
+            monster.SetState(MonsterState.Die);
+            monsterPool.EnqueueObject(monsterList[_index]);
+            monsterList.RemoveAt(_index);
+            deathCount++;
+        }
+        var text = (DamageText)damageTextPool.GetObject();
+        var transform = Camera.main.WorldToScreenPoint(monster.GetHUDTransform().position);
+        text.SetDamage(weapon.attackPower, transform, Color.black);
+        await UniTask.Delay(1500);
+        text.ResetText();
+        damageTextPool.EnqueueObject(text);
+        // hp가 0이하면 죽임
+    }
+
+    private bool TopTouch()
+    {
+        if (topPanel < Input.mousePosition.y)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

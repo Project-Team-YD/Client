@@ -17,4 +17,5 @@ public struct WeaponInfo
     public float attackPower;
     public float attackSpeed;
     public float attackRange;
+    public int enhance;
 }

@@ -26,7 +26,11 @@ public class Bullet : MonoBehaviour, IPoolable
     {
         spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
     }
-
+    /// <summary>
+    /// 무기타입의 따른 발사체 이미지 지정 함수.
+    /// </summary>
+    /// <param name="_type">무기타입</param>
+    /// <param name="_transform">타겟 몬스터 Transform</param>
     public void SetBulletSprite(WeaponType _type, Transform _transform)
     {
         enemyTransform = _transform;
