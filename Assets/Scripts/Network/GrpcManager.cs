@@ -146,34 +146,35 @@ public partial class GrpcManager
             var responseStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStreamBroadcast();
             var token = ServerManager.GetInstance.cancellationTokenSource.Token;
             // 서버에서 오는 응답 메시지 처리
-            while (await responseStream.ResponseStream.MoveNext() && !token.IsCancellationRequested)
+            while (true)//await responseStream.ResponseStream.MoveNext() && !token.IsCancellationRequested)
             {
-                var response = responseStream.ResponseStream.Current;
-                string message = response.Message;
-                Debug.Log($"Broadcast Message : {message}");
-                switch (response.Opcode)
+                if (await responseStream.ResponseStream.MoveNext())
                 {
-                    case (int)Opcode.HEARTBEAT:
-                        //-- 하트비트 값들어오면 하트비트에 저장
-                        RequestHeartBeat requestPacket = new RequestHeartBeat();
-                        requestPacket.heartBeat = ServerManager.GetInstance.heartBeat;
-                        Debug.Log($"Request HeartBeat:{requestPacket.heartBeat}");
-                        var responsePacket = await CheckHeartBeat(requestPacket);
-                        if (responsePacket.code != (int)MessageCode.Success)
-                        {
-                            //-- 하트비트 처리 제대로 안됬을경우
-                        }
-                        Debug.Log($"Response HeartBeat:{responsePacket.heartBeat}");
-                        ServerManager.GetInstance.heartBeat = responsePacket.heartBeat;
-                        break;
-                    case (int)Opcode.DUPLICATE_LOGIN:
-                        //-- 중복 로그인 처리
-                        Response resDuplicateLogin = GetDuplicateLogin(message);
-                        
-                        break;
+                    var response = responseStream.ResponseStream.Current;
+                    string message = response.Message;
+                    Debug.Log($"Broadcast Message : {message}");
+                    switch (response.Opcode)
+                    {
+                        case (int)Opcode.HEARTBEAT:
+                            //-- 하트비트 값들어오면 하트비트에 저장
+                            RequestHeartBeat requestPacket = new RequestHeartBeat();
+                            requestPacket.heartBeat = ServerManager.GetInstance.heartBeat;
+                            Debug.Log($"Request HeartBeat:{requestPacket.heartBeat}");
+                            var responsePacket = await CheckHeartBeat(requestPacket);
+                            if (responsePacket.code != (int)MessageCode.Success)
+                            {
+                                //-- 하트비트 처리 제대로 안됬을경우
+                            }
+                            Debug.Log($"Response HeartBeat:{responsePacket.heartBeat}");
+                            ServerManager.GetInstance.heartBeat = responsePacket.heartBeat;
+                            break;
+                        case (int)Opcode.DUPLICATE_LOGIN:
+                            //-- 중복 로그인 처리
+                            Response resDuplicateLogin = GetDuplicateLogin(message);
+
+                            break;
+                    }
                 }
-
-
                 /*
                 Debug.Log("Received response from server: " + response.Message);
                 string result = response.Message;
