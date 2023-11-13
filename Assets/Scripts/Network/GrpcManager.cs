@@ -135,11 +135,18 @@ public partial class GrpcManager
 
         return null;
     }
-    
-    public async Task ReceiveBroadcastMessages()
-    {
 
-        await Task.Yield();
+    public void Test()
+    {
+        Thread thread = new Thread(ReceiveBroadcastMessages);
+        thread.Start();
+
+        // 스레드가 완료될 때까지 대기
+        thread.Join();
+    }
+
+    public async void ReceiveBroadcastMessages()
+    {
 
         try
         {
