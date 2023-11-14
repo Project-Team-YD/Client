@@ -136,60 +136,47 @@ public partial class GrpcManager
         return null;
     }
     
-    public async Task ReceiveBroadcastMessages()
+    public async void ReceiveBroadcastMessages()
     {
+        var call = ServerManager.GetInstance.call;
+        var cancellationTokenSource = ServerManager.GetInstance.cancellationTokenSource;
 
-        await Task.Yield();
-
-        try
+        // 비동기 루프를 시작하여 들어오는 메시지를 수신
+        await Task.Run(async () =>
         {
-            var responseStream = ServerManager.GetInstance.grpcGameServerClient.GlobalGrpcStreamBroadcast();
-            var token = ServerManager.GetInstance.cancellationTokenSource.Token;
-            // 서버에서 오는 응답 메시지 처리
-            while (true)//await responseStream.ResponseStream.MoveNext() && !token.IsCancellationRequested)
+            try
             {
-                if (await responseStream.ResponseStream.MoveNext())
+                while (await call.ResponseStream.MoveNext())
                 {
-                    var response = responseStream.ResponseStream.Current;
-                    string message = response.Message;
-                    Debug.Log($"Broadcast Message : {message}");
-                    switch (response.Opcode)
+                    var response = call.ResponseStream.Current;
+                    var opcode = call.ResponseStream.Current.Opcode;
+                    // 여기서 수신된 응답을 처리
+                    Debug.Log($"Received message: {response.Message}");
+                    switch(opcode)
                     {
                         case (int)Opcode.HEARTBEAT:
-                            //-- 하트비트 값들어오면 하트비트에 저장
-                            RequestHeartBeat requestPacket = new RequestHeartBeat();
+                            var requestPacket = new RequestHeartBeat();
                             requestPacket.heartBeat = ServerManager.GetInstance.heartBeat;
-                            Debug.Log($"Request HeartBeat:{requestPacket.heartBeat}");
+
+                            Debug.Log($"Request HeartBeat!! HeartBeat:{requestPacket.heartBeat}");
                             var responsePacket = await CheckHeartBeat(requestPacket);
-                            if (responsePacket.code != (int)MessageCode.Success)
+                            if (responsePacket.code == (int)MessageCode.Success)
                             {
-                                //-- 하트비트 처리 제대로 안됬을경우
+                                ServerManager.GetInstance.heartBeat = responsePacket.heartBeat;
+                                Debug.Log($"Change HeartBeat!! HeartBeat:{responsePacket.heartBeat}");
                             }
-                            Debug.Log($"Response HeartBeat:{responsePacket.heartBeat}");
-                            ServerManager.GetInstance.heartBeat = responsePacket.heartBeat;
                             break;
                         case (int)Opcode.DUPLICATE_LOGIN:
-                            //-- 중복 로그인 처리
-                            Response resDuplicateLogin = GetDuplicateLogin(message);
-
                             break;
                     }
                 }
-                /*
-                Debug.Log("Received response from server: " + response.Message);
-                string result = response.Message;
-                return result;
-                */
             }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError("Error handling server responses: " + e.Message);
-        }
+            catch (RpcException ex)
+            {
+                // RpcException 처리 (예: 서버가 스트림을 닫음)
+                Debug.LogError($"RpcException: {ex.Status.Detail}");
+            }
+        }, cancellationTokenSource.Token);
     }
 
-    private void OnDestroy()
-    {
-        
-    }
 }

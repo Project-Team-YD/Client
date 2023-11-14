@@ -9,10 +9,11 @@ namespace Server
     public class ServerManager
     {
         private static ServerManager instance = null;
-        private Channel loginChannel;
-        private Channel gameChannel;
+        public Channel loginChannel;
+        public Channel gameChannel;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcLoginServerClient;
         public GlobalGRpcService.GlobalGRpcServiceClient grpcGameServerClient;
+        public AsyncDuplexStreamingCall<GlobalGrpcRequest, GlobalGrpcBroadcast> call;
         public string UUID;
         public string heartBeat;
         private ServerManager()
@@ -65,9 +66,10 @@ namespace Server
                 { "uuid", UUID }
             };
             Debug.Log("uuid::" + UUID);
-            CallOptions callOptions = new CallOptions(metaData);
+            //CallOptions callOptions = new CallOptions(metaData);
 
-            var response = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);
+            //var response = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);
+            call = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);
         }
         public CancellationTokenSource cancellationTokenSource;
         public string loginServerIp = "13.125.254.231";
@@ -75,12 +77,6 @@ namespace Server
         public string gameServerIp = "13.125.254.231";
         public int gameServerPort = 8080;
 
-        private void OnDestroy()
-        {
-            cancellationTokenSource?.Cancel();
-            gameChannel?.ShutdownAsync().Wait();
-            loginChannel?.ShutdownAsync().Wait();
-        }
     }
 }
 
