@@ -14,7 +14,6 @@ public class Test : MonoBehaviour
         ServerManager.GetInstance.ConnectToGrpcLoginServer();
 
         //-- 로그인서버 접근하여 로그인 요청
-        
         RequestLogin login = new RequestLogin();
         login.id = "test";
         ResponseLogin loginResponse = await GrpcManager.GetInstance.Login(login);
@@ -24,15 +23,19 @@ public class Test : MonoBehaviour
 
         Debug.Log(result);
         Debug.Log($"HeartBeat:{loginResponse.heartBeat}");
+        //-- 로그인 성공시
         if (loginResponse.code == (int)MessageCode.Success)
         {
+            //-- 로그인서버로부터 발급받은 UUID, HeartBeat값으로 초기화
             ServerManager.GetInstance.UUID = loginResponse.UUID;
             ServerManager.GetInstance.heartBeat = loginResponse.heartBeat;
 
+            //-- 게임서버 연결
             ServerManager.GetInstance.ConnectToGrpcGameServer();
   
             try
             {
+                //-- 게임서버로부터 받을 메시지들 처리
                 GrpcManager.GetInstance.ReceiveBroadcastMessages();
             }
             catch(System.OperationCanceledException)
