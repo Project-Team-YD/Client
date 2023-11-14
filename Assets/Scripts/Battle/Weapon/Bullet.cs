@@ -6,7 +6,7 @@ public class Bullet : MonoBehaviour, IPoolable
 {
     private SpriteRenderer spriteRenderer = null;
     private Transform enemyTransform = null;
-
+    private Transform playerTransform = null;
     private AABB curAABB;
 
     public AABB GetBulletAABB
@@ -45,6 +45,15 @@ public class Bullet : MonoBehaviour, IPoolable
         {
             spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{_type}");
         }
+    }
+
+    public void SetMonsterBulletSprite(Transform _transform)
+    {
+        playerTransform = _transform;
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Long_bullet");        
+        var direction = playerTransform.position - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle - 45, Vector3.forward);
     }
 
     public void OnActivate()

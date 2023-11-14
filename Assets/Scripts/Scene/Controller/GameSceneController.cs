@@ -335,8 +335,18 @@ public class GameSceneController : BaseSceneController
             for (int i = 0; i < monsterList.Count; i++)
             {
                 if (monsterList[i].GetState() == MonsterState.Chase)
-                    // playerTarget 생성때 넣어주는 방법 생각해보기
+                {
                     monsterList[i].OnMoveTarget(playerTransform);
+                    MonsterType type = monsterList[i].GetMonsterType();
+                    if(type == MonsterType.Long || type == MonsterType.Boss)
+                    {
+                        EnemyObject monster = monsterList[i];
+                        if(PossibleAttackPlayerMonsterBullet(monster, monster.GetAttackRange()))
+                        {
+                            FireMonsterBullet(monster).Forget();                            
+                        }
+                    }
+                }
             }
 
             await UniTask.Yield();
@@ -462,15 +472,8 @@ public class GameSceneController : BaseSceneController
                 if (isCollision)
                 {
                     Debug.Log($"충돌 / {i}번");
-                    var text = (DamageText)damageTextPool.GetObject();
-                    var transform = Camera.main.WorldToScreenPoint(PlayerHUDTransform.position);
-                    text.SetDamage(monsterList[i].GetAttackPower(), transform, Color.red);
-                    await UniTask.Delay(500);
-                    text.ResetText();
-                    damageTextPool.EnqueueObject(text);
-                    // 몬스터 공격하는 대신 플레이어 데미지 받게 하기
-                    // 데미지 주다가
-                    //AttackMonster(i);
+                    SetDamageText(monsterList[i].GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
+                    await UniTask.Delay(1000); // 공격 받은 후 무적시간 1초                    
                 }
             }
 
@@ -491,6 +494,15 @@ public class GameSceneController : BaseSceneController
             }
         }
         return null;
+    }
+
+    public bool PossibleAttackPlayerMonsterBullet(EnemyObject _enemy, float _range)
+    {
+        if ((playerTransform.position - _enemy.transform.position).sqrMagnitude <= _range * _range)
+        {
+            return true;
+        }
+        return false;
     }
 
     //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
@@ -548,6 +560,47 @@ public class GameSceneController : BaseSceneController
         }
     }
 
+    public async UniTaskVoid FireMonsterBullet(EnemyObject _enemy)
+    {
+        var obj = (Bullet)bulletPool.GetObject();                
+        obj.transform.position = _enemy.transform.position;
+        var direction = playerTransform.position - obj.transform.position;
+        obj.SetMonsterBulletSprite(playerTransform);
+        obj.OnActivate();
+        _enemy.SetState(MonsterState.Attack);
+        bool isMove = true;
+
+        while (isMove)
+        {
+            if (obj == null)
+                isMove = false;
+
+            obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
+            
+            // 충돌체크
+            var isCheck = obj.OnCheckCollision(localPlayerController.GetPlayerAABB);
+            if (isCheck)
+            {
+                bulletPool.EnqueueObject(obj);
+                isMove = false;                
+                SetDamageText(_enemy.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();                
+            }
+            
+            float distance = Vector3.Distance(_enemy.transform.position, obj.transform.position);
+            if (distance >= 6)
+            {
+                bulletPool.EnqueueObject(obj);                
+                isMove = false;                
+            }
+
+            await UniTask.Yield();
+
+            if (obj == null)
+                isMove = false;
+        }
+        await UniTask.Delay(1500);
+        _enemy.SetState(MonsterState.Chase);
+    }
     /// <summary>
     /// 원거리 무기 AABB
     /// </summary>
@@ -608,20 +661,25 @@ public class GameSceneController : BaseSceneController
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
         monster.SetDamage(weapon.attackPower);
+        // hp가 0이하면 죽임
         if (monster.IsDie())
         {
             monster.SetState(MonsterState.Die);
             monsterPool.EnqueueObject(monsterList[_index]);
             monsterList.RemoveAt(_index);
             deathCount++;
-        }
+        }        
+        SetDamageText(weapon.attackPower, monster.GetHUDTransform().position, Color.black).Forget();
+    }
+
+    private async UniTaskVoid SetDamageText(float _attackPower, Vector3 _position, Color _damageColor)
+    {
         var text = (DamageText)damageTextPool.GetObject();
-        var transform = Camera.main.WorldToScreenPoint(monster.GetHUDTransform().position);
-        text.SetDamage(weapon.attackPower, transform, Color.black);
+        var transform = Camera.main.WorldToScreenPoint(_position);
+        text.SetDamage(_attackPower, transform, _damageColor);
         await UniTask.Delay(1500);
         text.ResetText();
         damageTextPool.EnqueueObject(text);
-        // hp가 0이하면 죽임
     }
 
     private bool TopTouch()

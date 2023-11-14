@@ -101,9 +101,17 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         return nowState;
     }
+    public MonsterType GetMonsterType()
+    {
+        return type;
+    }
     public float GetAttackPower()
     {
         return attackPower;
+    }
+    public float GetAttackRange()
+    {
+        return attackDistance;
     }
     /// <summary>
     /// 몬스터 현재 상태를 지정하는 함수.
