@@ -14,7 +14,8 @@ public class WeaponController : MonoBehaviour
     private Transform playerTransform = null;
     private bool isRight = false;
 
-    private Vector3[] weaponpos;
+    private Vector3[] weaponPos;
+    private Vector3[] weaponLocalPos;
 
     public WeaponSlot[] GetWeapons { get { return slot; } }
 
@@ -37,12 +38,15 @@ public class WeaponController : MonoBehaviour
             slot[START_WEAPON_NUM].transform.eulerAngles = new Vector3(0f, 0f, rotate);
         }
 
-        weaponpos = new Vector3[slot.Length];
-        int count = weaponpos.Length;
+        weaponPos = new Vector3[slot.Length];
+        weaponLocalPos = new Vector3[slot.Length];
+        int count = weaponPos.Length;
         for (int i = 0; i < count; i++)
         {
             var pos = slot[i].transform.position;
-            weaponpos[i] = pos;
+            weaponPos[i] = pos;
+            var localPos = slot[i].transform.localPosition;
+            weaponLocalPos[i] = localPos;
         }
 
         playerManager.SetPlayerWeaponController = this;
@@ -89,7 +93,8 @@ public class WeaponController : MonoBehaviour
             var type = slot[i].GetWeaponType();
 
             // 근접무기의 경우 위치 틀어지는거 생각해보기
-            slot[i].transform.position = weaponpos[i];
+            slot[i].transform.position = weaponPos[i];
+            slot[i].transform.localPosition = weaponLocalPos[i];
 
             if (type == WeaponType.dagger || type == WeaponType.sword)
             {

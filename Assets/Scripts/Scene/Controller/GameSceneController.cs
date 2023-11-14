@@ -245,6 +245,9 @@ public class GameSceneController : BaseSceneController
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
 
+        joypadController.OnJoypadUp();
+        isTouch = false;
+
         playerManager.SetPlayerWeaponController.StopAttack();
     }
 
@@ -338,12 +341,12 @@ public class GameSceneController : BaseSceneController
                 {
                     monsterList[i].OnMoveTarget(playerTransform);
                     MonsterType type = monsterList[i].GetMonsterType();
-                    if(type == MonsterType.Long || type == MonsterType.Boss)
+                    if (type == MonsterType.Long || type == MonsterType.Boss)
                     {
                         EnemyObject monster = monsterList[i];
-                        if(PossibleAttackPlayerMonsterBullet(monster, monster.GetAttackRange()))
+                        if (PossibleAttackPlayerMonsterBullet(monster, monster.GetAttackRange()))
                         {
-                            FireMonsterBullet(monster).Forget();                            
+                            FireMonsterBullet(monster).Forget();
                         }
                     }
                 }
@@ -562,7 +565,7 @@ public class GameSceneController : BaseSceneController
 
     public async UniTaskVoid FireMonsterBullet(EnemyObject _enemy)
     {
-        var obj = (Bullet)bulletPool.GetObject();                
+        var obj = (Bullet)bulletPool.GetObject();
         obj.transform.position = _enemy.transform.position;
         var direction = playerTransform.position - obj.transform.position;
         obj.SetMonsterBulletSprite(playerTransform);
@@ -576,21 +579,21 @@ public class GameSceneController : BaseSceneController
                 isMove = false;
 
             obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
-            
+
             // 충돌체크
             var isCheck = obj.OnCheckCollision(localPlayerController.GetPlayerAABB);
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
-                isMove = false;                
-                SetDamageText(_enemy.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();                
+                isMove = false;
+                SetDamageText(_enemy.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
             }
-            
+
             float distance = Vector3.Distance(_enemy.transform.position, obj.transform.position);
             if (distance >= 6)
             {
-                bulletPool.EnqueueObject(obj);                
-                isMove = false;                
+                bulletPool.EnqueueObject(obj);
+                isMove = false;
             }
 
             await UniTask.Yield();
@@ -668,7 +671,7 @@ public class GameSceneController : BaseSceneController
             monsterPool.EnqueueObject(monsterList[_index]);
             monsterList.RemoveAt(_index);
             deathCount++;
-        }        
+        }
         SetDamageText(weapon.attackPower, monster.GetHUDTransform().position, Color.black).Forget();
     }
 
