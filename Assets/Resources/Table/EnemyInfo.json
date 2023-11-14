@@ -12,7 +12,7 @@
 		"type": "Long",
 		"hp": 10,
 		"moveSpeed": 1.5,
-		"attackDistance": 10,
+		"attackDistance": 4,
 		"attackPower": 5
 	},
 	{
