@@ -613,6 +613,18 @@ public class GameSceneController : BaseSceneController
     {
         for (int i = 0; i < monsterList.Count; i++)
         {
+            // 라인그리기
+            var aabb = _bullet.GetBulletAABB;
+            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+            Debug.DrawLine(leftTop, rightTop, Color.black);
+            Debug.DrawLine(rightTop, rightBottom, Color.black);
+            Debug.DrawLine(rightBottom, leftBottom, Color.black);
+            Debug.DrawLine(leftBottom, leftTop, Color.black);
+
             var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
             if (isCollision)
             {
@@ -663,6 +675,8 @@ public class GameSceneController : BaseSceneController
 
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
+        // 임시 강화 데미지 적용
+        var damage = weapon.attackPower * (weapon.enhance * 0.5f);
         monster.SetDamage(weapon.attackPower);
         // hp가 0이하면 죽임
         if (monster.IsDie())

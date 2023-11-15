@@ -53,11 +53,11 @@ public class EnemyObject : MonoBehaviour, IPoolable
     public void OnMoveTarget(Transform _target)
     {
         if (nowState != MonsterState.Die)
-        {           
+        {
             if (nowState != MonsterState.Hit && _target != null)
             {
                 var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
-                bool isLeft = direction.x < 0f;                
+                bool isLeft = direction.x < 0f;
                 spriteRenderer.flipX = isLeft;
                 if (type == MonsterType.Long)
                 {
@@ -144,9 +144,21 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         if (curAABB == null)
         {
-            var size = gameObject.GetComponent<SpriteRenderer>().size;
+            var size = spriteRenderer.size;
             curAABB = new AABB(this.transform, size);
         }
+
+        // 라인그리기
+        var aabb = curAABB;
+        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+        Debug.DrawLine(leftTop, rightTop, Color.black);
+        Debug.DrawLine(rightTop, rightBottom, Color.black);
+        Debug.DrawLine(rightBottom, leftBottom, Color.black);
+        Debug.DrawLine(leftBottom, leftTop, Color.black);
 
         return curAABB.CheckCollision(_other);
     }

@@ -38,7 +38,7 @@ public class WeaponSlot : MonoBehaviour
         {
             if (curAABB == null)
             {
-                var size = gameObject.GetComponent<SpriteRenderer>().size;
+                var size = weaponSprite.size;
                 curAABB = new AABB(this.transform, size);
             }
 
@@ -111,6 +111,18 @@ public class WeaponSlot : MonoBehaviour
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
 
+                        // 라인그리기
+                        var aabb = GetWeaponAABB;
+                        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+                        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+                        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+                        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+                        Debug.DrawLine(leftTop, rightTop, Color.black);
+                        Debug.DrawLine(rightTop, rightBottom, Color.black);
+                        Debug.DrawLine(rightBottom, leftBottom, Color.black);
+                        Debug.DrawLine(leftBottom, leftTop, Color.black);
+
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         var isAttack = await gameSceneController.CheckMonsterAttack(this);
 
@@ -129,6 +141,18 @@ public class WeaponSlot : MonoBehaviour
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
+
+                        // 라인그리기
+                        var aabb = GetWeaponAABB;
+                        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+                        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+                        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+                        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+                        Debug.DrawLine(leftTop, rightTop, Color.black);
+                        Debug.DrawLine(rightTop, rightBottom, Color.black);
+                        Debug.DrawLine(rightBottom, leftBottom, Color.black);
+                        Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         var isAttack = await gameSceneController.CheckMonsterAttack(this);
