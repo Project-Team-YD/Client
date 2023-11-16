@@ -8,6 +8,7 @@ public class PlayerController : BasePlayerController
     private const float HALF = 0.5f;
 
     private float speed = 10f;
+    private float hp = 100f;
 
     private float mapSizeWidth = 0;
     private float mapSizeHeight = 0;
@@ -43,15 +44,20 @@ public class PlayerController : BasePlayerController
         set
         {
             //mapSize = value * 0.5f;
-            // TODO:: ÀÓ½Ã·Î Ä³¸¯ÅÍ Å©±â´Â scale·Î ÃßÈÄ ¼öÁ¤ÇÊ¿ä
-            mapSizeWidth = value.x * HALF - (transform.localScale.x + HALF); // * -> + ·Î º¯°æ..¸Ê ³¡°ú ÇÃ·¹ÀÌ¾î ÀÚ±â ÀÚ½ÅÀÇ Å©±â ¹İÀı¸¸Å­ ´ú °¡±âÀ§ÇØ...
-            mapSizeHeight = value.y * HALF - (transform.localScale.y + HALF); // * -> + ·Î º¯°æ..¸Ê ³¡°ú ÇÃ·¹ÀÌ¾î ÀÚ±â ÀÚ½ÅÀÇ Å©±â ¹İÀı¸¸Å­ ´ú °¡±âÀ§ÇØ...
+            // TODO:: ì„ì‹œë¡œ ìºë¦­í„° í¬ê¸°ëŠ” scaleë¡œ ì¶”í›„ ìˆ˜ì •í•„ìš”
+            mapSizeWidth = value.x * HALF - (transform.localScale.x + HALF); // * -> + ë¡œ ë³€ê²½..ë§µ ëê³¼ í”Œë ˆì´ì–´ ìê¸° ìì‹ ì˜ í¬ê¸° ë°˜ì ˆë§Œí¼ ëœ ê°€ê¸°ìœ„í•´...
+            mapSizeHeight = value.y * HALF - (transform.localScale.y + HALF); // * -> + ë¡œ ë³€ê²½..ë§µ ëê³¼ í”Œë ˆì´ì–´ ìê¸° ìì‹ ì˜ í¬ê¸° ë°˜ì ˆë§Œí¼ ëœ ê°€ê¸°ìœ„í•´...
         }
+    }
+
+    public float GetMaxHP()
+    {
+        return hp;
     }
 
     public override void OnMove(float _rot, float _speed)
     {
-        // TODO:: map check·ÎÀÎÇØ base »ç¿ëÇÏÁö ¾ÊÀ½
+        // TODO:: map checkë¡œì¸í•´ base ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
         float speed = _speed * Time.deltaTime;
 
         Vector3 curPos = transform.position;

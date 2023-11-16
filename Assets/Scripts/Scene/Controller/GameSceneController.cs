@@ -56,10 +56,19 @@ public class GameSceneController : BaseSceneController
     [SerializeField] Image playerHpBar = null;
     [SerializeField] Button gameStopButton = null;
     [SerializeField] TextMeshProUGUI timeText = null;
+    [SerializeField] TextMeshProUGUI hpText = null;
+    [SerializeField] TextMeshProUGUI goldText = null;
+    [SerializeField] TextMeshProUGUI waveText = null;
     [SerializeField] GameObject bossHp = null;
     [SerializeField] Image bossHpBar = null;
 
     private StringBuilder sb = new StringBuilder();
+    private StringBuilder hpStringBuilder = new StringBuilder();
+    private StringBuilder goldStringBuilder = new StringBuilder();
+    private StringBuilder waveStringBuilder = new StringBuilder();
+    private float playerMaxHp;
+    private float currentPlayerHp;
+    private float currentGold;
     #endregion
 
     [SerializeField] private Transform damageTextRoot = null;
@@ -90,6 +99,11 @@ public class GameSceneController : BaseSceneController
         gameStopButton.onClick.AddListener(OnClickGameStopButton);
         bossHp.SetActive(false);
         sb.Clear();
+        hpStringBuilder.Clear();
+        goldStringBuilder.Clear();
+        waveStringBuilder.Clear();
+        currentGold = 0;
+        gameWave = 1;
     }
 
     private void Start()
@@ -113,8 +127,7 @@ public class GameSceneController : BaseSceneController
         spriteRenderer = mapObj.transform.GetChild(1).GetComponent<SpriteRenderer>();
         boundarySpriteRenderer = mapObj.transform.GetChild(2).GetComponent<SpriteRenderer>();
         var map = MapTable.getInstance.GetMapInfoByIndex(chapterIndex);
-        MapInfoInit(map);
-
+        MapInfoInit(map);        
         if (playerTransform != null)
         {
             localPlayerController = new PlayerController(playerTransform);
@@ -127,8 +140,12 @@ public class GameSceneController : BaseSceneController
             cameraController.SetMapSize(map.MapWidth, map.MapHeight);
 
             localPlayerController.SetMapSize = spriteRenderer.size;//new Vector2(28.5f, 28.5f);//spriteRenderer.size;            
+            playerMaxHp = localPlayerController.GetMaxHP();
+            currentPlayerHp = playerMaxHp;
         }
-
+        SetHpText(playerMaxHp);
+        SetGoldText(currentGold);
+        SetWaveText(gameWave);
         // 화면 크기에서의 퍼센트
         topPanel = Screen.height * 0.75f;
         var bossHpHeight = bossHp.GetComponent<RectTransform>().rect.height;
@@ -195,6 +212,30 @@ public class GameSceneController : BaseSceneController
         SetPlayTime();
     }
 
+    private void SetHpText(float _hp)
+    {
+        if (_hp <= 0)
+            _hp = 0;
+        hpStringBuilder.Clear();
+        hpStringBuilder.Append(_hp);
+        hpText.text = $"{hpStringBuilder}";
+        playerHpBar.fillAmount = _hp / playerMaxHp;
+    }
+
+    private void SetGoldText(float _gold)
+    {
+        goldStringBuilder.Clear();
+        goldStringBuilder.Append(_gold);
+        goldText.text = $"{goldStringBuilder}";
+    }
+
+    private void SetWaveText(int _wave)
+    {
+        waveStringBuilder.Clear();
+        waveStringBuilder.Append(_wave);
+        waveText.text = $"{waveStringBuilder}";
+    }
+
     private async void OnClickGameStopButton()
     {
         SetPlaying(false);
@@ -236,6 +277,10 @@ public class GameSceneController : BaseSceneController
         // 몬스터 숫자 생각 필요
         monsterCount = 0;
         deathCount = 0;
+        gameWave++;
+        currentPlayerHp = playerMaxHp;
+        SetWaveText(gameWave);
+        SetHpText(currentPlayerHp);
     }
 
     private async void EndGameWave()
@@ -476,6 +521,8 @@ public class GameSceneController : BaseSceneController
                 {
                     Debug.Log($"충돌 / {i}번");
                     SetDamageText(monsterList[i].GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
+                    currentPlayerHp -= monsterList[i].GetAttackPower();
+                    SetHpText(currentPlayerHp);
                     await UniTask.Delay(1000); // 공격 받은 후 무적시간 1초                    
                 }
             }
@@ -501,9 +548,12 @@ public class GameSceneController : BaseSceneController
 
     public bool PossibleAttackPlayerMonsterBullet(EnemyObject _enemy, float _range)
     {
-        if ((playerTransform.position - _enemy.transform.position).sqrMagnitude <= _range * _range)
+        if (playerTransform != null)
         {
-            return true;
+            if ((playerTransform.position - _enemy.transform.position).sqrMagnitude <= _range * _range)
+            {
+                return true;
+            }
         }
         return false;
     }
@@ -587,6 +637,8 @@ public class GameSceneController : BaseSceneController
                 bulletPool.EnqueueObject(obj);
                 isMove = false;
                 SetDamageText(_enemy.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
+                currentPlayerHp -= _enemy.GetAttackPower();
+                SetHpText(currentPlayerHp);
             }
 
             float distance = Vector3.Distance(_enemy.transform.position, obj.transform.position);
@@ -685,6 +737,8 @@ public class GameSceneController : BaseSceneController
             monsterPool.EnqueueObject(monsterList[_index]);
             monsterList.RemoveAt(_index);
             deathCount++;
+            currentGold += 100;
+            SetGoldText(currentGold);
         }
         SetDamageText(weapon.attackPower, monster.GetHUDTransform().position, Color.black).Forget();
     }
