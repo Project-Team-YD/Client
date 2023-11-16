@@ -14,6 +14,10 @@ public class PlayerManager : Singleton<PlayerManager>
     public List<WeaponInfo> SetPlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
 
 
+    /// <summary>
+    /// 이미 무기 최대 무기를 가지고있을 때 대비하기
+    /// </summary>
+    /// <param name="_weapon"></param>
     public void AddPlayerWeapon(WeaponInfo _weapon)
     {
         var weapon = EnhanceWeapon(_weapon.weaponId);

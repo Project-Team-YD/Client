@@ -60,9 +60,6 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
     /// </summary>
     private void OnClickTimeAttackButton()
     {
-        // 임시
-        selectWeapons.enhance = 1;
-
         playerManager.AddPlayerWeapon(selectWeapons);
 
         uiMgr.ClearAllCachedPanel();

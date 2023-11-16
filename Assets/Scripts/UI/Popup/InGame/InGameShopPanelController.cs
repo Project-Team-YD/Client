@@ -143,8 +143,6 @@ public class InGameShopPanelController : UIBaseController
         {
             shopItemList = new List<InGameShopItemController>(MAX_SHOP_ITEM_COUNT);
 
-            var count = weaponInfos.Length;
-
             for (int i = 0; i < MAX_SHOP_ITEM_COUNT; i++)
             {
                 var item = GameObject.Instantiate(shopItemController, itemShopSlotTransform);
@@ -155,9 +153,15 @@ public class InGameShopPanelController : UIBaseController
                 item.SetItemPrice = idx * 1000;
                 item.SetIndex = idx;
                 item.SetShopItemData(OnClickItem);
-
                 shopItemList.Add(item);
             }
+        }
+
+        // 임시 
+        var count = weaponInfos.Length;
+        for (int i = 0; i < count; i++)
+        {
+            shopItemList[i].ActiveEnhance(false);
         }
 
         OnClickItem(0);
@@ -189,6 +193,9 @@ public class InGameShopPanelController : UIBaseController
             // weapon.SetItemPrice = idx * 1000;
             weapon.SetIndex = idx;
             // weapon.SetShopItemData(OnClickItem);
+
+            weapon.SetEnhance = $"+{items[i].enhance}";
+            weapon.ActiveEnhance(true);
         }
     }
 

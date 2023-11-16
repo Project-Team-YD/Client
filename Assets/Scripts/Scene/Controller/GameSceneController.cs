@@ -10,6 +10,9 @@ using UnityEngine.UI;
 
 public class GameSceneController : BaseSceneController
 {
+    private const float MELEE_WEAPON_ENHANCE_POWER = 0.5f;
+    private const float RANGED_WEAPON_ENHANCE_POWER = 0.2f;
+
     #region Enemy
     [SerializeField] private Transform monsterPoolRoot;
     private ObjectPool<IPoolable> monsterPool = null;
@@ -727,8 +730,20 @@ public class GameSceneController : BaseSceneController
 
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
+
         // 임시 강화 데미지 적용
-        var damage = weapon.attackPower * ((1 + weapon.enhance) * 0.5f);
+        float ENHANCE_POWER;
+        if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
+        {
+            ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
+        }
+        else
+        {
+            ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
+        }
+
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+
         monster.SetDamage(damage);
         // hp가 0이하면 죽임
         if (monster.IsDie())
@@ -740,7 +755,7 @@ public class GameSceneController : BaseSceneController
             currentGold += 100;
             SetGoldText(currentGold);
         }
-        SetDamageText(weapon.attackPower, monster.GetHUDTransform().position, Color.black).Forget();
+        SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
 
     private async UniTaskVoid SetDamageText(float _attackPower, Vector3 _position, Color _damageColor)

@@ -26,8 +26,6 @@ public class WeaponController : MonoBehaviour
         playerTransform = gameObject.transform.parent.transform;
 
         var startWeapon = playerManager.SetPlayerWeapons[START_WEAPON_NUM];
-        // 여기 확인필요
-        WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(startWeapon.weaponId);
         isRight = false;
         slot[START_WEAPON_NUM].InitWeapon(startWeapon, gameSceneController, isRight);
         slot[START_WEAPON_NUM].SetTarget(playerTransform);
@@ -76,8 +74,6 @@ public class WeaponController : MonoBehaviour
         for (int i = 0; i < weaponCount; i++)
         {
             var weapons = playerManager.SetPlayerWeapons[i];
-            // 여기 확인필요
-            WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(weapons.weaponId);
             isRight = i == 0 ? false : true;
             slot[i].InitWeapon(weapons, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
