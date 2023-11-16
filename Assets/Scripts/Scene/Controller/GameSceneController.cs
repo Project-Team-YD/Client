@@ -127,7 +127,7 @@ public class GameSceneController : BaseSceneController
         spriteRenderer = mapObj.transform.GetChild(1).GetComponent<SpriteRenderer>();
         boundarySpriteRenderer = mapObj.transform.GetChild(2).GetComponent<SpriteRenderer>();
         var map = MapTable.getInstance.GetMapInfoByIndex(chapterIndex);
-        MapInfoInit(map);        
+        MapInfoInit(map);
         if (playerTransform != null)
         {
             localPlayerController = new PlayerController(playerTransform);
@@ -728,8 +728,8 @@ public class GameSceneController : BaseSceneController
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
         // 임시 강화 데미지 적용
-        var damage = weapon.attackPower * (weapon.enhance * 0.5f);
-        monster.SetDamage(weapon.attackPower);
+        var damage = weapon.attackPower * ((1 + weapon.enhance) * 0.5f);
+        monster.SetDamage(damage);
         // hp가 0이하면 죽임
         if (monster.IsDie())
         {

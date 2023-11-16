@@ -25,12 +25,11 @@ public class WeaponController : MonoBehaviour
 
         playerTransform = gameObject.transform.parent.transform;
 
-        SetStartWeapon();
-
         var startWeapon = playerManager.SetPlayerWeapons[START_WEAPON_NUM];
+        // 여기 확인필요
         WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(startWeapon.weaponId);
         isRight = false;
-        slot[START_WEAPON_NUM].InitWeapon(info, gameSceneController, isRight);
+        slot[START_WEAPON_NUM].InitWeapon(startWeapon, gameSceneController, isRight);
         slot[START_WEAPON_NUM].SetTarget(playerTransform);
         var type = slot[START_WEAPON_NUM].GetWeaponType();
         if (type == WeaponType.dagger || type == WeaponType.sword)
@@ -71,24 +70,16 @@ public class WeaponController : MonoBehaviour
         }
     }
 
-    private void SetStartWeapon()
-    {
-        var startWeapon = playerManager.SetStartWeapon;
-        if (playerManager.SetPlayerWeapons.Count <= 0)
-        {
-            playerManager.SetPlayerWeapons.Add(startWeapon);
-        }
-    }
-
     public void UpdateWeapon()
     {
         int weaponCount = playerManager.SetPlayerWeapons.Count;
         for (int i = 0; i < weaponCount; i++)
         {
             var weapons = playerManager.SetPlayerWeapons[i];
+            // 여기 확인필요
             WeaponInfo info = WeaponTable.getInstance.GetWeaponInfoByIndex(weapons.weaponId);
             isRight = i == 0 ? false : true;
-            slot[i].InitWeapon(info, gameSceneController, isRight);
+            slot[i].InitWeapon(weapons, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
             var type = slot[i].GetWeaponType();
 

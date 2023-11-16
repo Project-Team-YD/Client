@@ -7,11 +7,7 @@ public class PlayerManager : Singleton<PlayerManager>
 {
     private WeaponController playerWeaponController = null;
 
-    private WeaponInfo startWeapon;
-
     private List<WeaponInfo> playerWeapons = new List<WeaponInfo>();
-
-    public WeaponInfo SetStartWeapon { get { return startWeapon; } set { startWeapon = value; } }
 
     public WeaponController SetPlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
 
@@ -20,19 +16,27 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public void AddPlayerWeapon(WeaponInfo _weapon)
     {
+        var weapon = EnhanceWeapon(_weapon.weaponId);
+        if (!weapon)
+        {
+            playerWeapons.Add(_weapon);
+        }
+    }
+
+    private bool EnhanceWeapon(int _id)
+    {
         int count = playerWeapons.Count;
         for (int i = 0; i < count; i++)
         {
-            // 강화
-            if (playerWeapons[i].weaponId == _weapon.weaponId)
+            if (playerWeapons[i].weaponId == _id)
             {
-
-            }
-            // 추가
-            else
-            {
-                playerWeapons.Add(_weapon);
+                var weapons = playerWeapons[i];
+                weapons.enhance += 1;
+                playerWeapons[i] = weapons;
+                return true;
             }
         }
+
+        return false;
     }
 }
