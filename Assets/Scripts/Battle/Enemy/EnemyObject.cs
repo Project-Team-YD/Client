@@ -101,14 +101,26 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         return nowState;
     }
+    /// <summary>
+    /// 몬스터 타입 반환 함수.
+    /// </summary>
+    /// <returns>MonsterType</returns>
     public MonsterType GetMonsterType()
     {
         return type;
     }
+    /// <summary>
+    /// 몬스터 공격력 반환 함수.
+    /// </summary>
+    /// <returns></returns>
     public float GetAttackPower()
     {
         return attackPower;
     }
+    /// <summary>
+    /// 몬스터 공격 범위 반환 함수.
+    /// </summary>
+    /// <returns></returns>
     public float GetAttackRange()
     {
         return attackDistance;

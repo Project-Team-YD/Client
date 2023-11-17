@@ -49,7 +49,10 @@ public class PlayerController : BasePlayerController
             mapSizeHeight = value.y * HALF - (transform.localScale.y + HALF); // * -> + 로 변경..맵 끝과 플레이어 자기 자신의 크기 반절만큼 덜 가기위해...
         }
     }
-
+    /// <summary>
+    /// 플레이어 최대 hp 반환.
+    /// </summary>
+    /// <returns>hp</returns>
     public float GetMaxHP()
     {
         return hp;

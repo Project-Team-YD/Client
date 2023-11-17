@@ -214,7 +214,10 @@ public class GameSceneController : BaseSceneController
 
         SetPlayTime();
     }
-
+    /// <summary>
+    /// InGameUI HP 텍스트 셋팅.
+    /// </summary>
+    /// <param name="_hp">hp 수치</param>
     private void SetHpText(float _hp)
     {
         if (_hp <= 0)
@@ -224,21 +227,29 @@ public class GameSceneController : BaseSceneController
         hpText.text = $"{hpStringBuilder}";
         playerHpBar.fillAmount = _hp / playerMaxHp;
     }
-
+    /// <summary>
+    /// InGameUI Gold 텍스트 셋팅.
+    /// </summary>
+    /// <param name="_gold">gold 수치</param>
     private void SetGoldText(float _gold)
     {
         goldStringBuilder.Clear();
         goldStringBuilder.Append(_gold);
         goldText.text = $"{goldStringBuilder}";
     }
-
+    /// <summary>
+    /// InGameUI Wave 텍스트 셋팅.
+    /// </summary>
+    /// <param name="_wave">wave 수치</param>
     private void SetWaveText(int _wave)
     {
         waveStringBuilder.Clear();
         waveStringBuilder.Append(_wave);
         waveText.text = $"{waveStringBuilder}";
     }
-
+    /// <summary>
+    /// 게임 일시정지 버튼.
+    /// </summary>
     private async void OnClickGameStopButton()
     {
         SetPlaying(false);
@@ -246,7 +257,9 @@ public class GameSceneController : BaseSceneController
         var popup = await uIManager.Show<PausePopupController>("PausePopup");
         popup.SetCallback(SetPlaying);
     }
-
+    /// <summary>
+    /// Wave 시작할때 호출.
+    /// </summary>
     private async void StartGameWave()
     {
         await CreateMonster();
@@ -285,7 +298,9 @@ public class GameSceneController : BaseSceneController
         SetWaveText(gameWave);
         SetHpText(currentPlayerHp);
     }
-
+    /// <summary>
+    /// Wave 끝났을때 호출.
+    /// </summary>
     private async void EndGameWave()
     {
         SetPlaying(false);
@@ -378,7 +393,11 @@ public class GameSceneController : BaseSceneController
         await MoveMonster(monsterMoveCancel = new CancellationTokenSource());
     }
 
-    // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
+    /// <summary>
+    /// 몬스터 상태에 따른 추격 및 공격 함수.
+    /// </summary>
+    /// <param name="_cancellationToken">UniTask Cancel Token</param>
+    /// <returns></returns>
     private async UniTask MoveMonster(CancellationTokenSource _cancellationToken)
     {
         while (!_cancellationToken.IsCancellationRequested)
@@ -419,6 +438,10 @@ public class GameSceneController : BaseSceneController
     }
 
     #region MapCreate
+    /// <summary>
+    /// 맵 정보 초기화
+    /// </summary>
+    /// <param name="_info">맵 정보 객체</param>
     public void MapInfoInit(MapInfo _info)
     {
         backgroundSpriteRenderer.color = _info.MapBackgroundColor;
@@ -445,6 +468,10 @@ public class GameSceneController : BaseSceneController
         spriteRenderer.sortingOrder = -10;
         boundarySpriteRenderer.sortingOrder = -8;
     }
+    /// <summary>
+    /// 맵안에 장애물 정보 초기화
+    /// </summary>
+    /// <param name="_info">장애물 정보 객체</param>
     public void ObstructionInit(ObstructionInfo _info)
     {
         float positionX = _info.obstructionPositionX;
@@ -511,7 +538,11 @@ public class GameSceneController : BaseSceneController
         await CheckCollisionMonster(monsterCheckCollisionCancel = new CancellationTokenSource());
     }
 
-    // 몬스터 실시간 플레이어 위치로 이동..추후 수정해야함.
+    /// <summary>
+    /// 플레이어 AABB 충돌 체크
+    /// </summary>
+    /// <param name="_cancellationToken">UniTask CancelToken</param>
+    /// <returns></returns>
     private async UniTask CheckCollisionMonster(CancellationTokenSource _cancellationToken)
     {
         while (!_cancellationToken.IsCancellationRequested)
@@ -533,7 +564,11 @@ public class GameSceneController : BaseSceneController
             await UniTask.Yield();
         }
     }
-
+    /// <summary>
+    /// 플레이어 공격 범위 체크 후 공격 가능한 몬스터 객체 반환.
+    /// </summary>
+    /// <param name="_range">플레이어 공격 범위</param>
+    /// <returns></returns>
     public EnemyObject GetTargetEnemy(float _range)
     {
         if (playerTransform == null)
@@ -548,7 +583,12 @@ public class GameSceneController : BaseSceneController
         }
         return null;
     }
-
+    /// <summary>
+    /// 원거리 몬스터 공격 범위 가능한지 체크.
+    /// </summary>
+    /// <param name="_enemy">원거리 몬스터 객체</param>
+    /// <param name="_range">공격 범위</param>
+    /// <returns></returns>
     public bool PossibleAttackPlayerMonsterBullet(EnemyObject _enemy, float _range)
     {
         if (playerTransform != null)
@@ -615,7 +655,11 @@ public class GameSceneController : BaseSceneController
                 isMove = false;
         }
     }
-
+    /// <summary>
+    /// 원거리 몬스터 거리 계산 후 공격.
+    /// </summary>
+    /// <param name="_enemy">원거리 공격을 하는 몬스터 객체</param>
+    /// <returns></returns>
     public async UniTaskVoid FireMonsterBullet(EnemyObject _enemy)
     {
         var obj = (Bullet)bulletPool.GetObject();
@@ -757,7 +801,13 @@ public class GameSceneController : BaseSceneController
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
-
+    /// <summary>
+    /// 데미지 HUD 텍스트 띄우는 함수.
+    /// </summary>
+    /// <param name="_attackPower">데미지 수치</param>
+    /// <param name="_position">HUD Position</param>
+    /// <param name="_damageColor">데미지 Text Color</param>
+    /// <returns></returns>
     private async UniTaskVoid SetDamageText(float _attackPower, Vector3 _position, Color _damageColor)
     {
         var text = (DamageText)damageTextPool.GetObject();
