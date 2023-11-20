@@ -54,7 +54,6 @@ public class WeaponController : MonoBehaviour
         int weaponCount = playerManager.SetPlayerWeapons.Count;
         for (int i = 0; i < weaponCount; i++)
         {
-            slot[i].SetAttack = true;
             slot[i].WeaponAttack();
         }
     }
@@ -64,7 +63,7 @@ public class WeaponController : MonoBehaviour
         int slotCount = slot.Length;
         for (int i = 0; i < slotCount; i++)
         {
-            slot[i].SetAttack = false;
+            slot[i].StopAttack();
         }
     }
 

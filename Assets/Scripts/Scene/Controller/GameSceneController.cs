@@ -303,15 +303,17 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void EndGameWave()
     {
+        playerManager.SetPlayerWeaponController.StopAttack();
+
         SetPlaying(false);
-        timeManager.PauseTime();
+
         var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
         popup.SetData(StartNextWave);
 
         joypadController.OnJoypadUp();
         isTouch = false;
 
-        playerManager.SetPlayerWeaponController.StopAttack();
+        timeManager.PauseTime();
     }
 
     private void SetPlaying(bool _value)

@@ -14,7 +14,6 @@ public class WeaponSlot : MonoBehaviour
     private EnemyObject enemy = null;
     private WeaponType type;
     private WeaponInfo info;
-    private CancellationToken getTargetEnemyCancel = new CancellationToken();
 
     private int weaponId;
     private string weaponName;
@@ -24,12 +23,12 @@ public class WeaponSlot : MonoBehaviour
 
     private float coolTime;
     private bool isRightWeapon;
-    private bool isAttack = false;
 
     private AABB curAABB;
 
+    private CancellationTokenSource cancellationTokenSource;
+
     public int GetWeaponID { get { return weaponId; } }
-    public bool SetAttack { get { return isAttack; } set { isAttack = value; } }
 
     /// <summary>
     /// 근접무기용 AABB
@@ -103,12 +102,12 @@ public class WeaponSlot : MonoBehaviour
     {
         if (transform != null)
         {
+            cancellationTokenSource = new CancellationTokenSource();
+
             switch (type)
             {
                 case WeaponType.dagger:
-                    // 조건 AABB null 아닐때
-                    // 조건 공격 중일때
-                    while (isAttack)
+                    while (!cancellationTokenSource.IsCancellationRequested)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
@@ -133,13 +132,11 @@ public class WeaponSlot : MonoBehaviour
                             Debug.Log("Dagger 맞음");
                         }
 
-                        await UniTask.Yield();
+                        await UniTask.Yield(cancellationTokenSource.Token);
                     }
                     break;
                 case WeaponType.sword:
-                    // 조건 AABB null 아닐때
-                    // 조건 공격 중일때
-                    while (isAttack)
+                    while (!cancellationTokenSource.IsCancellationRequested)
                     {
                         coolTime = 360 / attackSpeed;
                         transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
@@ -164,11 +161,11 @@ public class WeaponSlot : MonoBehaviour
                             Debug.Log("Sword 맞음");
                         }
 
-                        await UniTask.Yield();
+                        await UniTask.Yield(cancellationTokenSource.Token);
                     }
                     break;
                 case WeaponType.gun:
-                    while (isAttack)
+                    while (!cancellationTokenSource.IsCancellationRequested)
                     {
                         if (enemy == null)
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
@@ -188,17 +185,18 @@ public class WeaponSlot : MonoBehaviour
                             }
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000;
+                            var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
 
-                            await UniTask.Delay(attackSpeeds, cancellationToken: getTargetEnemyCancel);
+                            await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
                             enemy = null;
                         }
-                        await UniTask.Yield();
+
+                        await UniTask.Yield(cancellationTokenSource.Token);
                     }
                     break;
                 case WeaponType.ninjastar:
-                    while (isAttack)
+                    while (!cancellationTokenSource.IsCancellationRequested)
                     {
                         if (enemy == null)
                             enemy = gameSceneController.GetTargetEnemy(attackRange);
@@ -206,18 +204,28 @@ public class WeaponSlot : MonoBehaviour
                         {
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000;
+                            var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
 
-                            await UniTask.Delay(attackSpeeds, cancellationToken: getTargetEnemyCancel);
+                            await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
                             enemy = null;
                         }
-                        await UniTask.Yield();
+
+                        await UniTask.Yield(cancellationTokenSource.Token);
                     }
                     break;
                 default:
                     break;
             }
         }
+    }
+
+    /// <summary>
+    /// yield 어떻게 처리할지
+    /// 이미 공격한 원거리 공격 회수하는거 생각하기
+    /// </summary>
+    public void StopAttack()
+    {
+        cancellationTokenSource?.Cancel();
     }
 }
