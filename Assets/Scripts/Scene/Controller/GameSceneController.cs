@@ -20,7 +20,7 @@ public class GameSceneController : BaseSceneController
     private int createCount;
     private int regenCount;
     private List<Vector2> summonPosition = new List<Vector2>();
-    private readonly int MAX_WAVE_MONSTER = 20;
+    private readonly int MAX_WAVE_MONSTER = 30;
     private int deathCount = 0;
     private int monsterCount = 0;
     #endregion
@@ -106,7 +106,7 @@ public class GameSceneController : BaseSceneController
         goldStringBuilder.Clear();
         waveStringBuilder.Clear();
         currentGold = 0;
-        gameWave = 1;
+        gameWave = 0;
     }
 
     private void Start()
@@ -244,7 +244,7 @@ public class GameSceneController : BaseSceneController
     private void SetWaveText(int _wave)
     {
         waveStringBuilder.Clear();
-        waveStringBuilder.Append(_wave);
+        waveStringBuilder.Append(_wave + 1);
         waveText.text = $"{waveStringBuilder}";
     }
     /// <summary>
@@ -352,6 +352,7 @@ public class GameSceneController : BaseSceneController
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
             obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            obj.WaveEnhanceMonster(gameWave);
             monsterList.Add(obj);
             monsterCount++;
         }

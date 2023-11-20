@@ -46,6 +46,11 @@ public class EnemyObject : MonoBehaviour, IPoolable
         nowState = MonsterState.Chase;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
     }
+    public void WaveEnhanceMonster(float _wave)
+    {
+        hp += (_wave * 0.5f * hp);
+        attackPower += (_wave * 0.5f * attackPower);
+    }
     /// <summary>
     /// 몬스터가 타겟으로 계속 이동하는 함수.
     /// </summary>
