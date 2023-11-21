@@ -8,14 +8,15 @@ public class LobbyScene : Scene
 {
     public override void OnActivate()
     {
+        TimeManager.getInstance.PlayTime();
         //SceneHelper.getInstance.ChangeScene(typeof(GameScene));
     }
     public override void OnDeactivate()
     {
-        
+
     }
     public override void OnUpdate()
     {
-        
+
     }
 }

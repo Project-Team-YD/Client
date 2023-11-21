@@ -92,6 +92,9 @@ public class GameSceneController : BaseSceneController
     private bool isTouch;
     private float topPanel;
 
+    // 임시 동적으로 가져오는 방법 생각해보기
+    private int MAX_STAGE = 2;
+
     private void Awake()
     {
         PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
@@ -213,6 +216,7 @@ public class GameSceneController : BaseSceneController
         if (isPlaying)
         {
             OnClickJoypad();
+            CheckGameOver();
         }
 
         SetPlayTime();
@@ -299,7 +303,7 @@ public class GameSceneController : BaseSceneController
         deathCount = 0;
         currentPlayerHp = playerMaxHp;
         SetWaveText(gameWave);
-        SetHpText(currentPlayerHp);        
+        SetHpText(currentPlayerHp);
     }
     /// <summary>
     /// Wave 끝났을때 호출.
@@ -310,8 +314,19 @@ public class GameSceneController : BaseSceneController
 
         SetPlaying(false);
 
-        var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-        popup.SetData(StartNextWave);
+        // 조건 게임이 끝났는지
+        //stage MAX STAGE 가져와야함
+        if (stage.StageId >= MAX_STAGE)
+        {
+            // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
+            var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
+            popup.SetData(true);
+        }
+        else
+        {
+            var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
+            popup.SetData(StartNextWave);
+        }
 
         joypadController.OnJoypadUp();
         isTouch = false;
@@ -337,7 +352,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <returns></returns>
     private async UniTask CreateMonster()
-    {        
+    {
         await UniTask.Delay(1500, cancellationToken: monsterCreateCancel.Token);
 
         for (int i = 0; i < createCount; i++)
@@ -370,7 +385,7 @@ public class GameSceneController : BaseSceneController
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
-            await UniTask.Delay(5000); // 몬스터 리젠 주기..5초
+            await UniTask.Delay(5000, cancellationToken: _cancellationToken.Token); // 몬스터 리젠 주기..5초
             for (int i = 0; i < regenCount; i++)
             {
                 var obj = (EnemyObject)monsterPool.GetObject();
@@ -563,7 +578,7 @@ public class GameSceneController : BaseSceneController
                     SetDamageText(monsterList[i].GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
                     currentPlayerHp -= monsterList[i].GetAttackPower();
                     SetHpText(currentPlayerHp);
-                    await UniTask.Delay(1000); // 공격 받은 후 무적시간 1초                    
+                    await UniTask.Delay(1000, cancellationToken: _cancellationToken.Token); // 공격 받은 후 무적시간 1초                    
                 }
             }
 
@@ -832,5 +847,28 @@ public class GameSceneController : BaseSceneController
         }
 
         return false;
+    }
+
+    private async void CheckGameOver()
+    {
+        // 게임을 일시 정지 시킬지 고민 필요
+        if (currentPlayerHp <= 0)
+        {
+            timeManagerCancel.Cancel();
+            monsterMoveCancel.Cancel();
+            monsterCheckCollisionCancel.Cancel();
+            monsterRegenCancel.Cancel();
+
+            SetPlaying(false);
+
+            var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
+            popup.SetData();
+
+            joypadController.OnJoypadUp();
+            isTouch = false;
+
+            // 데미지 텍스트 확인하기
+            timeManager.PauseTime();
+        }
     }
 }
