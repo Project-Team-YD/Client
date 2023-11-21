@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using HSMLibrary.Scene;
 using System.Collections;
@@ -19,12 +19,7 @@ public class StartScene : Scene
             return;
         }
 
-
-        bool isTableLoadSuccess = false;
-        //isTableLoadSuccess = await EnemyTable.getInstance.Initialize();
-        //isTableLoadSuccess ^= await WeaponTable.getInstance.Initialize();
-        ////TODO :: 임시..팀장님께 XOR 연산자 TableLoad 어떻게 해야 좋을지 여쭤보기
-        //await MapTable.getInstance.Initialize();
+        bool isTableLoadSuccess = false;        
 
         isTableLoadSuccess = await TableLoading();
 
@@ -41,7 +36,8 @@ public class StartScene : Scene
     {
         await UniTask.WhenAll(EnemyTable.getInstance.Initialize()
             , MapTable.getInstance.Initialize()
-            , WeaponTable.getInstance.Initialize());
+            , WeaponTable.getInstance.Initialize()
+            , StageTable.getInstance.Initialize());
         return true;
     }
     public override void OnActivate()

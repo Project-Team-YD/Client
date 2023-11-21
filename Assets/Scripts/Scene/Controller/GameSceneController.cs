@@ -20,7 +20,7 @@ public class GameSceneController : BaseSceneController
     private int createCount;
     private int regenCount;
     private List<Vector2> summonPosition = new List<Vector2>();
-    private readonly int MAX_WAVE_MONSTER = 30;
+    private readonly int MAX_WAVE_MONSTER = 50;
     private int deathCount = 0;
     private int monsterCount = 0;
     #endregion
@@ -81,11 +81,13 @@ public class GameSceneController : BaseSceneController
 
     private TimeManager timeManager = null;
     private int gameWave;
+    private int endWave;
     private UIManager uIManager = null;
     private PlayerManager playerManager = null;
     private WeaponSlot[] weapons = null;
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
+    private StageInfo stage;
     private bool isPlaying;
     private bool isTouch;
     private float topPanel;
@@ -107,6 +109,7 @@ public class GameSceneController : BaseSceneController
         waveStringBuilder.Clear();
         currentGold = 0;
         gameWave = 0;
+        endWave = StageTable.getInstance.GetEndWave();
     }
 
     private void Start()
@@ -262,12 +265,12 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void StartGameWave()
     {
+        stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeaponController.GetWeapons;
-
         SetPlaying(true);
         isTouch = false;
     }
@@ -283,6 +286,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private void StartNextWave()
     {
+        gameWave++;
         StartGameWave();
 
         playerManager.SetPlayerWeaponController.StartAttack();
@@ -293,10 +297,9 @@ public class GameSceneController : BaseSceneController
         // 몬스터 숫자 생각 필요
         monsterCount = 0;
         deathCount = 0;
-        gameWave++;
         currentPlayerHp = playerMaxHp;
         SetWaveText(gameWave);
-        SetHpText(currentPlayerHp);
+        SetHpText(currentPlayerHp);        
     }
     /// <summary>
     /// Wave 끝났을때 호출.
@@ -334,7 +337,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <returns></returns>
     private async UniTask CreateMonster()
-    {
+    {        
         await UniTask.Delay(1500, cancellationToken: monsterCreateCancel.Token);
 
         for (int i = 0; i < createCount; i++)
@@ -351,7 +354,7 @@ public class GameSceneController : BaseSceneController
             }
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(0)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
             obj.WaveEnhanceMonster(gameWave);
             monsterList.Add(obj);
             monsterCount++;
@@ -382,7 +385,7 @@ public class GameSceneController : BaseSceneController
                 }
                 obj.transform.localPosition = monsterPosition;
                 obj.OnActivate();
-                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(1)); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
                 monsterList.Add(obj);
                 monsterCount++;
             }
