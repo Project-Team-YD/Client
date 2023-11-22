@@ -92,6 +92,8 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
 
         joinBtn.interactable = true;
 
+        enhanceText.text = $"+{weaponInfos[_slotIndex].enhance}";
+
         weaponIndex = _slotIndex;
     }
     /// <summary>

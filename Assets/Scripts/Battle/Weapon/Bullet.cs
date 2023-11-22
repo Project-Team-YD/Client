@@ -46,7 +46,10 @@ public class Bullet : MonoBehaviour, IPoolable
             spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{_type}");
         }
     }
-
+    /// <summary>
+    /// 원거리 몬스터 총알 Sprite 지정 함수.
+    /// </summary>
+    /// <param name="_transform">플레이어 Transform</param>
     public void SetMonsterBulletSprite(Transform _transform)
     {
         playerTransform = _transform;

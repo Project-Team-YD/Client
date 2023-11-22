@@ -41,7 +41,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6664491077332243768}
   - component: {fileID: 6664491077332243767}
-  - component: {fileID: 4901945384724821351}
+  - component: {fileID: 1347773953672125441}
   m_Layer: 0
   m_Name: Slot2
   m_TagString: Untagged
@@ -116,7 +116,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4901945384724821351
+--- !u!114 &1347773953672125441
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -125,7 +125,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6664491077332243769}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5b1b6af0ccdef643931a7ec30370b9b, type: 3}
+  m_Script: {fileID: 11500000, guid: 882b19b126dfb2645b80f6c8bd3e13a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6664491077846993867
@@ -138,7 +138,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6664491077846993866}
   - component: {fileID: 6664491077846993865}
-  - component: {fileID: 6380839057619130172}
+  - component: {fileID: 3780131480062119239}
   m_Layer: 0
   m_Name: Slot1
   m_TagString: Untagged
@@ -213,7 +213,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &6380839057619130172
+--- !u!114 &3780131480062119239
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -222,7 +222,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 6664491077846993867}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e5b1b6af0ccdef643931a7ec30370b9b, type: 3}
+  m_Script: {fileID: 11500000, guid: 882b19b126dfb2645b80f6c8bd3e13a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6664491078349839214
@@ -380,6 +380,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   slot:
-  - {fileID: 6380839057619130172}
-  - {fileID: 4901945384724821351}
+  - {fileID: 3780131480062119239}
+  - {fileID: 1347773953672125441}
   gameSceneController: {fileID: 0}
