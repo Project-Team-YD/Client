@@ -16,9 +16,10 @@ public class Test : MonoBehaviour
         //-- 로그인서버 접근하여 로그인 요청
         RequestLogin login = new RequestLogin();
         login.id = "test";
+        Debug.Log("Request!!");
         ResponseLogin loginResponse = await GrpcManager.GetInstance.Login(login);
 
-        string result = $"MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
+        string result = $"Response MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
 
 
         Debug.Log(result);
