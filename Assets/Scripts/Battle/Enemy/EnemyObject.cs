@@ -46,6 +46,11 @@ public class EnemyObject : MonoBehaviour, IPoolable
         nowState = MonsterState.Chase;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
     }
+    public void WaveEnhanceMonster(float _wave)
+    {
+        hp += (_wave * 0.5f * hp);
+        attackPower += (_wave * 0.5f * attackPower);
+    }
     /// <summary>
     /// 몬스터가 타겟으로 계속 이동하는 함수.
     /// </summary>
@@ -53,11 +58,11 @@ public class EnemyObject : MonoBehaviour, IPoolable
     public void OnMoveTarget(Transform _target)
     {
         if (nowState != MonsterState.Die)
-        {           
+        {
             if (nowState != MonsterState.Hit && _target != null)
             {
                 var direction = (_target.localPosition - gameObject.transform.localPosition).normalized;
-                bool isLeft = direction.x < 0f;                
+                bool isLeft = direction.x < 0f;
                 spriteRenderer.flipX = isLeft;
                 if (type == MonsterType.Long)
                 {
@@ -101,9 +106,29 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         return nowState;
     }
+    /// <summary>
+    /// 몬스터 타입 반환 함수.
+    /// </summary>
+    /// <returns>MonsterType</returns>
+    public MonsterType GetMonsterType()
+    {
+        return type;
+    }
+    /// <summary>
+    /// 몬스터 공격력 반환 함수.
+    /// </summary>
+    /// <returns></returns>
     public float GetAttackPower()
     {
         return attackPower;
+    }
+    /// <summary>
+    /// 몬스터 공격 범위 반환 함수.
+    /// </summary>
+    /// <returns></returns>
+    public float GetAttackRange()
+    {
+        return attackDistance;
     }
     /// <summary>
     /// 몬스터 현재 상태를 지정하는 함수.
@@ -136,9 +161,21 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         if (curAABB == null)
         {
-            var size = gameObject.GetComponent<SpriteRenderer>().size;
+            var size = spriteRenderer.size;
             curAABB = new AABB(this.transform, size);
         }
+
+        // 라인그리기
+        var aabb = curAABB;
+        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+        Debug.DrawLine(leftTop, rightTop, Color.black);
+        Debug.DrawLine(rightTop, rightBottom, Color.black);
+        Debug.DrawLine(rightBottom, leftBottom, Color.black);
+        Debug.DrawLine(leftBottom, leftTop, Color.black);
 
         return curAABB.CheckCollision(_other);
     }

@@ -11,7 +11,7 @@ using HSMLibrary.Manager;
 using HSMLibrary.Scene;
 using TMPro;
 
-public class DungeonSelectPopupController : UIBaseController , IPopup
+public class DungeonSelectPopupController : UIBaseController, IPopup
 {
     [SerializeField] private Button infinityBtn = null;
     [SerializeField] private Button timeAttackBtn = null;
@@ -21,14 +21,21 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
     private TextMeshProUGUI infinityText = null;
     private TextMeshProUGUI timeAttackText = null;
     private UIManager uiMgr = null;
+    private PlayerManager playerManager = null;
 
     private const string MODE_SELECT_TEXT = "모드선택";
     private const string INFINITY_TEXT = "무한모드";
     private const string TIMEATTACK_TEXT = "타임어택";
+
+    private WeaponInfo selectWeapons;
+
     protected override void Awake()
     {
         base.Awake();
+
         uiMgr = UIManager.getInstance;
+        playerManager = PlayerManager.getInstance;
+
         timeAttackBtn.onClick.AddListener(OnClickTimeAttackButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
         infinityText = infinityBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -53,6 +60,8 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
     /// </summary>
     private void OnClickTimeAttackButton()
     {
+        playerManager.AddPlayerWeapon(selectWeapons);
+
         uiMgr.ClearAllCachedPanel();
         uiMgr.ClearAllPanelStack();
         SceneHelper.getInstance.ChangeScene(typeof(GameScene));
@@ -68,5 +77,11 @@ public class DungeonSelectPopupController : UIBaseController , IPopup
     public void OnClickCloseButton()
     {
         uiMgr.Hide();
+    }
+
+    public void SetWeapon(WeaponInfo _weaponInfo)
+    {
+        // 초기화 만들기
+        selectWeapons = _weaponInfo;
     }
 }

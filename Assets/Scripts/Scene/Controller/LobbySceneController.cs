@@ -24,7 +24,7 @@ public class LobbySceneController : BaseSceneController
     }
     private void Start()
     {
-        
+
     }
     /// <summary>
     /// 던전 입장 버튼 이벤트.
@@ -52,6 +52,7 @@ public class LobbySceneController : BaseSceneController
     /// </summary>
     public async void OnClickRankingButton()
     {
-        await uiMgr.Show<RankingPopupController>("RankingPopup");
+        var popup = await uiMgr.Show<RankingPopupController>("RankingPopup");
+        popup.SetData();
     }
 }

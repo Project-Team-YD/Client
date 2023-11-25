@@ -15,12 +15,16 @@ public class TimeManager : Singleton<TimeManager>
     {
         time = 0;
     }
-
+    /// <summary>
+    /// timeScale = 0
+    /// </summary>
     public void PauseTime()
     {
         Time.timeScale = 0f;
     }
-
+    /// <summary>
+    /// timeScale = 1
+    /// </summary>
     public void PlayTime()
     {
         Time.timeScale = 1f;

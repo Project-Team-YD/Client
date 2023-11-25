@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-// interface »ı°¢ÇØº¸±â
+// interface ìƒê°í•´ë³´ê¸°
 public class AABB
 {
     private Vector3 size;
     private Transform thisTransform = null;
+
+    public Vector3 GetSize { get { return size; } }
+    public Transform GetTransform { get { return thisTransform; } }
 
     /// <summary>
     /// Setting
@@ -34,7 +37,7 @@ public class AABB
         get { return thisTransform.position.y + size.y; }
     }
 
-    public float GetButtom
+    public float GetBottom
     {
         get { return thisTransform.position.y - size.y; }
     }
@@ -46,11 +49,11 @@ public class AABB
     /// <returns></returns>
     public bool CheckCollision(AABB _other)
     {
-        // Ãæµ¹ ¾ÈÇÔ
+        // ì¶©ëŒ ì•ˆí•¨
         if (GetRight < _other.GetLeft || GetLeft > _other.GetRight) return false;
-        if (GetTop < _other.GetButtom || GetButtom > _other.GetTop) return false;
+        if (GetTop < _other.GetBottom || GetBottom > _other.GetTop) return false;
 
-        // Ãæµ¹
+        // ì¶©ëŒ
         return true;
     }
 }
