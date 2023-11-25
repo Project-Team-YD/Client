@@ -11,7 +11,7 @@ namespace Packet
     public class Response
     {
         public uint code;
-        public string message; 
+        public string message;
     }
 
 
@@ -31,7 +31,7 @@ namespace Packet
      */
 
     #region 로그인
-    
+
     public class RequestLogin
     {
         public string id;
@@ -53,5 +53,129 @@ namespace Packet
     {
         public string heartBeat;
     }
+
+    #region 게임 DB 테이블
+    public class Item
+    {
+        public int id;
+        public string itemName;
+        public int itemType;
+        public int category;
+        public string imageName;
+        public bool isStack;
+    }
+    public class ItemWeapon
+    {
+        public int damage;
+        public float speed;
+        public int range;
+    }
+    public class ItemEffect
+    {
+        public int maxHp;
+        public int regenHp;
+        public int shortDamage;
+        public int longDamage;
+    }
+    public class WeaponEnchant
+    {
+        public int enxchant;
+        public int probability;
+        public int price;
+    }
+    public class ShopItem
+    {
+        public int id;
+        public int moneyType;
+        public int price;
+    }
+
+    public class ResponseGameDB : Response
+    {
+        public Dictionary<int, Item> itemTable;
+        public Dictionary<int, ItemWeapon> itemWeaponTable;
+        public Dictionary<int, ItemEffect> itemEfffectTable;
+        public Dictionary<int, ShopItem> shopTable;
+        public Dictionary<int, WeaponEnchant> weaponEnchantTable;
+
+        public int money;
+    }
+    #endregion
+    #region 인벤토리
+    public class InventoryItem
+    {
+        public int id;
+        public int count;
+        public int enchant;
+    }
+
+    public class ResponseInventory : Response
+    {
+        public Dictionary<int, InventoryItem> items;
+    }
+
+    #endregion
+    #region 상점
+    public class ResponseBuyItem : Response
+    {
+        public int id;
+        public int count;
+        public int enchant;
+        public int money;
+    }
+    #endregion
+    #region 강화
+    public class ResponseUpgradeItem : Response
+    {
+        public int id;
+        public int enchant;
+        public int money;
+    }
+    #endregion
+    #region 인게임
+    public class Weapon
+    {
+        public int id;
+        public int enchant;
+    }
+    public class Effect
+    {
+        public int id;
+        public int count;
+    }
+
+    public class ResponseJoinGame : Response
+    {
+        public int gold;
+        public int currentStage;
+        public Weapon[] slot;
+        public Effect[] effect;
+    }
+
+    public class IngameShopItem
+    {
+        public int id;
+        public int price;
+    }
+    public class ResponseLoadIngameShop : Response
+    {
+        public IngameShopItem[] items;
+    }
+
+    public class ResponseBuyIngameItem : Response
+    {
+        public int gbold;
+        public int currentStage;
+        public Weapon[] slot;
+        public Effect[] effect;
+    }
+
+    #endregion
+    #region
+    #endregion
+    #region
+    #endregion
+    #region
+    #endregion
 }
 
