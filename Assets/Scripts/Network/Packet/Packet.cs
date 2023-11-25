@@ -116,6 +116,10 @@ namespace Packet
 
     #endregion
     #region 상점
+    public class RequestBuyItem
+    {
+        public int id;
+    }
     public class ResponseBuyItem : Response
     {
         public int id;
@@ -125,6 +129,10 @@ namespace Packet
     }
     #endregion
     #region 강화
+    public class RequestUpgradeItem
+    {
+        public int id;
+    }
     public class ResponseUpgradeItem : Response
     {
         public int id;
@@ -143,7 +151,10 @@ namespace Packet
         public int id;
         public int count;
     }
-
+    public class RequestJoinGame
+    {
+        public int itemId;
+    }
     public class ResponseJoinGame : Response
     {
         public int gold;
@@ -152,6 +163,10 @@ namespace Packet
         public Effect[] effect;
     }
 
+    public class RequestLoadIngameShop
+    {
+        public int currentStage;
+    }
     public class IngameShopItem
     {
         public int id;
@@ -162,6 +177,11 @@ namespace Packet
         public IngameShopItem[] items;
     }
 
+    public class RequestBuyIngameItem
+    {
+        public int currentStage;
+        public int itemId;
+    }
     public class ResponseBuyIngameItem : Response
     {
         public int gbold;

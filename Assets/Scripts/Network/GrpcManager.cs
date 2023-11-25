@@ -63,7 +63,7 @@ public partial class GrpcManager
         return null;
     }
 
-    public async Task<string> SendRpcAsync(string rpcKey, string message)
+    public async Task<string> SendRpcAsync(string rpcKey, string message = null)
     {
 
         try
