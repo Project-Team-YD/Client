@@ -68,6 +68,11 @@ public partial class GrpcManager
 
         try
         {
+            if (message == null)
+            {
+                var test_message = "NONE MESSAGE";
+                message = JsonConvert.SerializeObject(test_message);
+            }
             // gRPC 패킷 전
             GlobalGrpcRequest request = new GlobalGrpcRequest
             {
@@ -76,6 +81,7 @@ public partial class GrpcManager
             };
             var metaData = new Metadata();
             metaData.Add("UUID", ServerManager.GetInstance.UUID);
+            Debug.Log($"SendRpcAsync:: RpcKey:{rpcKey}/message:{message}/UUID:{ServerManager.GetInstance.UUID}");
             GlobalGrpcResponse response = await ServerManager.GetInstance.grpcGameServerClient.GlobalGRpcAsync(request, metaData);
             return response.Message;
         }

@@ -44,6 +44,7 @@ namespace Packet
     }
     #endregion
 
+    #region 하트비트 (게임서버)
     public class RequestHeartBeat
     {
         public string heartBeat;
@@ -53,8 +54,15 @@ namespace Packet
     {
         public string heartBeat;
     }
+    #endregion
 
     #region 게임 DB 테이블
+    /*
+
+    서버에 캐싱된 DB테이블들 (데이터 값 변경이 이뤄지지 않음)
+
+    */
+    //-- 모든 아이템 공통 정보
     public class Item
     {
         public int id;
@@ -64,12 +72,14 @@ namespace Packet
         public string imageName;
         public bool isStack;
     }
+    //-- 아이템중 무기류 아이템 부가정보
     public class ItemWeapon
     {
         public int damage;
         public float speed;
         public int range;
     }
+    //-- 아이템중 효과류 아이템 부가정보
     public class ItemEffect
     {
         public int maxHp;
@@ -77,12 +87,16 @@ namespace Packet
         public int shortDamage;
         public int longDamage;
     }
+
+    //-- 무기 강화비용 및 확률 정보
     public class WeaponEnchant
     {
-        public int enxchant;
+        public int enchant;
         public int probability;
         public int price;
     }
+
+    //-- 상점 판매 아이템 정보
     public class ShopItem
     {
         public int id;
@@ -94,13 +108,14 @@ namespace Packet
     {
         public Dictionary<int, Item> itemTable;
         public Dictionary<int, ItemWeapon> itemWeaponTable;
-        public Dictionary<int, ItemEffect> itemEfffectTable;
+        public Dictionary<int, ItemEffect> itemEffectTable;
         public Dictionary<int, ShopItem> shopTable;
         public Dictionary<int, WeaponEnchant> weaponEnchantTable;
 
         public int money;
     }
     #endregion
+
     #region 인벤토리
     public class InventoryItem
     {
@@ -141,16 +156,20 @@ namespace Packet
     }
     #endregion
     #region 인게임
+    //-- 무기정보
     public class Weapon
     {
         public int id;
         public int enchant;
     }
+    //-- 효과아이템 정보
     public class Effect
     {
         public int id;
         public int count;
     }
+
+    //-- 게임 입장시 착용하고 들어갈 무기정보
     public class RequestJoinGame
     {
         public int itemId;
@@ -165,6 +184,7 @@ namespace Packet
 
     public class RequestLoadIngameShop
     {
+        public int gold;
         public int currentStage;
     }
     public class IngameShopItem
@@ -184,12 +204,11 @@ namespace Packet
     }
     public class ResponseBuyIngameItem : Response
     {
-        public int gbold;
+        public int gold;
         public int currentStage;
         public Weapon[] slot;
         public Effect[] effect;
     }
-
     #endregion
     #region
     #endregion
