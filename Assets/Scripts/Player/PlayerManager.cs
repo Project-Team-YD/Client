@@ -43,4 +43,9 @@ public class PlayerManager : Singleton<PlayerManager>
 
         return false;
     }
+
+    public void ClearPlayerWeapon()
+    {
+        playerWeapons.Clear();
+    }
 }

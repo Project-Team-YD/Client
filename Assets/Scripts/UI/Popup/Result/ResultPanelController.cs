@@ -40,6 +40,7 @@ public class ResultPanelController : UIBaseController
     [SerializeField] private TextMeshProUGUI gameOverText = null;
 
     private UIManager uiManager = null;
+    private PlayerManager playerManager = null;
 
     protected override void Awake()
     {
@@ -49,6 +50,7 @@ public class ResultPanelController : UIBaseController
         rankGroupButton.onClick.AddListener(OnClickRankButton);
 
         uiManager = UIManager.getInstance;
+        playerManager = PlayerManager.getInstance;
 
         Initialize();
     }
@@ -93,6 +95,8 @@ public class ResultPanelController : UIBaseController
 
     private void OnClickTitleButton()
     {
+        playerManager.ClearPlayerWeapon();
+
         uiManager.Hide();
 
         // 타이틀로 돌아가기
