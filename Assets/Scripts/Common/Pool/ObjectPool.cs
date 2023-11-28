@@ -14,7 +14,7 @@ public class ObjectPool<T> where T : IPoolable
     public async void Initialize(string _prefabPath, int _initializeCreateCount, Transform _root)
     {
         string prefabPath = Path.Combine("", _prefabPath);
-        //.. TODO :: Addressable / ºñµ¿±â Àû¿ë
+        //.. TODO :: Addressable / ë¹„ë™ê¸° ì ìš©
         prefab = Resources.Load(prefabPath, typeof(GameObject)) as GameObject;
         rootTransform = _root;
         for (int i = 0; i < _initializeCreateCount; i++)
@@ -36,13 +36,18 @@ public class ObjectPool<T> where T : IPoolable
 
     public void EnqueueObject(T _object)
     {
-        //.. FIXME? :: ¿©±â¼­ È£Ãâ ÇÏÁö ¸»±î?
+        //.. FIXME? :: ì—¬ê¸°ì„œ í˜¸ì¶œ í•˜ì§€ ë§ê¹Œ?
         _object.OnDeactivate();
-        unusedObjectQueue.Enqueue(_object);
+        if (unusedObjectQueue != null)
+        {
+            unusedObjectQueue.Enqueue(_object);
+        }
     }
 
     public T GetObject()
     {
+        if (unusedObjectQueue == null)
+            return default;
         T getObject;
         if(unusedObjectQueue.Count <= 0)
         {

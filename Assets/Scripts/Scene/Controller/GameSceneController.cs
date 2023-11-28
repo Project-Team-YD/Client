@@ -395,20 +395,23 @@ public class GameSceneController : BaseSceneController
             for (int i = 0; i < regenCount; i++)
             {
                 var obj = (EnemyObject)monsterPool.GetObject();
-                var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
-                if (summonPosition.Contains(monsterPosition))
+                if (obj != null)
                 {
-                    monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                    var monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                    if (summonPosition.Contains(monsterPosition))
+                    {
+                        monsterPosition = RandomSummonPosition(width - (obj.transform.localScale.x / 2), height - (obj.transform.localScale.y / 2));
+                    }
+                    else
+                    {
+                        summonPosition.Add(monsterPosition);
+                    }
+                    obj.transform.localPosition = monsterPosition;
+                    obj.OnActivate();
+                    obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+                    monsterList.Add(obj);
+                    monsterCount++;
                 }
-                else
-                {
-                    summonPosition.Add(monsterPosition);
-                }
-                obj.transform.localPosition = monsterPosition;
-                obj.OnActivate();
-                obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
-                monsterList.Add(obj);
-                monsterCount++;
             }
             summonPosition.Clear();
             await UniTask.Delay(100, cancellationToken: monsterRegenCancel.Token);
@@ -839,13 +842,16 @@ public class GameSceneController : BaseSceneController
     private async UniTaskVoid SetDamageText(float _attackPower, Vector3 _position, Color _damageColor)
     {
         var text = (DamageText)damageTextPool.GetObject();
-        var transform = Camera.main.WorldToScreenPoint(_position);
-        text.SetDamage(_attackPower, transform, _damageColor);
+        if (text != null)
+        {
+            var transform = Camera.main.WorldToScreenPoint(_position);
+            text.SetDamage(_attackPower, transform, _damageColor);
 
-        await UniTask.Delay(1500, cancellationToken: damageTextCancel.Token);
+            await UniTask.Delay(1500, cancellationToken: damageTextCancel.Token);
 
-        text.ResetText();
-        damageTextPool.EnqueueObject(text);
+            text.ResetText();
+            damageTextPool.EnqueueObject(text);
+        }
     }
 
     private bool TopTouch()
@@ -877,6 +883,9 @@ public class GameSceneController : BaseSceneController
             joypadController.OnJoypadUp();
             isTouch = false;
 
+            PoolManager.getInstance.RemoveObjectPool<EnemyObject>();
+            PoolManager.getInstance.RemoveObjectPool<Bullet>();
+            PoolManager.getInstance.RemoveObjectPool<DamageText>();
             // 데미지 텍스트 확인하기
             timeManager.PauseTime();
         }
