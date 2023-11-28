@@ -53,6 +53,7 @@ public class GameSceneController : BaseSceneController
     private CancellationTokenSource monsterCheckCollisionCancel;
     private CancellationTokenSource getTargetEnemyCancel = new CancellationTokenSource();
     private CancellationTokenSource timeManagerCancel;
+    private CancellationTokenSource damageTextCancel;
     #endregion
 
     #region InGameUI
@@ -97,8 +98,9 @@ public class GameSceneController : BaseSceneController
 
     private void Awake()
     {
-        PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
-        PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
+        // PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
+        // PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
+
         uIManager = UIManager.getInstance;
         timeManager = TimeManager.getInstance;
         playerManager = PlayerManager.getInstance;
@@ -269,6 +271,8 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void StartGameWave()
     {
+        damageTextCancel = new CancellationTokenSource();
+
         stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
@@ -310,6 +314,8 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void EndGameWave()
     {
+        damageTextCancel.Cancel();
+
         playerManager.SetPlayerWeaponController.StopAttack();
 
         SetPlaying(false);
@@ -822,6 +828,7 @@ public class GameSceneController : BaseSceneController
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
+
     /// <summary>
     /// 데미지 HUD 텍스트 띄우는 함수.
     /// </summary>
@@ -834,7 +841,9 @@ public class GameSceneController : BaseSceneController
         var text = (DamageText)damageTextPool.GetObject();
         var transform = Camera.main.WorldToScreenPoint(_position);
         text.SetDamage(_attackPower, transform, _damageColor);
-        await UniTask.Delay(1500);
+
+        await UniTask.Delay(1500, cancellationToken: damageTextCancel.Token);
+
         text.ResetText();
         damageTextPool.EnqueueObject(text);
     }
@@ -858,6 +867,7 @@ public class GameSceneController : BaseSceneController
             monsterMoveCancel.Cancel();
             monsterCheckCollisionCancel.Cancel();
             monsterRegenCancel.Cancel();
+            damageTextCancel.Cancel();
 
             SetPlaying(false);
 
