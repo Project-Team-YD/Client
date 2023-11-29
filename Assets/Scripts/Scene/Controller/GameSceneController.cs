@@ -320,6 +320,9 @@ public class GameSceneController : BaseSceneController
 
         SetPlaying(false);
 
+        EndWaveActiveBulletObjectEnqueue();
+        EndWaveActiveDamageTextObjectEnqueue();
+
         // 조건 게임이 끝났는지
         //stage MAX STAGE 가져와야함
         if (stage.StageId >= MAX_STAGE)
@@ -327,6 +330,9 @@ public class GameSceneController : BaseSceneController
             // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
             popup.SetData(true);
+            PoolManager.getInstance.RemoveObjectPool<EnemyObject>();
+            PoolManager.getInstance.RemoveObjectPool<Bullet>();
+            PoolManager.getInstance.RemoveObjectPool<DamageText>();
         }
         else
         {
@@ -864,6 +870,39 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
+    private void EndWaveActiveBulletObjectEnqueue()
+    {
+        foreach (Transform item in BulletPoolRoot)
+        {
+            if(item.gameObject.activeSelf)
+            {
+                if(item.gameObject.TryGetComponent(out Bullet bullet))
+                {
+                    if (bullet.GetWeaponType() == WeaponType.ninjastar)
+                    {
+                        TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+                    }
+                    bulletPool.EnqueueObject(bullet);
+                }
+            }
+        }
+    }
+
+    private void EndWaveActiveDamageTextObjectEnqueue()
+    {
+        foreach (Transform item in damageTextRoot)
+        {
+            if (item.gameObject.activeSelf)
+            {
+                if (item.gameObject.TryGetComponent(out DamageText damageText))
+                {
+                    damageText.ResetText();
+                    damageTextPool.EnqueueObject(damageText);
+                }
+            }
+        }
+    }
+
     private async void CheckGameOver()
     {
         // 게임을 일시 정지 시킬지 고민 필요
@@ -883,10 +922,11 @@ public class GameSceneController : BaseSceneController
             joypadController.OnJoypadUp();
             isTouch = false;
 
+            // 씬 이동으로 인한 기존 ObjectPool 삭제 및 초기화.
             PoolManager.getInstance.RemoveObjectPool<EnemyObject>();
             PoolManager.getInstance.RemoveObjectPool<Bullet>();
             PoolManager.getInstance.RemoveObjectPool<DamageText>();
-            // 데미지 텍스트 확인하기
+            
             timeManager.PauseTime();
         }
     }

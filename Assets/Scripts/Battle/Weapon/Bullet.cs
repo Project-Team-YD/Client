@@ -8,7 +8,7 @@ public class Bullet : MonoBehaviour, IPoolable
     private Transform enemyTransform = null;
     private Transform playerTransform = null;
     private AABB curAABB;
-
+    private WeaponType weaponType;
     public AABB GetBulletAABB
     {
         get
@@ -34,7 +34,8 @@ public class Bullet : MonoBehaviour, IPoolable
     public void SetBulletSprite(WeaponType _type, Transform _transform)
     {
         enemyTransform = _transform;
-        if (_type == WeaponType.gun)
+        weaponType = _type;
+        if (weaponType == WeaponType.gun)
         {
             spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/bullet");
             var direction = enemyTransform.position - transform.position;
@@ -43,8 +44,16 @@ public class Bullet : MonoBehaviour, IPoolable
         }
         else
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{_type}");
+            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");
         }
+    }
+    /// <summary>
+    /// 현재 발사체의 무기의 타입을 반환.
+    /// </summary>
+    /// <returns></returns>
+    public WeaponType GetWeaponType()
+    {
+        return weaponType;
     }
     /// <summary>
     /// 원거리 몬스터 총알 Sprite 지정 함수.
