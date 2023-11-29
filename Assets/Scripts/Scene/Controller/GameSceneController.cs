@@ -656,7 +656,12 @@ public class GameSceneController : BaseSceneController
         while (isMove)
         {
             if (obj == null)
+            {
+                if (type == WeaponType.ninjastar && type != WeaponType.gun)
+                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
                 isMove = false;
+            }
 
             obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
 
@@ -686,9 +691,6 @@ public class GameSceneController : BaseSceneController
             }
 
             await UniTask.Yield();
-
-            if (obj == null)
-                isMove = false;
         }
     }
     /// <summary>
@@ -732,9 +734,6 @@ public class GameSceneController : BaseSceneController
             }
 
             await UniTask.Yield();
-
-            if (obj == null)
-                isMove = false;
         }
         await UniTask.Delay(1500);
         _enemy.SetState(MonsterState.Chase);
@@ -804,14 +803,13 @@ public class GameSceneController : BaseSceneController
             return;
 
         var monster = monsterList[_index];
-        // 몬스터 충격 이펙트
+
         monster.SetState(MonsterState.Hit);
         monster.SetAttack(playerTransform);
 
         // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
         var weapon = _weapon.GetWeaponInfo();
 
-        // 임시 강화 데미지 적용
         float ENHANCE_POWER;
         if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
         {
@@ -825,7 +823,7 @@ public class GameSceneController : BaseSceneController
         var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
 
         monster.SetDamage(damage);
-        // hp가 0이하면 죽임
+
         if (monster.IsDie())
         {
             monster.SetState(MonsterState.Die);
@@ -874,9 +872,9 @@ public class GameSceneController : BaseSceneController
     {
         foreach (Transform item in BulletPoolRoot)
         {
-            if(item.gameObject.activeSelf)
+            if (item.gameObject.activeSelf)
             {
-                if(item.gameObject.TryGetComponent(out Bullet bullet))
+                if (item.gameObject.TryGetComponent(out Bullet bullet))
                 {
                     if (bullet.GetWeaponType() == WeaponType.ninjastar)
                     {
@@ -926,7 +924,7 @@ public class GameSceneController : BaseSceneController
             PoolManager.getInstance.RemoveObjectPool<EnemyObject>();
             PoolManager.getInstance.RemoveObjectPool<Bullet>();
             PoolManager.getInstance.RemoveObjectPool<DamageText>();
-            
+
             timeManager.PauseTime();
         }
     }
