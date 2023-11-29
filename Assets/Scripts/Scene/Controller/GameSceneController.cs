@@ -670,29 +670,36 @@ public class GameSceneController : BaseSceneController
             var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
             {
-                bulletPool.EnqueueObject(obj);
+                //bulletPool.EnqueueObject(obj);
 
-                if (type == WeaponType.ninjastar && type != WeaponType.gun)
-                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+                //if (type == WeaponType.ninjastar && type != WeaponType.gun)
+                //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
-                isMove = false;
+                //isMove = false;
+                isMove = FireBulletKill(obj, type);
             }
 
             // 플레이어와 거리체크 소멸
             float distance = Vector3.Distance(playerTransform.position, obj.transform.position);
             if (distance >= 25)
             {
-                bulletPool.EnqueueObject(obj);
-
-                if (type == WeaponType.ninjastar && type != WeaponType.gun)
-                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
-
-                isMove = false;
+                isMove = FireBulletKill(obj, type);
             }
 
             await UniTask.Yield();
         }
     }
+
+    private bool FireBulletKill(Bullet _bullet, WeaponType _weaponType)
+    {
+        bulletPool.EnqueueObject(_bullet);
+
+        if (_weaponType == WeaponType.ninjastar && _weaponType != WeaponType.gun)
+            TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+
+        return false;
+    }
+
     /// <summary>
     /// 원거리 몬스터 거리 계산 후 공격.
     /// </summary>
