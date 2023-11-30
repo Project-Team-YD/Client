@@ -179,40 +179,7 @@ public class GameSceneController : BaseSceneController
     }
 
     private void Update()
-    {
-        //if (Input.GetKeyUp(KeyCode.Escape))
-        //{
-
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.Z))
-        //{
-        //    var obj = (EnemyObject)pool.GetObject();
-        //    obj.OnActivate();
-        //    obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(test.Count));
-        //    test.Enqueue(obj);
-        //}
-
-        //if (Input.GetKeyDown(KeyCode.X))
-        //{
-        //    monsterPool.EnqueueObject(monsterList[0]);
-        //}
-
-        if (deathCount >= MAX_WAVE_MONSTER)
-        {
-            timeManagerCancel.Cancel();
-            monsterMoveCancel.Cancel();
-            monsterCheckCollisionCancel.Cancel();
-
-            EndGameWave();
-
-            // 초기화 필요
-            deathCount = 0;
-        }
-        if (monsterCount >= MAX_WAVE_MONSTER)
-        {
-            monsterRegenCancel.Cancel();
-        }
+    {        
         // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
         // 조이패드 상단 간섭 금지
         // 조이패드 임시
@@ -221,6 +188,11 @@ public class GameSceneController : BaseSceneController
             OnClickJoypad();
             CheckGameOver();
         }
+        if (monsterCount >= MAX_WAVE_MONSTER)
+        {
+            monsterRegenCancel.Cancel();
+        }
+        
 
         SetPlayTime();
     }
@@ -274,6 +246,8 @@ public class GameSceneController : BaseSceneController
     {
         damageTextCancel = new CancellationTokenSource();
 
+        monsterCount = 0;
+        deathCount = 0;
         stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
@@ -281,7 +255,7 @@ public class GameSceneController : BaseSceneController
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeaponController.GetWeapons;
         SetPlaying(true);
-        isTouch = false;
+        isTouch = false;        
     }
 
     /// <summary>
@@ -302,10 +276,7 @@ public class GameSceneController : BaseSceneController
 
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
-        timeManager.PlayTime();
-        // 몬스터 숫자 생각 필요
-        monsterCount = 0;
-        deathCount = 0;
+        timeManager.PlayTime();        
         currentPlayerHp = playerMaxHp;
         SetWaveText(gameWave);
         SetHpText(currentPlayerHp);
@@ -347,6 +318,23 @@ public class GameSceneController : BaseSceneController
         timeManager.PauseTime();
     }
 
+    private void CheckGameWaveEnd(bool _endWave)
+    {
+        if (_endWave && gameWave != endWave)
+        {
+            timeManagerCancel.Cancel();
+            monsterMoveCancel.Cancel();
+            monsterCheckCollisionCancel.Cancel();
+
+            EndGameWave();
+        }
+        else if(_endWave && gameWave == endWave)
+        {
+            //Boss등장 UI 만들어서 띄워주기..UI등장과 함께 2초(임시)후 출현..
+            CreateBossMonster().Forget();
+        }
+    }
+
     private void SetPlaying(bool _value)
     {
         isPlaying = _value;
@@ -359,6 +347,16 @@ public class GameSceneController : BaseSceneController
         sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.SetTime / 60, timeManager.SetTime % 60));
         timeText.text = sb.ToString();
         sb.Clear();
+    }
+    private async UniTask CreateBossMonster()
+    {
+        await UniTask.Delay(2000);
+
+        var obj = (EnemyObject)monsterPool.GetObject();
+        obj.transform.localPosition = Vector3.zero;
+        obj.OnActivate();
+        obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(2));
+        bossMonster = obj;
     }
     /// <summary>
     /// 몬스터 생성 함수(중복 포지션 생성이 안되도록 난수 중복 제거 로직 사용)
@@ -805,7 +803,7 @@ public class GameSceneController : BaseSceneController
     /// hp 적용필요
     /// </summary>
     /// <param name="_index"></param>
-    private async UniTaskVoid AttackMonster(WeaponSlot _weapon, int _index)
+    private void AttackMonster(WeaponSlot _weapon, int _index)
     {
         if (weapons == null)
             return;
@@ -839,7 +837,8 @@ public class GameSceneController : BaseSceneController
             monsterList.RemoveAt(_index);
             deathCount++;
             currentGold += 100;
-            SetGoldText(currentGold);
+            SetGoldText(currentGold);            
+            CheckGameWaveEnd(deathCount >= MAX_WAVE_MONSTER);
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
