@@ -20,7 +20,7 @@ public class GameSceneController : BaseSceneController
     private int createCount;
     private int regenCount;
     private List<Vector2> summonPosition = new List<Vector2>();
-    private readonly int MAX_WAVE_MONSTER = 50;
+    private readonly int MAX_WAVE_MONSTER = 20;
     private int deathCount = 0;
     private int monsterCount = 0;
     private EnemyObject bossMonster = null;
@@ -93,9 +93,6 @@ public class GameSceneController : BaseSceneController
     private bool isPlaying;
     private bool isTouch;
     private float topPanel;
-
-    // 임시 동적으로 가져오는 방법 생각해보기
-    private int MAX_STAGE = 2;
 
     private void Awake()
     {
@@ -297,7 +294,7 @@ public class GameSceneController : BaseSceneController
 
         // 조건 게임이 끝났는지
         //stage MAX STAGE 가져와야함
-        if (stage.StageId >= MAX_STAGE)
+        if (gameWave >= endWave)
         {
             // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
@@ -603,7 +600,9 @@ public class GameSceneController : BaseSceneController
 
                 if (isCollision)
                 {
-                    Debug.Log("보스 아파");
+                    SetDamageText(bossMonster.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
+                    currentPlayerHp -= bossMonster.GetAttackPower();
+                    SetHpText(currentPlayerHp);
                     await UniTask.Delay(1000, cancellationToken: _cancellationToken.Token); // 공격 받은 후 무적시간 1초                    
                 }
             }
@@ -620,6 +619,8 @@ public class GameSceneController : BaseSceneController
     {
         if (playerTransform == null)
             return null;
+        if (bossMonster != null)
+            return bossMonster;
         int count = monsterList.Count;
         for (int i = 0; i < count; i++)
         {
@@ -763,6 +764,30 @@ public class GameSceneController : BaseSceneController
     /// <returns></returns>
     private bool CheckMonsterAttack(WeaponSlot _weapon, Bullet _bullet)
     {
+        // 여기서 보스 공격확인
+        if (bossMonster != null)
+        {
+            // 라인그리기
+            var aabb = _bullet.GetBulletAABB;
+            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+            Debug.DrawLine(leftTop, rightTop, Color.black);
+            Debug.DrawLine(rightTop, rightBottom, Color.black);
+            Debug.DrawLine(rightBottom, leftBottom, Color.black);
+            Debug.DrawLine(leftBottom, leftTop, Color.black);
+
+            var isCollision = bossMonster.OnCheckCollision(_bullet.GetBulletAABB);
+
+            if (isCollision)
+            {
+                BossMonsterAttack(_weapon);
+                return true;
+            }
+        }
+
         for (int i = 0; i < monsterList.Count; i++)
         {
             // 라인그리기
@@ -783,32 +808,7 @@ public class GameSceneController : BaseSceneController
                 AttackMonster(_weapon, i);
                 return true;
             }
-        }
-
-        // 여기서 보스 공격확인
-        if (bossMonster != null)
-        {
-            // 라인그리기
-            var aabb = _bullet.GetBulletAABB;
-            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-            Debug.DrawLine(leftTop, rightTop, Color.black);
-            Debug.DrawLine(rightTop, rightBottom, Color.black);
-            Debug.DrawLine(rightBottom, leftBottom, Color.black);
-            Debug.DrawLine(leftBottom, leftTop, Color.black);
-
-            var isCollision = bossMonster.OnCheckCollision(_bullet.GetBulletAABB);
-
-            if (isCollision)
-            {
-                Debug.Log("보스 원거리 때렸다");
-                return true;
-            }
-        }
-
+        }        
         return false;
     }
 
@@ -817,19 +817,9 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_aabb"></param>
     /// <returns></returns>
-    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon)
+    public async UniTask CheckMonsterAttack(WeaponSlot _weapon)
     {
         await UniTask.Yield();
-
-        for (int i = 0; i < monsterList.Count; i++)
-        {
-            var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
-            if (isCollision)
-            {
-                AttackMonster(_weapon, i);
-                return true;
-            }
-        }
 
         if (bossMonster != null)
         {
@@ -837,12 +827,18 @@ public class GameSceneController : BaseSceneController
 
             if (isCollision)
             {
-                Debug.Log("보스 근거리 때렸다");
-                return true;
+                BossMonsterAttack(_weapon);                                
             }
         }
 
-        return false;
+        for (int i = 0; i < monsterList.Count; i++)
+        {
+            var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
+            if (isCollision)
+            {
+                AttackMonster(_weapon, i);                
+            }
+        }                
     }
 
     /// <summary>
@@ -889,7 +885,40 @@ public class GameSceneController : BaseSceneController
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
+    private void BossMonsterAttack(WeaponSlot _weapon)
+    {
+        if (weapons == null)
+            return;        
 
+        bossMonster.SetState(MonsterState.Hit);
+        //bossMonster.SetAttack(playerTransform);
+
+        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        var weapon = _weapon.GetWeaponInfo();
+
+        float ENHANCE_POWER;
+        if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
+        {
+            ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
+        }
+        else
+        {
+            ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
+        }
+
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+
+        bossMonster.SetDamage(damage);
+
+        if (bossMonster.IsDie())
+        {
+            bossMonster.SetState(MonsterState.Die);
+            monsterPool.EnqueueObject(bossMonster);
+            // TODO :: 외부 상점용 재화 올라가는 기능 추가 필요..
+            EndGameWave();
+        }
+        SetDamageText(damage, bossMonster.GetHUDTransform().position, Color.black).Forget();
+    }
     /// <summary>
     /// 데미지 HUD 텍스트 띄우는 함수.
     /// </summary>

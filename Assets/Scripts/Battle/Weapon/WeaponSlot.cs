@@ -125,12 +125,7 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        var isAttack = await gameSceneController.CheckMonsterAttack(this);
-
-                        if (isAttack)
-                        {
-                            Debug.Log("Dagger 맞음");
-                        }
+                        await gameSceneController.CheckMonsterAttack(this);
 
                         await UniTask.Yield(cancellationTokenSource.Token);
                     }
@@ -154,12 +149,7 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        var isAttack = await gameSceneController.CheckMonsterAttack(this);
-
-                        if (isAttack)
-                        {
-                            Debug.Log("Sword 맞음");
-                        }
+                        await gameSceneController.CheckMonsterAttack(this);
 
                         await UniTask.Yield(cancellationTokenSource.Token);
                     }
