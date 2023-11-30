@@ -23,6 +23,7 @@ public class GameSceneController : BaseSceneController
     private readonly int MAX_WAVE_MONSTER = 50;
     private int deathCount = 0;
     private int monsterCount = 0;
+    private EnemyObject bossMonster;
     #endregion
 
     #region Map
@@ -444,7 +445,7 @@ public class GameSceneController : BaseSceneController
                 {
                     monsterList[i].OnMoveTarget(playerTransform);
                     MonsterType type = monsterList[i].GetMonsterType();
-                    if (type == MonsterType.Long || type == MonsterType.Boss)
+                    if (type == MonsterType.Long) //|| type == MonsterType.Boss)
                     {
                         EnemyObject monster = monsterList[i];
                         if (PossibleAttackPlayerMonsterBullet(monster, monster.GetAttackRange()))

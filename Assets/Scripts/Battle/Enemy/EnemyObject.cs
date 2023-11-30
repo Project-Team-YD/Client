@@ -179,4 +179,19 @@ public class EnemyObject : MonoBehaviour, IPoolable
 
         return curAABB.CheckCollision(_other);
     }
+    /// <summary>
+    /// 보스 공격 패턴
+    /// </summary>
+    /// <param name="_Pattern">공격 패턴 Index</param>
+    public void BossAttack(int _Pattern)
+    {
+        BossMonsterAttackPattern pattern = (BossMonsterAttackPattern)_Pattern;
+        switch (pattern)
+        {
+            case BossMonsterAttackPattern.BulletFire:
+                break;
+            case BossMonsterAttackPattern.BodyAttack:
+                break;
+        }
+    }
 }

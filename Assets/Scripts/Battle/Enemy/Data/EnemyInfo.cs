@@ -1,17 +1,25 @@
 public enum MonsterType
 {
-    Close = 0, // ±Ù°Å¸®
-    Long, // ¿ø°Å¸®
-    Boss // º¸½º
+    Close = 0, // ê·¼ê±°ë¦¬
+    Long, // ì›ê±°ë¦¬
+    Boss // ë³´ìŠ¤
 }
 
 public enum MonsterState
 {
-    Chase = 0, // Ãß°İ
-    Attack, // °ø°İ
-    Hit, // ÇÇ°İ
-    Die // Á×À½
+    Chase = 0, // ì¶”ê²©
+    Attack, // ê³µê²©
+    Hit, // í”¼ê²©
+    Die // ì£½ìŒ
 }
+
+public enum BossMonsterAttackPattern
+{
+    BulletFire = 0,
+    BodyAttack,
+    Max
+}
+
 public struct EnemyInfo
 {
     public string name;
