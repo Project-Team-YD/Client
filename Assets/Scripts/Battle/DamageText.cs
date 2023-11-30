@@ -42,8 +42,7 @@ public class DamageText : MonoBehaviour, IPoolable
     /// Damage Text 리셋 함수.
     /// </summary>
     public void ResetText()
-    {
-        transitionManager.KillSequence(TransitionManager.TransitionType.Invisible);
+    {        
         damageText.alpha = 1f;
         OnDeactivate();
     }

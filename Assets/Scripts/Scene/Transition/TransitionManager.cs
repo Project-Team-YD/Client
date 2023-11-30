@@ -10,7 +10,7 @@ public class TransitionManager : Singleton<TransitionManager>
 {
     public enum TransitionType
     {
-        Fade,
+        FadeInOut,
         PositionMove,
         Invisible,
         Rotate,
@@ -43,8 +43,8 @@ public class TransitionManager : Singleton<TransitionManager>
     private void InitPositionMove(GameObject _object, Vector3 _direction, float _time)
     {
         sequencePositionMove = DOTween.Sequence()
-            .SetAutoKill(false)
-            .Append(_object.transform.DOMove(_direction, _time))                        
+            //.SetAutoKill(false)
+            .Append(_object.transform.DOLocalMove(_direction, _time))                        
             .SetLoops(1);
     }
     /// <summary>
@@ -55,7 +55,7 @@ public class TransitionManager : Singleton<TransitionManager>
     private void InitInvisible(TextMeshProUGUI _object, float _time)
     {
         sequenceInvisible = DOTween.Sequence()
-            .SetAutoKill(false)
+            //.SetAutoKill(false) //Text(EX..Damage)의 경우 여러개가 동시에 시행될수도 있기 때문에 시행 후 AutoKill..재사용의 의미가 없음.
             .Append(_object.DOFade(0.0f, _time))
             .SetLoops(1);
     }
@@ -87,7 +87,7 @@ public class TransitionManager : Singleton<TransitionManager>
     {
         switch (_type)
         {
-            case TransitionType.Fade:
+            case TransitionType.FadeInOut:
                 if (_object.TryGetComponent<Image>(out var _image))
                 {
                     InitFadeInOut(_image, _time);
@@ -118,24 +118,28 @@ public class TransitionManager : Singleton<TransitionManager>
         }
     }
     /// <summary>
-    /// 현재 적용된 DoTweenSequence Kiil함수.(효과 완료 or Active(false) or Scene 이동 or Destroy 상황시 kill 목적.)
+    /// 현재 적용된 DoTweenSequence Kiil함수.(Scene 이동 or Destroy 상황시 kill 목적.)
     /// </summary>
     /// <param name="_type">Kill 시킬 DoTween타입</param>
     public void KillSequence(TransitionType _type)
     {
         switch (_type)
         {
-            case TransitionType.Fade:
-                sequenceFadeInOut.Kill(true);
+            case TransitionType.FadeInOut:
+                if(sequenceFadeInOut.IsPlaying())
+                    sequenceFadeInOut.Kill(true);                
                 break;
             case TransitionType.PositionMove:
-                sequencePositionMove.Kill(true);
+                if(sequencePositionMove.IsPlaying())
+                    sequencePositionMove.Kill(true);
                 break;
-            case TransitionType.Invisible:                
-                sequenceInvisible.Kill(true);
+            case TransitionType.Invisible:
+                if(sequenceInvisible.IsPlaying())
+                    sequenceInvisible.Kill(true);                
                 break;
             case TransitionType.Rotate:
-                sequenceRotate.Kill(true);                
+                if(sequenceRotate.IsPlaying())
+                    sequenceRotate.Kill(true);                
                 break;
             default:
                 break;
