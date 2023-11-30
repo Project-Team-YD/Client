@@ -136,6 +136,8 @@ public class InGameShopPanelController : UIBaseController
     {
         callBack = _callback;
 
+        possessionGoldText.text = $"{playerManager.SetCurrentGold}";
+
         UpdateMyWeaponData();
 
         // MAX_PLAYER_WEAPON_COUNT와 비교해서 무기는 더이상 안나오게 바꿔야함 혹은 구매 못하게 해야함

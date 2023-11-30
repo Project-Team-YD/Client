@@ -73,7 +73,6 @@ public class GameSceneController : BaseSceneController
     private StringBuilder waveStringBuilder = new StringBuilder();
     private float playerMaxHp;
     private float currentPlayerHp;
-    private float currentGold;
     #endregion
 
     [SerializeField] private Transform damageTextRoot = null;
@@ -110,7 +109,7 @@ public class GameSceneController : BaseSceneController
         hpStringBuilder.Clear();
         goldStringBuilder.Clear();
         waveStringBuilder.Clear();
-        currentGold = 0;
+        playerManager.SetCurrentGold = 0;
         gameWave = 0;
         endWave = StageTable.getInstance.GetEndWave();
     }
@@ -153,7 +152,7 @@ public class GameSceneController : BaseSceneController
             currentPlayerHp = playerMaxHp;
         }
         SetHpText(playerMaxHp);
-        SetGoldText(currentGold);
+        SetGoldText(playerManager.SetCurrentGold);
         SetWaveText(gameWave);
         // 화면 크기에서의 퍼센트
         topPanel = Screen.height * 0.75f;
@@ -355,6 +354,7 @@ public class GameSceneController : BaseSceneController
         obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(2));
         bossMonster = obj;
     }
+
     /// <summary>
     /// 몬스터 생성 함수(중복 포지션 생성이 안되도록 난수 중복 제거 로직 사용)
     /// </summary>
@@ -808,7 +808,7 @@ public class GameSceneController : BaseSceneController
                 AttackMonster(_weapon, i);
                 return true;
             }
-        }        
+        }
         return false;
     }
 
@@ -827,7 +827,7 @@ public class GameSceneController : BaseSceneController
 
             if (isCollision)
             {
-                BossMonsterAttack(_weapon);                                
+                BossMonsterAttack(_weapon);
             }
         }
 
@@ -836,9 +836,9 @@ public class GameSceneController : BaseSceneController
             var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
             if (isCollision)
             {
-                AttackMonster(_weapon, i);                
+                AttackMonster(_weapon, i);
             }
-        }                
+        }
     }
 
     /// <summary>
@@ -879,8 +879,8 @@ public class GameSceneController : BaseSceneController
             monsterPool.EnqueueObject(monsterList[_index]);
             monsterList.RemoveAt(_index);
             deathCount++;
-            currentGold += 100;
-            SetGoldText(currentGold);
+            playerManager.SetCurrentGold += 100;
+            SetGoldText(playerManager.SetCurrentGold);
             CheckGameWaveEnd(deathCount >= MAX_WAVE_MONSTER);
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
@@ -888,7 +888,7 @@ public class GameSceneController : BaseSceneController
     private void BossMonsterAttack(WeaponSlot _weapon)
     {
         if (weapons == null)
-            return;        
+            return;
 
         bossMonster.SetState(MonsterState.Hit);
         //bossMonster.SetAttack(playerTransform);

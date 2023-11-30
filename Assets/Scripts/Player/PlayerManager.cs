@@ -14,6 +14,10 @@ public class PlayerManager : Singleton<PlayerManager>
     public List<WeaponInfo> SetPlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
 
 
+    private float currentGold;
+
+    public float SetCurrentGold { get { return currentGold; } set { currentGold = value; } }
+
     /// <summary>
     /// 이미 무기 최대 무기를 가지고있을 때 대비하기
     /// </summary>
