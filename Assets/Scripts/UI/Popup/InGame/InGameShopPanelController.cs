@@ -228,10 +228,12 @@ public class InGameShopPanelController : UIBaseController
         var addItem = shopItemList[selectItemIndex].SetWeaponInfo;
         playerManager.AddPlayerWeapon(addItem);
 
-        // 구매완료 팝업 애니메이션화 후 
         buyObjectGroup.SetActive(true);
 
         playerManager.SetPlayerWeaponController.UpdateWeapon();
+
+        playerManager.SetCurrentGold -= shopItemList[selectItemIndex].SetItemPrice;
+        possessionGoldText.text = $"{playerManager.SetCurrentGold}";
     }
 
     #region 구매완료 팝업

@@ -152,7 +152,6 @@ public class GameSceneController : BaseSceneController
             currentPlayerHp = playerMaxHp;
         }
         SetHpText(playerMaxHp);
-        SetGoldText(playerManager.SetCurrentGold);
         SetWaveText(gameWave);
         // 화면 크기에서의 퍼센트
         topPanel = Screen.height * 0.75f;
@@ -240,6 +239,8 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void StartGameWave()
     {
+        SetGoldText(playerManager.SetCurrentGold);
+
         damageTextCancel = new CancellationTokenSource();
 
         monsterCount = 0;
