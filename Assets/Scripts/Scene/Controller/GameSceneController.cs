@@ -202,7 +202,7 @@ public class GameSceneController : BaseSceneController
             _hp = 0;
         hpStringBuilder.Clear();
         hpStringBuilder.Append(_hp);
-        hpText.text = $"{hpStringBuilder}";
+        hpText.text = string.Format("{0:N1}", hpStringBuilder);
         playerHpBar.fillAmount = _hp / playerMaxHp;
     }
     /// <summary>
