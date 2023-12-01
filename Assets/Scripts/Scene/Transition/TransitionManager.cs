@@ -14,12 +14,16 @@ public class TransitionManager : Singleton<TransitionManager>
         PositionMove,
         Invisible,
         Rotate,
+        ChangeColor,
     }
 
     private Sequence sequenceFadeInOut;
     private Sequence sequencePositionMove;
     private Sequence sequenceInvisible;
     private Sequence sequenceRotate;
+    private Sequence sequenceChangeColor;
+
+    private Color defaultColor = Color.white;
 
     /// <summary>
     /// FadeInOut 초기화 함수. (깜빡거리는 효과 등..)
@@ -74,6 +78,13 @@ public class TransitionManager : Singleton<TransitionManager>
             .SetRelative(true)
             .SetLoops(-1, LoopType.Incremental);        
     }
+    private void InitChangeColor(SpriteRenderer _object, float _time, Color _color)
+    {
+        sequenceChangeColor = DOTween.Sequence()
+            .Append(_object.DOColor(_color, _time))
+            .Append(_object.DOColor(Color.white, _time))
+            .SetLoops(1);
+    }
 
     /// <summary>
     /// 만들어둔 DoTween Sequence Play.
@@ -83,7 +94,7 @@ public class TransitionManager : Singleton<TransitionManager>
     /// <param name="_vector">적용시킬 Vector값</param>
     /// <param name="_image">적용시킬 이미지</param>
     /// <param name="_object">적용시킬 오브젝트</param>
-    public void Play(TransitionType _type, float _time, Vector3 _vector, GameObject _object = null)
+    public void Play(TransitionType _type, float _time, Vector3 _vector, GameObject _object = null, Color _color = new Color())
     {
         switch (_type)
         {
@@ -113,6 +124,13 @@ public class TransitionManager : Singleton<TransitionManager>
                 InitRotateInfinity(_object, _vector, _time);
                 sequenceRotate.Play();
                 break;
+            case TransitionType.ChangeColor:
+                if(_object.TryGetComponent<SpriteRenderer>(out var _sprite))
+                {
+                    InitChangeColor(_sprite, _time, _color);
+                    sequenceChangeColor.Play();
+                }
+                break;
             default:
                 break;
         }
@@ -140,6 +158,10 @@ public class TransitionManager : Singleton<TransitionManager>
             case TransitionType.Rotate:
                 if(sequenceRotate.IsPlaying())
                     sequenceRotate.Kill(true);                
+                break;
+            case TransitionType.ChangeColor:
+                if (sequenceChangeColor.IsPlaying())
+                    sequenceChangeColor.Kill(true);
                 break;
             default:
                 break;

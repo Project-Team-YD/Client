@@ -7,6 +7,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private MonsterType type;
     private MonsterState nowState;
     private float hp;
+    private float maxHP;
     private float moveSpeed;
     private float attackDistance;
     private float attackPower;
@@ -39,6 +40,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         name = _info.name.ToString();
         type = _info.type;
         hp = _info.hp;
+        maxHP = hp;
         moveSpeed = _info.moveSpeed;
         attackDistance = _info.attackDistance;
         attackPower = _info.attackPower;
@@ -46,6 +48,19 @@ public class EnemyObject : MonoBehaviour, IPoolable
         nowState = MonsterState.Chase;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
     }
+    public float GetMaxHp()
+    {
+        return maxHP;
+    }
+
+    public float GetCurrentHp()
+    {
+        return hp;
+    }
+    /// <summary>
+    /// 게임 웨이브에 따른 몬스터 스펙 강화 함수.
+    /// </summary>
+    /// <param name="_wave">게임 웨이브</param>
     public void WaveEnhanceMonster(float _wave)
     {
         hp += (_wave * 0.5f * hp);
@@ -80,6 +95,14 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         var direction = -(_target.localPosition - gameObject.transform.localPosition).normalized;
         transform.localPosition += (direction * 100f) * Time.deltaTime;
+        nowState = MonsterState.Chase;
+    }
+    /// <summary>
+    /// 보스 몬스터가 공격 받았을때 피드백 이벤트 함수.
+    /// </summary>
+    public void SetBossAttack()
+    {
+        TransitionManager.getInstance.Play(TransitionManager.TransitionType.ChangeColor, 0.25f, Vector3.zero, spriteRenderer.gameObject, Color.red);
         nowState = MonsterState.Chase;
     }
     /// <summary>
