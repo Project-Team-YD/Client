@@ -41,7 +41,7 @@ public class WeaponSlot : MonoBehaviour
         {
             if (curAABB == null)
             {
-                var size = weaponSprite.size;
+                var size = weaponSprite.sprite.rect.size / weaponSprite.sprite.pixelsPerUnit;
                 curAABB = new AABB(this.transform, size);
             }
 

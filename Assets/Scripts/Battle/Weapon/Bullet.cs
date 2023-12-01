@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour, IPoolable
         {
             if (curAABB == null)
             {
-                var size = gameObject.GetComponent<SpriteRenderer>().size;
+                var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
                 curAABB = new AABB(this.transform, size);
             }
 
@@ -46,6 +46,9 @@ public class Bullet : MonoBehaviour, IPoolable
         {
             spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");
         }
+
+        var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
+        curAABB = new AABB(this.transform, size);
     }
     /// <summary>
     /// 현재 발사체의 무기의 타입을 반환.
@@ -62,7 +65,7 @@ public class Bullet : MonoBehaviour, IPoolable
     public void SetMonsterBulletSprite(Transform _transform)
     {
         playerTransform = _transform;
-        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Long_bullet");        
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Long_bullet");
         var direction = playerTransform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle - 45, Vector3.forward);

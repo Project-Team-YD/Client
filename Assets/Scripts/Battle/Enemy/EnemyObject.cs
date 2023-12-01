@@ -48,7 +48,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         spriteRenderer.sprite = sprite;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
         nowState = MonsterState.Chase;
-        Vector2 tempSize = sprite.rect.size / sprite.pixelsPerUnit;
+        var tempSize = sprite.rect.size / sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, tempSize);
     }
     public float GetMaxHp()
@@ -187,7 +187,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         if (curAABB == null)
         {
-            var size = spriteRenderer.size;
+            var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
             curAABB = new AABB(this.transform, size);
         }
 
