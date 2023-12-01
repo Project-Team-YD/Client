@@ -44,9 +44,12 @@ public class EnemyObject : MonoBehaviour, IPoolable
         moveSpeed = _info.moveSpeed;
         attackDistance = _info.attackDistance;
         attackPower = _info.attackPower;
-        spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/{type}/{type}_0");
-        nowState = MonsterState.Chase;
+        var sprite = Resources.Load<Sprite>($"Monster/{type}/{type}");
+        spriteRenderer.sprite = sprite;
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
+        nowState = MonsterState.Chase;
+        Vector2 tempSize = sprite.rect.size / sprite.pixelsPerUnit;
+        curAABB = new AABB(this.transform, tempSize);
     }
     public float GetMaxHp()
     {
