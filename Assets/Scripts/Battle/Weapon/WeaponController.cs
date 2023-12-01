@@ -32,6 +32,7 @@ public class WeaponController : MonoBehaviour
         var type = slot[START_WEAPON_NUM].GetWeaponType();
         if (type == WeaponType.dagger || type == WeaponType.sword)
         {
+            slot[START_WEAPON_NUM].transform.position += new Vector3(-0.6f, 0f, 0f);
             slot[START_WEAPON_NUM].transform.eulerAngles = new Vector3(0f, 0f, rotate);
         }
 
@@ -85,11 +86,12 @@ public class WeaponController : MonoBehaviour
             if (type == WeaponType.dagger || type == WeaponType.sword)
             {
                 if (i == 0)
-                {
+                {                    
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, rotate);
                 }
                 else
                 {
+                    slot[i].transform.position += new Vector3(0.6f, 0f, 0f);
                     slot[i].transform.eulerAngles = new Vector3(0f, 0f, -rotate);
                 }
             }
