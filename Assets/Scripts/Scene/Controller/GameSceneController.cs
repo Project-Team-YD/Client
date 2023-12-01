@@ -91,7 +91,6 @@ public class GameSceneController : BaseSceneController
     private StageInfo stage;
     private bool isPlaying;
     private bool isTouch;
-    private bool isBossAttack;
     private float topPanel;
 
     private void Awake()
@@ -360,7 +359,6 @@ public class GameSceneController : BaseSceneController
         obj.OnActivate();
         obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(2));
         bossMonster = obj;
-        isBossAttack = false;
     }
 
     /// <summary>
@@ -831,7 +829,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     /// <param name="_aabb"></param>
     /// <returns></returns>
-    public async UniTask CheckMonsterAttack(WeaponSlot _weapon)
+    public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon)
     {
         await UniTask.Yield();
 
@@ -842,6 +840,7 @@ public class GameSceneController : BaseSceneController
             if (isCollision)
             {
                 BossMonsterAttack(_weapon);
+                return true;
             }
         }
         else
@@ -852,9 +851,12 @@ public class GameSceneController : BaseSceneController
                 if (isCollision)
                 {
                     AttackMonster(_weapon, i);
+                    return false;
                 }
             }
         }
+
+        return false;
     }
 
     /// <summary>
@@ -901,49 +903,44 @@ public class GameSceneController : BaseSceneController
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
-    private async UniTask BossAttackDelay()
-    {
-        await UniTask.Delay(1000);
-        isBossAttack = false;
-    }
+
     private void BossMonsterAttack(WeaponSlot _weapon)
     {
         if (weapons == null)
             return;
-        if (!isBossAttack)
+
+        bossMonster.SetState(MonsterState.Hit);
+        //bossMonster.SetAttack(playerTransform);
+
+        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        var weapon = _weapon.GetWeaponInfo();
+
+        float ENHANCE_POWER;
+        if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
         {
-            isBossAttack = true;
-            bossMonster.SetState(MonsterState.Hit);
-            //bossMonster.SetAttack(playerTransform);
-
-            // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
-            var weapon = _weapon.GetWeaponInfo();
-
-            float ENHANCE_POWER;
-            if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
-            {
-                ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
-            }
-            else
-            {
-                ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
-            }
-
-            var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
-
-            bossMonster.SetDamage(damage);
-
-            if (bossMonster.IsDie())
-            {
-                bossMonster.SetState(MonsterState.Die);
-                monsterPool.EnqueueObject(bossMonster);
-                // TODO :: 외부 상점용 재화 올라가는 기능 추가 필요..
-                EndGameWave();
-            }
-            SetDamageText(damage, bossMonster.GetHUDTransform().position, Color.black).Forget();
-            BossAttackDelay().Forget();
+            ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
         }
+        else
+        {
+            ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
+        }
+
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+
+        bossMonster.SetDamage(damage);
+
+        if (bossMonster.IsDie())
+        {
+            bossMonster.SetState(MonsterState.Die);
+            monsterPool.EnqueueObject(bossMonster);
+            // TODO :: 외부 상점용 재화 올라가는 기능 추가 필요..
+            EndGameWave();
+        }
+        SetDamageText(damage, bossMonster.GetHUDTransform().position, Color.black).Forget();
+
+        Debug.Log("보스 때렸다");
     }
+
     /// <summary>
     /// 데미지 HUD 텍스트 띄우는 함수.
     /// </summary>

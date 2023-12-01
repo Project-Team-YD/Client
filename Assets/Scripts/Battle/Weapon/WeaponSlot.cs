@@ -28,6 +28,8 @@ public class WeaponSlot : MonoBehaviour
 
     private CancellationTokenSource cancellationTokenSource;
 
+    private bool isBossAttack = false;
+
     public int GetWeaponID { get { return weaponId; } }
 
     /// <summary>
@@ -125,7 +127,13 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        await gameSceneController.CheckMonsterAttack(this);
+                        if (isBossAttack == false)
+                        {
+                            isBossAttack = await gameSceneController.CheckMonsterAttack(this);
+
+                            if (isBossAttack)
+                                BossAttackDelay().Forget();
+                        }
 
                         await UniTask.Yield(cancellationTokenSource.Token);
                     }
@@ -149,7 +157,13 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
-                        await gameSceneController.CheckMonsterAttack(this);
+                        if (isBossAttack == false)
+                        {
+                            isBossAttack = await gameSceneController.CheckMonsterAttack(this);
+
+                            if (isBossAttack)
+                                BossAttackDelay().Forget();
+                        }
 
                         await UniTask.Yield(cancellationTokenSource.Token);
                     }
@@ -208,6 +222,15 @@ public class WeaponSlot : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private async UniTaskVoid BossAttackDelay()
+    {
+        Debug.Log("보스 때려서 들어왔다");
+        await UniTask.Delay(1000);
+        Debug.Log("보스 때려서 나갔다");
+
+        isBossAttack = false;
     }
 
     /// <summary>
