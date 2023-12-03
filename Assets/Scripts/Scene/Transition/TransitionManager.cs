@@ -156,8 +156,7 @@ public class TransitionManager : Singleton<TransitionManager>
                     sequenceInvisible.Kill(true);                
                 break;
             case TransitionType.Rotate:
-                if(sequenceRotate.IsPlaying())
-                    sequenceRotate.Kill(true);                
+                sequenceRotate.Kill(false);
                 break;
             case TransitionType.ChangeColor:
                 if (sequenceChangeColor.IsPlaying())

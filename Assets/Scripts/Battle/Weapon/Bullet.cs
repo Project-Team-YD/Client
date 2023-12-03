@@ -35,16 +35,17 @@ public class Bullet : MonoBehaviour, IPoolable
     {
         enemyTransform = _transform;
         weaponType = _type;
+        var direction = enemyTransform.position - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         if (weaponType == WeaponType.gun)
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/bullet");
-            var direction = enemyTransform.position - transform.position;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/bullet");            
             transform.rotation = Quaternion.AngleAxis(angle - 135, Vector3.forward);
         }
         else
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");
+            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");            
+            transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
         }
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;

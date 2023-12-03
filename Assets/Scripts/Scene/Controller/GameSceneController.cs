@@ -631,15 +631,27 @@ public class GameSceneController : BaseSceneController
         if (playerTransform == null)
             return null;
         if (bossMonster != null)
-            return bossMonster;
-        int count = monsterList.Count;
-        for (int i = 0; i < count; i++)
         {
-            if ((monsterList[i].transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
+            //if ((bossMonster.transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
+            //var data = Vector3.Distance(playerTransform.position, bossMonster.transform.position);
+            if ((bossMonster.transform.position - playerTransform.position).magnitude <= _range)
             {
-                return monsterList[i];
+                return bossMonster;
+            }            
+        }
+        else
+        {
+            int count = monsterList.Count;
+            for (int i = 0; i < count; i++)
+            {
+                //if ((monsterList[i].transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
+                if ((monsterList[i].transform.position - playerTransform.position).magnitude <= _range)
+                {
+                    return monsterList[i];
+                }
             }
         }
+        
         return null;
     }
     /// <summary>
@@ -665,14 +677,14 @@ public class GameSceneController : BaseSceneController
     {
         var obj = (Bullet)bulletPool.GetObject();
         var type = _weapon.GetWeaponType();
-        if (type == WeaponType.ninjastar && type != WeaponType.gun)
-        {
-            TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), obj.gameObject);
-        }
         obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
         obj.SetBulletSprite(type, _enemy.transform);
         obj.OnActivate();
+        //if (type == WeaponType.ninjastar && type != WeaponType.gun)
+        //{
+        //    TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), obj.gameObject);
+        //}
 
         bool isMove = true;
 
@@ -680,8 +692,8 @@ public class GameSceneController : BaseSceneController
         {
             if (obj == null)
             {
-                if (type == WeaponType.ninjastar && type != WeaponType.gun)
-                    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
+                //if (type == WeaponType.ninjastar && type != WeaponType.gun)
+                //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, obj.transform);
 
                 isMove = false;
             }
@@ -699,7 +711,7 @@ public class GameSceneController : BaseSceneController
                 //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
                 //isMove = false;
-                isMove = FireBulletKill(obj, type);
+                isMove = FireBulletKill(obj, type);                
             }
 
             // 플레이어와 거리체크 소멸
@@ -715,10 +727,9 @@ public class GameSceneController : BaseSceneController
 
     private bool FireBulletKill(Bullet _bullet, WeaponType _weaponType)
     {
+        //if (_weaponType == WeaponType.ninjastar && _weaponType != WeaponType.gun)
+        //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, _bullet.transform);
         bulletPool.EnqueueObject(_bullet);
-
-        if (_weaponType == WeaponType.ninjastar && _weaponType != WeaponType.gun)
-            TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
         return false;
     }
@@ -981,10 +992,10 @@ public class GameSceneController : BaseSceneController
             {
                 if (item.gameObject.TryGetComponent(out Bullet bullet))
                 {
-                    if (bullet.GetWeaponType() == WeaponType.ninjastar)
-                    {
-                        TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
-                    }
+                    //if (bullet.GetWeaponType() == WeaponType.ninjastar)
+                    //{
+                    //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, bullet.transform);
+                    //}
                     bulletPool.EnqueueObject(bullet);
                 }
             }
