@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,10 +15,13 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private SpriteRenderer spriteRenderer = null;
     private Animator monsterAnim = null;
 
+    private Transform targetTransform;
     private AABB curAABB;
 
     [SerializeField] private RuntimeAnimatorController[] Anim;
     [SerializeField] private Transform HUDTransform;
+    [SerializeField] private GameObject BossAttackPattern;
+    [SerializeField] private GameObject[] BossAttackPatterns;
     private void Awake()
     {
         monsterAnim = gameObject.GetComponent<Animator>();
@@ -50,6 +54,14 @@ public class EnemyObject : MonoBehaviour, IPoolable
         nowState = MonsterState.Chase;
         var tempSize = sprite.rect.size / sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, tempSize);
+        if(type == MonsterType.Boss)
+        {
+            BossAttackPattern.SetActive(true);
+        }
+        else
+        {
+            BossAttackPattern.SetActive(false);
+        }
     }
     public float GetMaxHp()
     {
@@ -89,6 +101,14 @@ public class EnemyObject : MonoBehaviour, IPoolable
                 transform.localPosition += (moveSpeed * direction) * Time.deltaTime;
             }
         }
+    }
+    /// <summary>
+    /// Boss몬스터 타겟 지정
+    /// </summary>
+    /// <param name="_target">플레이어</param>
+    public void SetBossTarget(Transform _target)
+    {
+        targetTransform = _target;
     }
     /// <summary>
     /// 몬스터가 공격 받았을때 피드백 이벤트 함수.
@@ -206,18 +226,36 @@ public class EnemyObject : MonoBehaviour, IPoolable
         return curAABB.CheckCollision(_other);
     }
     /// <summary>
-    /// 보스 공격 패턴
+    /// 보스 공격 패턴에 따른 공격 범위 컨트롤 함수.
     /// </summary>
     /// <param name="_Pattern">공격 패턴 Index</param>
-    public void BossAttack(int _Pattern)
+    public async UniTask<bool> BossAttackRange(int _Pattern)
     {
+        // TODO :: 여기서는 공격 범위 오브젝트만 컨트롤하고 공격 기능은 GameScene에서 관리할까?? 모든 공격이 GameScene에서 이루어지고 있음. return값으로 공격 가능인지 체크.
         BossMonsterAttackPattern pattern = (BossMonsterAttackPattern)_Pattern;
-        switch (pattern)
+        if (BossAttackPattern.activeSelf)
         {
-            case BossMonsterAttackPattern.BulletFire:
-                break;
-            case BossMonsterAttackPattern.BodyAttack:
-                break;
+            switch (pattern)
+            {
+                case BossMonsterAttackPattern.BulletFire:
+                    if ((targetTransform.position - transform.position).magnitude <= attackDistance)
+                    {
+                        var direction = targetTransform.position - transform.position;
+                        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                        BossAttackPatterns[_Pattern].transform.rotation = Quaternion.AngleAxis(angle + 90, Vector3.forward);
+                        BossAttackPatterns[_Pattern].SetActive(true);
+                        await UniTask.Delay(1000);
+                        BossAttackPatterns[_Pattern].SetActive(false);
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                case BossMonsterAttackPattern.BodyAttack:
+                    break;
+            }
         }
+        return false;
     }
 }

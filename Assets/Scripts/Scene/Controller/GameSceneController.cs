@@ -362,8 +362,18 @@ public class GameSceneController : BaseSceneController
         obj.OnActivate();
         obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(2));
         bossMonster = obj;
+        bossMonster.SetBossTarget(playerTransform);
+        BossMonsterAttackStart().Forget();
     }
-
+    private async UniTask BossMonsterAttackStart()
+    {
+        while(true)
+        {
+            int pattern = Random.Range(0, (int)BossMonsterAttackPattern.Max);
+            await bossMonster.BossAttackRange(pattern);
+            await UniTask.Delay(2000);
+        }
+    }
     /// <summary>
     /// 몬스터 생성 함수(중복 포지션 생성이 안되도록 난수 중복 제거 로직 사용)
     /// </summary>
@@ -666,7 +676,7 @@ public class GameSceneController : BaseSceneController
     {
         if (playerTransform != null)
         {
-            if ((playerTransform.position - _enemy.transform.position).sqrMagnitude <= _range * _range)
+            if ((playerTransform.position - _enemy.transform.position).magnitude <= _range)
             {
                 return true;
             }
