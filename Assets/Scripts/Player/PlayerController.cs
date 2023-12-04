@@ -27,6 +27,17 @@ public class PlayerController : BasePlayerController
                 curAABB = new AABB(this.transform, playerSprite.size);
             }
 
+            // 라인그리기
+            var leftTop = new Vector3(curAABB.GetLeft, curAABB.GetTop, 0);
+            var rightTop = new Vector3(curAABB.GetRight, curAABB.GetTop, 0);
+            var leftBottom = new Vector3(curAABB.GetLeft, curAABB.GetBottom, 0);
+            var rightBottom = new Vector3(curAABB.GetRight, curAABB.GetBottom, 0);
+
+            Debug.DrawLine(leftTop, rightTop, Color.black);
+            Debug.DrawLine(rightTop, rightBottom, Color.black);
+            Debug.DrawLine(rightBottom, leftBottom, Color.black);
+            Debug.DrawLine(leftBottom, leftTop, Color.black);
+
             return curAABB;
         }
     }

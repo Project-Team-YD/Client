@@ -126,6 +126,19 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(rightBottom, leftBottom, Color.black);
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
+                        // 45도로 회전한 AABB의 네 꼭짓점 계산
+                        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
+                        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
+                        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
+                        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
+
+                        // 회전된 AABB를 라인으로 그리기
+                        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
+                        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
+                        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
+                        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
+
+
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         if (isBossAttack == false)
                         {
@@ -155,6 +168,18 @@ public class WeaponSlot : MonoBehaviour
                         Debug.DrawLine(rightTop, rightBottom, Color.black);
                         Debug.DrawLine(rightBottom, leftBottom, Color.black);
                         Debug.DrawLine(leftBottom, leftTop, Color.black);
+
+                        // 45도로 회전한 AABB의 네 꼭짓점 계산
+                        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
+                        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
+                        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
+                        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
+
+                        // 회전된 AABB를 라인으로 그리기
+                        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
+                        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
+                        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
+                        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
 
                         // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                         if (isBossAttack == false)

@@ -86,10 +86,10 @@ public class Bullet : MonoBehaviour, IPoolable
     {
         if (curAABB == null)
         {
-            var size = gameObject.GetComponent<SpriteRenderer>().size;
+            var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
             curAABB = new AABB(this.transform, size);
         }
 
-        return curAABB.CheckCollision(_other);
+        return curAABB.CheckCollisionOBB(_other);
     }
 }

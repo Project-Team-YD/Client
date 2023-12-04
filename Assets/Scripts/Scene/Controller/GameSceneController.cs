@@ -245,13 +245,15 @@ public class GameSceneController : BaseSceneController
 
         monsterCount = 0;
         deathCount = 0;
+
+        SetPlaying(true);
+
         stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeaponController.GetWeapons;
-        SetPlaying(true);
         isTouch = false;
     }
 
@@ -637,7 +639,7 @@ public class GameSceneController : BaseSceneController
             if ((bossMonster.transform.position - playerTransform.position).magnitude <= _range)
             {
                 return bossMonster;
-            }            
+            }
         }
         else
         {
@@ -651,7 +653,7 @@ public class GameSceneController : BaseSceneController
                 }
             }
         }
-        
+
         return null;
     }
     /// <summary>
@@ -711,7 +713,7 @@ public class GameSceneController : BaseSceneController
                 //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
 
                 //isMove = false;
-                isMove = FireBulletKill(obj, type);                
+                isMove = FireBulletKill(obj, type);
             }
 
             // 플레이어와 거리체크 소멸
@@ -820,10 +822,21 @@ public class GameSceneController : BaseSceneController
                 var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
                 var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
 
-                Debug.DrawLine(leftTop, rightTop, Color.black);
-                Debug.DrawLine(rightTop, rightBottom, Color.black);
-                Debug.DrawLine(rightBottom, leftBottom, Color.black);
-                Debug.DrawLine(leftBottom, leftTop, Color.black);
+                // Debug.DrawLine(leftTop, rightTop, Color.black);
+                // Debug.DrawLine(rightTop, rightBottom, Color.black);
+                // Debug.DrawLine(rightBottom, leftBottom, Color.black);
+                // Debug.DrawLine(leftBottom, leftTop, Color.black);
+
+                // 45도로 회전한 AABB의 네 꼭짓점 계산
+                Vector3 leftTop2 = aabb.RotatePoint(leftTop);
+                Vector3 rightTop2 = aabb.RotatePoint(rightTop);
+                Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
+                Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
+
+                // 회전된 AABB를 라인으로 그리기
+                Debug.DrawLine(leftTop2, rightTop2, Color.blue);
+                Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
+                Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
 
                 var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
                 if (isCollision)
