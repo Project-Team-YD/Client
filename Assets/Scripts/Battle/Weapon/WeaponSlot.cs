@@ -123,11 +123,6 @@ public class WeaponSlot : MonoBehaviour
                             var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
                             var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
 
-                            Debug.DrawLine(leftTop, rightTop, Color.black);
-                            Debug.DrawLine(rightTop, rightBottom, Color.black);
-                            Debug.DrawLine(rightBottom, leftBottom, Color.black);
-                            Debug.DrawLine(leftBottom, leftTop, Color.black);
-
                             // 45도로 회전한 AABB의 네 꼭짓점 계산
                             Vector3 leftTop2 = aabb.RotatePoint(leftTop);
                             Vector3 rightTop2 = aabb.RotatePoint(rightTop);
@@ -167,11 +162,6 @@ public class WeaponSlot : MonoBehaviour
                             var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
                             var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
                             var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-                            Debug.DrawLine(leftTop, rightTop, Color.black);
-                            Debug.DrawLine(rightTop, rightBottom, Color.black);
-                            Debug.DrawLine(rightBottom, leftBottom, Color.black);
-                            Debug.DrawLine(leftBottom, leftTop, Color.black);
 
                             // 45도로 회전한 AABB의 네 꼭짓점 계산
                             Vector3 leftTop2 = aabb.RotatePoint(leftTop);

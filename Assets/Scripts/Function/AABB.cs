@@ -77,20 +77,19 @@ public class AABB
         var dis = thisTransform.position - _other.GetTransform.position;
 
         // 충돌 검사
-        if (CheckOBB(_other, dis, GetTransform.up))
-            return true;
+        if (CheckOBB(_other, dis, GetTransform.right) == false)
+            return false;
 
-        if (CheckOBB(_other, dis, _other.GetTransform.up))
-            return true;
+        if (CheckOBB(_other, dis, GetTransform.up) == false)
+            return false;
 
-        if (CheckOBB(_other, dis, GetTransform.right))
-            return true;
+        if (CheckOBB(_other, dis, _other.GetTransform.right) == false)
+            return false;
 
-        if (CheckOBB(_other, dis, _other.GetTransform.right))
-            return true;
+        if (CheckOBB(_other, dis, _other.GetTransform.up) == false)
+            return false;
 
-        // 충돌 없음
-        return false;
+        return true;
     }
 
     /// <summary>
@@ -104,6 +103,7 @@ public class AABB
     /// <returns></returns>
     public bool CheckOBB(AABB _other, Vector3 _dis, Vector3 _axis)
     {
+        // 거리 벡터
         var dis = Mathf.Abs(Vector3.Dot(_dis, _axis));
 
         if (dis > Mathf.Abs(Vector3.Dot(_axis, GetTransform.up * size.y))

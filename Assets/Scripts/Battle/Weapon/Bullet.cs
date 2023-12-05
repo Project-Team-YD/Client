@@ -70,6 +70,9 @@ public class Bullet : MonoBehaviour, IPoolable
         var direction = playerTransform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle - 45, Vector3.forward);
+
+        var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
+        curAABB = new AABB(this.transform, size);
     }
 
     public void SetBossMonsterBulletSprite(Transform _transform, int _rotationAngle)
@@ -79,6 +82,9 @@ public class Bullet : MonoBehaviour, IPoolable
         var direction = playerTransform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle - (_rotationAngle * 45), Vector3.forward);
+
+        var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
+        curAABB = new AABB(this.transform, size);
     }
 
     public void OnActivate()
@@ -98,6 +104,24 @@ public class Bullet : MonoBehaviour, IPoolable
             var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
             curAABB = new AABB(this.transform, size);
         }
+
+        // 라인그리기
+        var aabb = GetBulletAABB;
+        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+        // 45도로 회전한 AABB의 네 꼭짓점 계산
+        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
+        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
+        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
+        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
+
+        // 회전된 AABB를 라인으로 그리기
+        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
+        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
+        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
 
         return curAABB.CheckCollisionOBB(_other);
     }

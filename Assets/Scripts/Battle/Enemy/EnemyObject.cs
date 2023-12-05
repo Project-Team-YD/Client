@@ -223,7 +223,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         Debug.DrawLine(rightBottom, leftBottom, Color.black);
         Debug.DrawLine(leftBottom, leftTop, Color.black);
 
-        return curAABB.CheckCollision(_other);
+        return curAABB.CheckCollisionOBB(_other);
     }
     /// <summary>
     /// 보스 공격 패턴에 따른 공격 범위 컨트롤 함수.

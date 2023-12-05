@@ -871,21 +871,28 @@ public class GameSceneController : BaseSceneController
     /// <returns></returns>
     private bool CheckMonsterAttack(WeaponSlot _weapon, Bullet _bullet)
     {
+        // 라인그리기
+        var aabb = _bullet.GetBulletAABB;
+        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
+        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
+        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
+        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
+
+        // 45도로 회전한 AABB의 네 꼭짓점 계산
+        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
+        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
+        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
+        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
+
+        // 회전된 AABB를 라인으로 그리기
+        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
+        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
+        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
+        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
+
         // 여기서 보스 공격확인
         if (bossMonster != null)
         {
-            // 라인그리기
-            var aabb = _bullet.GetBulletAABB;
-            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-            Debug.DrawLine(leftTop, rightTop, Color.black);
-            Debug.DrawLine(rightTop, rightBottom, Color.black);
-            Debug.DrawLine(rightBottom, leftBottom, Color.black);
-            Debug.DrawLine(leftBottom, leftTop, Color.black);
-
             var isCollision = bossMonster.OnCheckCollision(_bullet.GetBulletAABB);
 
             if (isCollision)
@@ -898,28 +905,6 @@ public class GameSceneController : BaseSceneController
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
-                // 라인그리기
-                var aabb = _bullet.GetBulletAABB;
-                var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-                var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-                var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-                var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-                // Debug.DrawLine(leftTop, rightTop, Color.black);
-                // Debug.DrawLine(rightTop, rightBottom, Color.black);
-                // Debug.DrawLine(rightBottom, leftBottom, Color.black);
-                // Debug.DrawLine(leftBottom, leftTop, Color.black);
-
-                // 45도로 회전한 AABB의 네 꼭짓점 계산
-                Vector3 leftTop2 = aabb.RotatePoint(leftTop);
-                Vector3 rightTop2 = aabb.RotatePoint(rightTop);
-                Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
-                Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
-
-                // 회전된 AABB를 라인으로 그리기
-                Debug.DrawLine(leftTop2, rightTop2, Color.blue);
-                Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
-                Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
 
                 var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
                 if (isCollision)
