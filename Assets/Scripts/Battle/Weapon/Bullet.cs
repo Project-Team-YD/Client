@@ -72,6 +72,15 @@ public class Bullet : MonoBehaviour, IPoolable
         transform.rotation = Quaternion.AngleAxis(angle - 45, Vector3.forward);
     }
 
+    public void SetBossMonsterBulletSprite(Transform _transform, int _rotationAngle)
+    {
+        playerTransform = _transform;
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");
+        var direction = playerTransform.position - transform.position;
+        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+        transform.rotation = Quaternion.AngleAxis(angle - (_rotationAngle * 45), Vector3.forward);
+    }
+
     public void OnActivate()
     {
         gameObject.SetActive(true);
