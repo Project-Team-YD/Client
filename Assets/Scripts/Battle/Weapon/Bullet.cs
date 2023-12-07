@@ -39,12 +39,12 @@ public class Bullet : MonoBehaviour, IPoolable
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
         if (weaponType == WeaponType.gun)
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/bullet");            
+            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/bullet");
             transform.rotation = Quaternion.AngleAxis(angle - 135, Vector3.forward);
         }
         else
         {
-            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");            
+            spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/{weaponType}");
             transform.rotation = Quaternion.AngleAxis(angle - 180, Vector3.forward);
         }
 
@@ -87,6 +87,17 @@ public class Bullet : MonoBehaviour, IPoolable
         curAABB = new AABB(this.transform, size);
     }
 
+    public void SetBossMonsterBodyAttackSprite(Transform _transform)
+    {
+        playerTransform = _transform;
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/Boss/Boss_0");
+        var direction = playerTransform.position - transform.position;
+        transform.rotation = Quaternion.Euler(0, 0, 0);
+
+        var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
+        curAABB = new AABB(this.transform, size);
+    }
+
     public void OnActivate()
     {
         gameObject.SetActive(true);
@@ -122,6 +133,7 @@ public class Bullet : MonoBehaviour, IPoolable
         Debug.DrawLine(leftTop2, rightTop2, Color.blue);
         Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
         Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
+        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
 
         return curAABB.CheckCollisionOBB(_other);
     }

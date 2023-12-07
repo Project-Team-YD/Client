@@ -380,12 +380,12 @@ public class GameSceneController : BaseSceneController
     /// <returns></returns>
     private async UniTask BossMonsterAttackStart()
     {
-        while(true)
+        while (true)
         {
             int pattern = Random.Range(0, (int)BossMonsterAttackPattern.Max);
             BossMonsterAttackPattern attackPattern = (BossMonsterAttackPattern)pattern;
             bool attackPossible = await bossMonster.BossAttackRange(pattern);
-            if(attackPossible)
+            if (attackPossible)
             {
                 switch (attackPattern)
                 {
@@ -393,9 +393,10 @@ public class GameSceneController : BaseSceneController
                         FireBossMonsterBullet(bossMonster, bossMonster.GetAttackRangeDirection());
                         break;
                     case BossMonsterAttackPattern.BodyAttack:
+                        BossBodyAttack(bossMonster, bossMonster.GetAttackRangeDirection());
                         break;
                     case BossMonsterAttackPattern.Max:
-                        break;                    
+                        break;
                 }
             }
             await UniTask.Delay(2000);
@@ -516,7 +517,7 @@ public class GameSceneController : BaseSceneController
         return position;
     }
 
-#region MapCreate
+    #region MapCreate
     /// <summary>
     /// 맵 정보 초기화
     /// </summary>
@@ -560,7 +561,7 @@ public class GameSceneController : BaseSceneController
         float sizeX = _info.obstructionWidth;
         float sizeY = _info.obstructionHeight;
         obstructionspriteRenderer.drawMode = SpriteDrawMode.Tiled;
-#region Map 영역 벗어나는지 체크 후 포지션 조정..
+        #region Map 영역 벗어나는지 체크 후 포지션 조정..
         if (positionX >= ((width / 2) - (sizeX / 2)))
         {
             positionX = (width / 2) - (sizeX / 2);
@@ -577,7 +578,7 @@ public class GameSceneController : BaseSceneController
         {
             positionY = (-height / 2) + (sizeY / 2);
         }
-#endregion
+        #endregion
         position.x = positionX;
         position.y = positionY;
         obstructionspriteRenderer.transform.localPosition = position;
@@ -585,7 +586,7 @@ public class GameSceneController : BaseSceneController
         obstructionspriteRenderer.sprite = GetMapSprite(_info.obstructionImageName);
         obstructionspriteRenderer.sortingOrder = -9;
     }
-#endregion
+    #endregion
 
     private void OnClickJoypad()
     {
@@ -670,7 +671,7 @@ public class GameSceneController : BaseSceneController
         if (playerTransform == null)
             return null;
         if (bossMonster != null)
-        {            
+        {
             if ((bossMonster.transform.position - playerTransform.position).magnitude <= _range)
             {
                 return bossMonster;
@@ -680,7 +681,7 @@ public class GameSceneController : BaseSceneController
         {
             int count = monsterList.Count;
             for (int i = 0; i < count; i++)
-            {                
+            {
                 if ((monsterList[i].transform.position - playerTransform.position).magnitude <= _range)
                 {
                     return monsterList[i];
@@ -721,14 +722,14 @@ public class GameSceneController : BaseSceneController
         obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
         obj.SetBulletSprite(type, _enemy.transform);
-        obj.OnActivate();        
+        obj.OnActivate();
 
         bool isMove = true;
 
         while (isMove)
         {
             if (obj == null)
-            {                
+            {
                 isMove = false;
             }
 
@@ -738,7 +739,7 @@ public class GameSceneController : BaseSceneController
             // 충돌체크
             var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
-            {                
+            {
                 isMove = FireBulletKill(obj);
             }
 
@@ -758,7 +759,7 @@ public class GameSceneController : BaseSceneController
     /// <param name="_bullet">Bullet 객체</param>    
     /// <returns></returns>
     private bool FireBulletKill(Bullet _bullet)
-    {        
+    {
         bulletPool.EnqueueObject(_bullet);
 
         return false;
@@ -816,36 +817,55 @@ public class GameSceneController : BaseSceneController
     /// <param name="_direction">공격 범위 방향</param>
     public void FireBossMonsterBullet(EnemyObject _enemy, Vector3 _direction)
     {
-        _enemy.SetState(MonsterState.Attack);        
+        _enemy.SetState(MonsterState.Attack);
         for (int i = -1; i <= 1; i++)
         {
             var obj = (Bullet)bulletPool.GetObject();
-            obj.transform.position = _enemy.transform.position;            
-            var direction = _direction;            
+            obj.transform.position = _enemy.transform.position;
+            var direction = _direction;
             var quaternion = Quaternion.Euler(0, 0, (i * 45));
-            var newDirection = quaternion * direction;            
+            var newDirection = quaternion * direction;
             obj.SetBossMonsterBulletSprite(playerTransform, i + 2);
             obj.OnActivate();
             BossBulletMove(obj, newDirection).Forget();
         }
         _enemy.SetState(MonsterState.Chase);
     }
+
+    private void BossBodyAttack(EnemyObject _enemy, Vector3 _direction)
+    {
+        // 보스 상태 변경
+        _enemy.SetState(MonsterState.Attack);
+        // 공격용 오브젝트 가져오고
+        var obj = (Bullet)bulletPool.GetObject();
+        // 위치 잡아주고
+        obj.transform.position = _enemy.transform.position;
+        // bullet 이미지와 aabb 적용
+        obj.SetBossMonsterBodyAttackSprite(playerTransform);
+        // 켜주고
+        obj.OnActivate();
+        // 발사
+        BossBulletMove(obj, _direction, 2f).Forget();
+        // 상태 변경
+        _enemy.SetState(MonsterState.Chase);
+    }
+
     /// <summary>
     /// 보스 몬스터 전용 총알들 이동 함수.
     /// </summary>
     /// <param name="_bullet">Bullet 객체</param>
     /// <param name="_direction">각 총알의 방향</param>
     /// <returns></returns>
-    private async UniTask BossBulletMove(Bullet _bullet, Vector3 _direction)
+    private async UniTask BossBulletMove(Bullet _bullet, Vector3 _direction, float _bulletSpeed = 1f)
     {
         bool isMove = true;
         while (isMove)
-        {            
+        {
             if (_bullet == null)
                 isMove = false;
             else
             {
-                _bullet.transform.position += (_direction.normalized * BULLET_SPEED) * Time.deltaTime;
+                _bullet.transform.position += (_direction.normalized * (BULLET_SPEED * _bulletSpeed)) * Time.deltaTime;
 
                 // 충돌체크
                 var isCheck = _bullet.OnCheckCollision(localPlayerController.GetPlayerAABB);
@@ -970,7 +990,7 @@ public class GameSceneController : BaseSceneController
 
         monster.SetState(MonsterState.Hit);
         monster.SetAttack(playerTransform);
-        
+
         var weapon = _weapon.GetWeaponInfo();
 
         float ENHANCE_POWER;
@@ -1007,7 +1027,7 @@ public class GameSceneController : BaseSceneController
 
         bossMonster.SetState(MonsterState.Hit);
         bossMonster.SetBossAttack();
-        
+
         var weapon = _weapon.GetWeaponInfo();
 
         float ENHANCE_POWER;
@@ -1074,7 +1094,7 @@ public class GameSceneController : BaseSceneController
             if (item.gameObject.activeSelf)
             {
                 if (item.gameObject.TryGetComponent(out Bullet bullet))
-                {                    
+                {
                     bulletPool.EnqueueObject(bullet);
                 }
             }

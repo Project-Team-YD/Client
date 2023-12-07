@@ -255,7 +255,15 @@ public class EnemyObject : MonoBehaviour, IPoolable
                         return false;
                     }
                 case BossMonsterAttackPattern.BodyAttack:
-                    break;
+                    if ((targetTransform.position - transform.position).magnitude <= attackDistance)
+                    {
+                        // 여기서 예상 방향 켜주기
+                        return true;
+                    }
+                    else
+                    {
+                        return false;
+                    }
             }
         }
         return false;
