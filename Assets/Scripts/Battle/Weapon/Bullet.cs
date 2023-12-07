@@ -81,7 +81,7 @@ public class Bullet : MonoBehaviour, IPoolable
         spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");
         var direction = playerTransform.position - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.AngleAxis(angle - (_rotationAngle * 45), Vector3.forward);
+        transform.rotation = Quaternion.AngleAxis(angle + 90 + (_rotationAngle * 45), Vector3.forward);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, size);

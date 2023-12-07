@@ -388,7 +388,7 @@ public class GameSceneController : BaseSceneController
                 switch (attackPattern)
                 {
                     case BossMonsterAttackPattern.BulletFire:
-                        FireBossMonsterBullet(bossMonster);
+                        FireBossMonsterBullet(bossMonster, bossMonster.GetAttackRangeDirection());
                         break;
                     case BossMonsterAttackPattern.BodyAttack:
                         break;
@@ -816,19 +816,20 @@ public class GameSceneController : BaseSceneController
         await UniTask.Delay(1500);
         _enemy.SetState(MonsterState.Chase);
     }
-    public void FireBossMonsterBullet(EnemyObject _enemy)
+    public void FireBossMonsterBullet(EnemyObject _enemy, Vector3 _direction)
     {
         _enemy.SetState(MonsterState.Attack);        
         for (int i = -1; i <= 1; i++)
         {
             var obj = (Bullet)bulletPool.GetObject();
             obj.transform.position = _enemy.transform.position;
-            var direction = playerTransform.position - obj.transform.position;
+            //var direction = playerTransform.position - obj.transform.position;
+            var direction = _direction;
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
             obj.transform.rotation = Quaternion.AngleAxis(angle - (i * 45), Vector3.forward);
             var quaternion = Quaternion.Euler(0, 0, (i * 45));
             var newDirection = quaternion * direction;            
-            obj.SetBossMonsterBulletSprite(playerTransform, i);
+            obj.SetBossMonsterBulletSprite(playerTransform, i + 2);
             obj.OnActivate();
             BossBulletMove(obj, newDirection).Forget();
         }
@@ -856,7 +857,7 @@ public class GameSceneController : BaseSceneController
             }
 
             float distance = Vector3.Distance(bossMonster.transform.position, _bullet.transform.position);
-            if (distance >= 45)
+            if (distance >= 15)
             {
                 bulletPool.EnqueueObject(_bullet);
                 isMove = false;

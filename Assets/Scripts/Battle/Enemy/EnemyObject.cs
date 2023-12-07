@@ -17,6 +17,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
 
     private Transform targetTransform;
     private AABB curAABB;
+    private Vector3 rangeDirection;
 
     [SerializeField] private RuntimeAnimatorController[] Anim;
     [SerializeField] private Transform HUDTransform;
@@ -241,6 +242,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
                     if ((targetTransform.position - transform.position).magnitude <= attackDistance)
                     {
                         var direction = targetTransform.position - transform.position;
+                        rangeDirection = direction;
                         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
                         BossAttackPatterns[_Pattern].transform.rotation = Quaternion.AngleAxis(angle + 90, Vector3.forward);
                         BossAttackPatterns[_Pattern].SetActive(true);
@@ -257,5 +259,10 @@ public class EnemyObject : MonoBehaviour, IPoolable
             }
         }
         return false;
+    }
+
+    public Vector3 GetAttackRangeDirection()
+    {
+        return rangeDirection;
     }
 }
