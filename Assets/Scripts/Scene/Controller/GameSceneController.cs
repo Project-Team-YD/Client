@@ -95,9 +95,6 @@ public class GameSceneController : BaseSceneController
 
     private void Awake()
     {
-        // PoolManager.getInstance.RegisterObjectPool<EnemyObject>(new ObjectPool<IPoolable>());
-        // PoolManager.getInstance.RegisterObjectPool<Bullet>(new ObjectPool<IPoolable>());
-
         uIManager = UIManager.getInstance;
         timeManager = TimeManager.getInstance;
         playerManager = PlayerManager.getInstance;
@@ -294,8 +291,7 @@ public class GameSceneController : BaseSceneController
         EndWaveActiveBulletObjectEnqueue();
         EndWaveActiveDamageTextObjectEnqueue();
 
-        // 조건 게임이 끝났는지
-        //stage MAX STAGE 가져와야함
+        // 조건 게임이 끝났는지        
         if (gameWave >= endWave)
         {
             // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
@@ -421,7 +417,7 @@ public class GameSceneController : BaseSceneController
             }
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
-            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+            obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount]));
             obj.WaveEnhanceMonster(gameWave);
             monsterList.Add(obj);
             monsterCount++;
@@ -454,7 +450,7 @@ public class GameSceneController : BaseSceneController
                     }
                     obj.transform.localPosition = monsterPosition;
                     obj.OnActivate();
-                    obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount])); // 일단 근거리 한종류..추후 몬스터 추가 될수록 Random함수를 이용해 난수로 몬스터 종류별 랜덤 생성되게..
+                    obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount]));
                     obj.WaveEnhanceMonster(gameWave);
                     monsterList.Add(obj);
                     monsterCount++;
@@ -485,7 +481,7 @@ public class GameSceneController : BaseSceneController
                 {
                     monsterList[i].OnMoveTarget(playerTransform);
                     MonsterType type = monsterList[i].GetMonsterType();
-                    if (type == MonsterType.Long) //|| type == MonsterType.Boss)
+                    if (type == MonsterType.Long)
                     {
                         EnemyObject monster = monsterList[i];
                         if (PossibleAttackPlayerMonsterBullet(monster, monster.GetAttackRange()))
@@ -668,9 +664,7 @@ public class GameSceneController : BaseSceneController
         if (playerTransform == null)
             return null;
         if (bossMonster != null)
-        {
-            //if ((bossMonster.transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
-            //var data = Vector3.Distance(playerTransform.position, bossMonster.transform.position);
+        {            
             if ((bossMonster.transform.position - playerTransform.position).magnitude <= _range)
             {
                 return bossMonster;
@@ -680,8 +674,7 @@ public class GameSceneController : BaseSceneController
         {
             int count = monsterList.Count;
             for (int i = 0; i < count; i++)
-            {
-                //if ((monsterList[i].transform.position - playerTransform.position).sqrMagnitude <= _range * _range)
+            {                
                 if ((monsterList[i].transform.position - playerTransform.position).magnitude <= _range)
                 {
                     return monsterList[i];
@@ -709,7 +702,12 @@ public class GameSceneController : BaseSceneController
         return false;
     }
 
-    //TODO :: 몬스터 충돌 처리 후 DeActive + bulletpool로 발사체 Enqueue 처리해줘야함..수리검은 또한 DoTween kill해줘야함.
+    /// <summary>
+    /// 플레이어 원거리 공격 함수.
+    /// </summary>
+    /// <param name="_enemy">Target Enemy(가장 가까운 몬스터)</param>
+    /// <param name="_weapon">원거리 무기 객체</param>
+    /// <returns></returns>
     public async UniTaskVoid FireBullet(EnemyObject _enemy, WeaponSlot _weapon)
     {
         var obj = (Bullet)bulletPool.GetObject();
@@ -717,21 +715,14 @@ public class GameSceneController : BaseSceneController
         obj.transform.position = _weapon.transform.position;
         var direction = _enemy.transform.position - obj.transform.position;
         obj.SetBulletSprite(type, _enemy.transform);
-        obj.OnActivate();
-        //if (type == WeaponType.ninjastar && type != WeaponType.gun)
-        //{
-        //    TransitionManager.getInstance.Play(TransitionManager.TransitionType.Rotate, BULLET_ROTATE_SPEED, new Vector3(0, 0, 360f), obj.gameObject);
-        //}
+        obj.OnActivate();        
 
         bool isMove = true;
 
         while (isMove)
         {
             if (obj == null)
-            {
-                //if (type == WeaponType.ninjastar && type != WeaponType.gun)
-                //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, obj.transform);
-
+            {                
                 isMove = false;
             }
 
@@ -741,31 +732,27 @@ public class GameSceneController : BaseSceneController
             // 충돌체크
             var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
-            {
-                //bulletPool.EnqueueObject(obj);
-
-                //if (type == WeaponType.ninjastar && type != WeaponType.gun)
-                //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate);
-
-                //isMove = false;
-                isMove = FireBulletKill(obj, type);
+            {                
+                isMove = FireBulletKill(obj);
             }
 
             // 플레이어와 거리체크 소멸
             float distance = Vector3.Distance(playerTransform.position, obj.transform.position);
             if (distance >= 25)
             {
-                isMove = FireBulletKill(obj, type);
+                isMove = FireBulletKill(obj);
             }
 
             await UniTask.Yield();
         }
     }
-
-    private bool FireBulletKill(Bullet _bullet, WeaponType _weaponType)
-    {
-        //if (_weaponType == WeaponType.ninjastar && _weaponType != WeaponType.gun)
-        //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, _bullet.transform);
+    /// <summary>
+    /// 불렛 객체 return ObjectPool
+    /// </summary>
+    /// <param name="_bullet">Bullet 객체</param>    
+    /// <returns></returns>
+    private bool FireBulletKill(Bullet _bullet)
+    {        
         bulletPool.EnqueueObject(_bullet);
 
         return false;
@@ -816,17 +803,19 @@ public class GameSceneController : BaseSceneController
         await UniTask.Delay(1500);
         _enemy.SetState(MonsterState.Chase);
     }
+    /// <summary>
+    /// 보스 몬스터 전용 총알공격 함수.
+    /// </summary>
+    /// <param name="_enemy">bossMonster</param>
+    /// <param name="_direction">공격 범위 방향</param>
     public void FireBossMonsterBullet(EnemyObject _enemy, Vector3 _direction)
     {
         _enemy.SetState(MonsterState.Attack);        
         for (int i = -1; i <= 1; i++)
         {
             var obj = (Bullet)bulletPool.GetObject();
-            obj.transform.position = _enemy.transform.position;
-            //var direction = playerTransform.position - obj.transform.position;
-            var direction = _direction;
-            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-            obj.transform.rotation = Quaternion.AngleAxis(angle - (i * 45), Vector3.forward);
+            obj.transform.position = _enemy.transform.position;            
+            var direction = _direction;            
             var quaternion = Quaternion.Euler(0, 0, (i * 45));
             var newDirection = quaternion * direction;            
             obj.SetBossMonsterBulletSprite(playerTransform, i + 2);
@@ -835,6 +824,12 @@ public class GameSceneController : BaseSceneController
         }
         _enemy.SetState(MonsterState.Chase);
     }
+    /// <summary>
+    /// 보스 몬스터 전용 총알들 이동 함수.
+    /// </summary>
+    /// <param name="_bullet">Bullet 객체</param>
+    /// <param name="_direction">각 총알의 방향</param>
+    /// <returns></returns>
     private async UniTask BossBulletMove(Bullet _bullet, Vector3 _direction)
     {
         bool isMove = true;
@@ -967,8 +962,7 @@ public class GameSceneController : BaseSceneController
 
         monster.SetState(MonsterState.Hit);
         monster.SetAttack(playerTransform);
-
-        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        
         var weapon = _weapon.GetWeaponInfo();
 
         float ENHANCE_POWER;
@@ -1005,8 +999,7 @@ public class GameSceneController : BaseSceneController
 
         bossMonster.SetState(MonsterState.Hit);
         bossMonster.SetBossAttack();
-
-        // TODO :: weapons는 무기슬릇 배열로 어느 무기로 때렸는지 알아내어야 해당 무기슬릇의 데미지를 가져와 몬스터 hp를 계산후 밑의 로직을 타도록 수정해야함..
+        
         var weapon = _weapon.GetWeaponInfo();
 
         float ENHANCE_POWER;
@@ -1073,11 +1066,7 @@ public class GameSceneController : BaseSceneController
             if (item.gameObject.activeSelf)
             {
                 if (item.gameObject.TryGetComponent(out Bullet bullet))
-                {
-                    //if (bullet.GetWeaponType() == WeaponType.ninjastar)
-                    //{
-                    //    TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.Rotate, bullet.transform);
-                    //}
+                {                    
                     bulletPool.EnqueueObject(bullet);
                 }
             }
