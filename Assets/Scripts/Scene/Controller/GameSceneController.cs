@@ -825,7 +825,7 @@ public class GameSceneController : BaseSceneController
             var direction = _direction;
             var quaternion = Quaternion.Euler(0, 0, (i * 45));
             var newDirection = quaternion * direction;
-            obj.SetBossMonsterBulletSprite(playerTransform, i + 2);
+            obj.SetBossMonsterBulletSprite(_direction, i + 2);
             obj.OnActivate();
             BossBulletMove(obj, newDirection).Forget();
         }

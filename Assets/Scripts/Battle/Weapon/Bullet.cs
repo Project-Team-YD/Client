@@ -75,12 +75,10 @@ public class Bullet : MonoBehaviour, IPoolable
         curAABB = new AABB(this.transform, size);
     }
 
-    public void SetBossMonsterBulletSprite(Transform _transform, int _rotationAngle)
-    {
-        playerTransform = _transform;
-        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");
-        var direction = playerTransform.position - transform.position;
-        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+    public void SetBossMonsterBulletSprite(Vector3 _direction, int _rotationAngle)
+    {        
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");        
+        float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle + 90 + (_rotationAngle * 45), Vector3.forward);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
@@ -90,7 +88,7 @@ public class Bullet : MonoBehaviour, IPoolable
     public void SetBossMonsterBodyAttackSprite(Transform _transform)
     {
         playerTransform = _transform;
-        spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/Boss/Boss_0");
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/Boss/Boss");
         var direction = playerTransform.position - transform.position;
         transform.rotation = Quaternion.Euler(0, 0, 0);
 
