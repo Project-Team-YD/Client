@@ -55,7 +55,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         nowState = MonsterState.Chase;
         var tempSize = sprite.rect.size / sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, tempSize);
-        if(type == MonsterType.Boss)
+        if (type == MonsterType.Boss)
         {
             BossAttackPattern.SetActive(true);
         }
@@ -257,7 +257,13 @@ public class EnemyObject : MonoBehaviour, IPoolable
                 case BossMonsterAttackPattern.BodyAttack:
                     if ((targetTransform.position - transform.position).magnitude <= attackDistance)
                     {
-                        // 여기서 예상 방향 켜주기
+                        var direction = targetTransform.position - transform.position;
+                        rangeDirection = direction;
+                        float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+                        BossAttackPatterns[_Pattern].transform.rotation = Quaternion.AngleAxis(angle + 90, Vector3.forward);
+                        BossAttackPatterns[_Pattern].SetActive(true);
+                        await UniTask.Delay(1000);
+                        BossAttackPatterns[_Pattern].SetActive(false);
                         return true;
                     }
                     else

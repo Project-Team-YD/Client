@@ -85,11 +85,9 @@ public class Bullet : MonoBehaviour, IPoolable
         curAABB = new AABB(this.transform, size);
     }
 
-    public void SetBossMonsterBodyAttackSprite(Transform _transform)
+    public void SetBossMonsterBodyAttackSprite()
     {
-        playerTransform = _transform;
         spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/Boss/Boss");
-        var direction = playerTransform.position - transform.position;
         transform.rotation = Quaternion.Euler(0, 0, 0);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;

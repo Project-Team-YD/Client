@@ -834,19 +834,12 @@ public class GameSceneController : BaseSceneController
 
     private void BossBodyAttack(EnemyObject _enemy, Vector3 _direction)
     {
-        // 보스 상태 변경
         _enemy.SetState(MonsterState.Attack);
-        // 공격용 오브젝트 가져오고
         var obj = (Bullet)bulletPool.GetObject();
-        // 위치 잡아주고
         obj.transform.position = _enemy.transform.position;
-        // bullet 이미지와 aabb 적용
-        obj.SetBossMonsterBodyAttackSprite(playerTransform);
-        // 켜주고
+        obj.SetBossMonsterBodyAttackSprite();
         obj.OnActivate();
-        // 발사
         BossBulletMove(obj, _direction, 2f).Forget();
-        // 상태 변경
         _enemy.SetState(MonsterState.Chase);
     }
 
