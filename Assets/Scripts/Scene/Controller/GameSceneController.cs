@@ -245,9 +245,15 @@ public class GameSceneController : BaseSceneController
 
         SetPlaying(true);
 
+#if CHEAT_BOSS
+        gameWave = endWave;
+        CheckGameWaveEnd(true);
+#endif
         stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
+#if !CHEAT_BOSS
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
+#endif
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.SetPlayerWeaponController.GetWeapons;
@@ -510,7 +516,7 @@ public class GameSceneController : BaseSceneController
         return position;
     }
 
-    #region MapCreate
+#region MapCreate
     /// <summary>
     /// 맵 정보 초기화
     /// </summary>
@@ -554,7 +560,7 @@ public class GameSceneController : BaseSceneController
         float sizeX = _info.obstructionWidth;
         float sizeY = _info.obstructionHeight;
         obstructionspriteRenderer.drawMode = SpriteDrawMode.Tiled;
-        #region Map 영역 벗어나는지 체크 후 포지션 조정..
+#region Map 영역 벗어나는지 체크 후 포지션 조정..
         if (positionX >= ((width / 2) - (sizeX / 2)))
         {
             positionX = (width / 2) - (sizeX / 2);
@@ -571,7 +577,7 @@ public class GameSceneController : BaseSceneController
         {
             positionY = (-height / 2) + (sizeY / 2);
         }
-        #endregion
+#endregion
         position.x = positionX;
         position.y = positionY;
         obstructionspriteRenderer.transform.localPosition = position;
@@ -579,7 +585,7 @@ public class GameSceneController : BaseSceneController
         obstructionspriteRenderer.sprite = GetMapSprite(_info.obstructionImageName);
         obstructionspriteRenderer.sortingOrder = -9;
     }
-    #endregion
+#endregion
 
     private void OnClickJoypad()
     {
@@ -837,25 +843,27 @@ public class GameSceneController : BaseSceneController
         {            
             if (_bullet == null)
                 isMove = false;
-
-            _bullet.transform.position += (_direction.normalized * BULLET_SPEED) * Time.deltaTime;
-
-            // 충돌체크
-            var isCheck = _bullet.OnCheckCollision(localPlayerController.GetPlayerAABB);
-            if (isCheck)
+            else
             {
-                bulletPool.EnqueueObject(_bullet);
-                isMove = false;
-                SetDamageText(bossMonster.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
-                currentPlayerHp -= bossMonster.GetAttackPower();
-                SetHpText(currentPlayerHp);
-            }
+                _bullet.transform.position += (_direction.normalized * BULLET_SPEED) * Time.deltaTime;
 
-            float distance = Vector3.Distance(bossMonster.transform.position, _bullet.transform.position);
-            if (distance >= 15)
-            {
-                bulletPool.EnqueueObject(_bullet);
-                isMove = false;
+                // 충돌체크
+                var isCheck = _bullet.OnCheckCollision(localPlayerController.GetPlayerAABB);
+                if (isCheck)
+                {
+                    bulletPool.EnqueueObject(_bullet);
+                    isMove = false;
+                    SetDamageText(bossMonster.GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
+                    currentPlayerHp -= bossMonster.GetAttackPower();
+                    SetHpText(currentPlayerHp);
+                }
+
+                float distance = Vector3.Distance(bossMonster.transform.position, _bullet.transform.position);
+                if (distance >= 15)
+                {
+                    bulletPool.EnqueueObject(_bullet);
+                    isMove = false;
+                }
             }
             await UniTask.Yield();
         }
