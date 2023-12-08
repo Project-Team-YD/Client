@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using HSMLibrary.Manager;
 
 public class IntroSceneController : BaseSceneController
 {
     [SerializeField] Button gameStartButton = null;
-    [SerializeField] Image gameStartImage = null;    
+    [SerializeField] Image gameStartImage = null;
 
     private void Awake()
     {
@@ -20,7 +21,13 @@ public class IntroSceneController : BaseSceneController
     /// </summary>
     public void OnClickGameStart()
     {
+        // 서버 통신
+        // 닉네임이 있으면 그대로 진행 
+        // 없으면
+        // var panel = UIManager.getInstance.Show<NickNamePanelController>("NickNamePanel");
         SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
+
+
         TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.FadeInOut);
     }
 }
