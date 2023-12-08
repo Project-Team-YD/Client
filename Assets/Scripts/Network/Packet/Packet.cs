@@ -67,8 +67,8 @@ namespace Packet
     {
         public int id;
         public string itemName;
-        public int itemType;
-        public int category;
+        public int itemType; // 무기인지 효과아이템인지..0번 웨폰 , 1번 효과아이템
+        public int category; // 단검/장검/수리검 등등..무엇인지
         public string imageName;
         public bool isStack;
     }
@@ -120,7 +120,7 @@ namespace Packet
     public class InventoryItem
     {
         public int id;
-        public int count;
+        public int count; // 없애도될듯...안씀.
         public int enchant;
     }
 

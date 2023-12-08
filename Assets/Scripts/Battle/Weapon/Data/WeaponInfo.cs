@@ -12,10 +12,10 @@ public enum WeaponType
 
 public struct WeaponInfo
 {    
-    public int weaponId;
-    public string weaponName;
-    public float attackPower;
-    public float attackSpeed;
-    public float attackRange;
-    public int enhance;
+    public int weaponId; // Item
+    public string weaponName; // Item
+    public float attackPower; // WeaponItem
+    public float attackSpeed; // WeaponItem
+    public float attackRange; // WeaponItem
+    public int enhance; // InventoryItem
 }
