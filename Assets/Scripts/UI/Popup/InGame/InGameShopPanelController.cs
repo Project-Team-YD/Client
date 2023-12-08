@@ -65,13 +65,14 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private Button nextButton = null;
 
     private int MAX_PLAYER_WEAPON_COUNT;
+    private int MAX_PLAYER_PASSIVE_ITEM_COUNT;
 
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
 
     private List<InGameShopItemController> shopItemList = null;
     private List<InGameShopItemController> weaponItemList = null;
-    private List<InGameShopItemController> itemList = null;
+    private List<InGameShopItemController> passiveItemList = null;
 
     private PlayerManager playerManager = null;
 
@@ -104,6 +105,18 @@ public class InGameShopPanelController : UIBaseController
             var item = GameObject.Instantiate(shopItemController, weaponItemSlotTransform);
             item.gameObject.SetActive(false);
             weaponItemList.Add(item);
+        }
+
+        // 임시
+        MAX_PLAYER_PASSIVE_ITEM_COUNT = 4;
+
+        passiveItemList = new List<InGameShopItemController>(MAX_PLAYER_PASSIVE_ITEM_COUNT);
+
+        for (int i = 0; i < MAX_PLAYER_PASSIVE_ITEM_COUNT; i++)
+        {
+            var item = GameObject.Instantiate(shopItemController, itemSlotTransform);
+            item.gameObject.SetActive(false);
+            passiveItemList.Add(item);
         }
 
         buyObjectGroup.SetActive(false);
@@ -139,6 +152,7 @@ public class InGameShopPanelController : UIBaseController
         possessionGoldText.text = $"{playerManager.SetCurrentGold}";
 
         UpdateMyWeaponData();
+        UpdateMyPassiveItemData();
 
         // MAX_PLAYER_WEAPON_COUNT와 비교해서 무기는 더이상 안나오게 바꿔야함 혹은 구매 못하게 해야함
         if (shopItemList == null)
@@ -149,7 +163,6 @@ public class InGameShopPanelController : UIBaseController
             {
                 var item = GameObject.Instantiate(shopItemController, itemShopSlotTransform);
                 item.SetWeaponInfo = weaponInfos[i];
-                item.UpdateItemData();
                 var idx = i;
                 item.SetItemExplanation = $"{idx}번 아이템 설명";
                 item.SetItemPrice = idx * 1000;
@@ -158,6 +171,8 @@ public class InGameShopPanelController : UIBaseController
                 shopItemList.Add(item);
             }
         }
+
+
 
         // 임시 
         var count = weaponInfos.Length;
@@ -189,15 +204,37 @@ public class InGameShopPanelController : UIBaseController
             }
 
             weapon.SetWeaponInfo = GetWeapon(items[i].weaponId);
-            weapon.UpdateItemData();
             var idx = i;
             weapon.SetItemExplanation = $"{idx}번 아이템 설명";
-            // weapon.SetItemPrice = idx * 1000;
             weapon.SetIndex = idx;
-            // weapon.SetShopItemData(OnClickItem);
-
+            weapon.SetWeaponItemData(OnClickWeaponData);
             weapon.SetEnhance = $"+{items[i].enhance}";
             weapon.ActiveEnhance(true);
+        }
+    }
+
+    private void UpdateMyPassiveItemData()
+    {
+        var items = playerManager.SetPlayerPassiveItem;
+        int count = items.Count;
+
+        for (int i = 0; i < count; i++)
+        {
+            var item = passiveItemList[i];
+
+            if (item.gameObject.activeSelf == false)
+            {
+                item.gameObject.SetActive(true);
+            }
+
+            item.SetPassiveItemInfo = items[i];
+            var idx = i;
+            item.SetItemExplanation = $"{idx}번 아이템 설명";
+            item.SetIndex = idx;
+            item.SetWeaponItemData(OnClickPassiveItemData);
+
+            item.SetEnhance = $"+{items[i].enhance}";
+            item.ActiveEnhance(true);
         }
     }
 
@@ -206,6 +243,20 @@ public class InGameShopPanelController : UIBaseController
     /// </summary>
     private void ResetInGameShop()
     {
+        int weaponItemCount = weaponItemList.Count;
+        for (int i = 0; i < weaponItemCount; i++)
+        {
+            weaponItemList[i].gameObject.SetActive(false);
+            weaponItemList[i].ActiveEnhance(false);
+        }
+
+        int passiveItemCount = passiveItemList.Count;
+        for (int i = 0; i < passiveItemCount; i++)
+        {
+            passiveItemList[i].gameObject.SetActive(false);
+            passiveItemList[i].ActiveEnhance(false);
+        }
+
         // 선택 index 변수
         selectItemIndex = -1;
         // 버튼 초기화
@@ -265,5 +316,16 @@ public class InGameShopPanelController : UIBaseController
     {
         var item = Array.Find(weaponInfos, x => x.weaponId == _id);
         return item;
+    }
+
+    // 나중에 아이템 정보 띄우기용
+    private void OnClickWeaponData(int _key)
+    {
+
+    }
+
+    private void OnClickPassiveItemData(int _key)
+    {
+
     }
 }

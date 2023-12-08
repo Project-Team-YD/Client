@@ -11,14 +11,17 @@ public class InGameShopItemController : MonoBehaviour
     [SerializeField] private Button thisButton = null;
     [SerializeField] private TextMeshProUGUI enhance = null;
 
-    private WeaponInfo info;
+    private WeaponInfo weaponInfo;
+    private PassiveItemInfo passiveItemInfo;
+
     private string explanation;
     private int price;
     private int idx;
 
     private Action<int> callBack = null;
 
-    public WeaponInfo SetWeaponInfo { get { return info; } set { info = value; } }
+    public WeaponInfo SetWeaponInfo { get { return weaponInfo; } set { weaponInfo = value; } }
+    public PassiveItemInfo SetPassiveItemInfo { get { return passiveItemInfo; } set { passiveItemInfo = value; } }
     public string SetItemExplanation { get { return explanation; } set { explanation = value; } }
     public int SetItemPrice { get { return price; } set { price = value; } }
     public int SetIndex { get { return idx; } set { idx = value; } }
@@ -32,6 +35,19 @@ public class InGameShopItemController : MonoBehaviour
     public void SetShopItemData(Action<int> _callBack)
     {
         callBack = _callBack;
+        UpdateWeaponItemImage();
+    }
+
+    public void SetWeaponItemData(Action<int> _callBack)
+    {
+        callBack = _callBack;
+        UpdateWeaponItemImage();
+    }
+
+    public void SetPassvieItemData(Action<int> _callBack)
+    {
+        callBack = _callBack;
+        UpdatePassiveItemImage();
     }
 
     private void OnClickButton()
@@ -39,9 +55,14 @@ public class InGameShopItemController : MonoBehaviour
         callBack(idx);
     }
 
-    public void UpdateItemData()
+    public void UpdateWeaponItemImage()
     {
-        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)info.weaponId}");
+        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)weaponInfo.weaponId}");
+    }
+
+    public void UpdatePassiveItemImage()
+    {
+        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)weaponInfo.weaponId}");
     }
 
     public void ActiveEnhance(bool _isActive)
