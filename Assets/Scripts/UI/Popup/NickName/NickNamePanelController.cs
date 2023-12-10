@@ -10,6 +10,7 @@ using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
 using HSMLibrary.Scene;
+using Packet;
 
 public class NickNamePanelController : UIBaseController
 {
@@ -62,12 +63,14 @@ public class NickNamePanelController : UIBaseController
         nickNameInputCheckText.text = NICKNAME_CHECK_TEXT;
     }
 
-    private void OnClickCheckButton()
+    private async void OnClickCheckButton()
     {
         // 서버 연결 통신
+        RequestUserName userName = new RequestUserName();
+        userName.userName = nickNameInputText.text;
+        var check = await GrpcManager.GetInstance.UserName(userName);
 
-        // 결과에 따라서
-        // 성공시
+        //if(check.)
         SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
         // 실패시
         checkButton.interactable = false;

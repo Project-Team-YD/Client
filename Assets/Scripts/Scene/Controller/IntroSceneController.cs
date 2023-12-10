@@ -21,12 +21,16 @@ public class IntroSceneController : BaseSceneController
     /// </summary>
     public void OnClickGameStart()
     {
-        // 서버 통신
-        // 닉네임이 있으면 그대로 진행 
-        // 없으면
-        // var panel = UIManager.getInstance.Show<NickNamePanelController>("NickNamePanel");
-        SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
+        var userName = PlayerManager.getInstance.SetUserName;
 
+        if (string.IsNullOrEmpty(userName))
+        {
+            var panel = UIManager.getInstance.Show<NickNamePanelController>("NickNamePanel");
+        }
+        else
+        {
+            SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
+        }
 
         TransitionManager.getInstance.KillSequence(TransitionManager.TransitionType.FadeInOut);
     }

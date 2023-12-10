@@ -7,6 +7,8 @@ public class PlayerManager : Singleton<PlayerManager>
 {
     private const float ONE_HUNDREDTH = 0.01f;
 
+    private string userName = null;
+
     private float currentGold;
 
     private float maxHp = 0;
@@ -20,6 +22,8 @@ public class PlayerManager : Singleton<PlayerManager>
     private List<WeaponInfo> playerWeapons = new List<WeaponInfo>();
 
     private List<PassiveItemInfo> playerPassiveItem = new List<PassiveItemInfo>();
+
+    public string SetUserName { get { return userName; } set { userName = value; } }
 
     public WeaponController SetPlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
 

@@ -72,6 +72,8 @@ public class StartScene : Scene
 
         isInitialized = true;
 
+        //PlayerManager.getInstance.SetUserName = // 결과를 넣어주세용
+
         SceneHelper.getInstance.ChangeScene(typeof(IntroScene));
     }
     private async UniTask<bool> TableLoading()
