@@ -9,6 +9,7 @@ using HSMLibrary.Extensions;
 using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
+using HSMLibrary.Scene;
 
 public class NickNamePanelController : UIBaseController
 {

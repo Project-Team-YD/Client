@@ -4,7 +4,8 @@ public class PassiveItemInfo
     public string passiveItemName;
     public float maxHp;
     public float regenHp;
-    public float shortDamage;
-    public float longDamage;
+    public float speed;
+    public float damage;
+    public float attackSpeed;
     public int enhance;
 }

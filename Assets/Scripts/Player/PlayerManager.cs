@@ -5,12 +5,15 @@ using UnityEngine;
 
 public class PlayerManager : Singleton<PlayerManager>
 {
+    private const float ONE_HUNDREDTH = 0.01f;
+
     private float currentGold;
 
     private float maxHp = 0;
     private float regenHp = 0;
-    private float shortDamage = 0;
-    private float longDamage = 0;
+    private float speed = 0;
+    private float damage = 0;
+    private float attackSpeed = 0;
 
     private WeaponController playerWeaponController = null;
 
@@ -26,10 +29,11 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public float SetCurrentGold { get { return currentGold; } set { currentGold = value; } }
 
-    public float GetPlayerMaxHP { get { return maxHp; } }
+    public float GetPlayerMaxHP { get { return maxHp * ONE_HUNDREDTH; } }
     public float GetPlayerRegenHp { get { return regenHp; } }
-    public float GetPlayerShortDamage { get { return shortDamage; } }
-    public float GetPlayerLongDamage { get { return longDamage; } }
+    public float GetPlayerSpeed { get { return speed * ONE_HUNDREDTH; } }
+    public float GetPlayerDamage { get { return damage * ONE_HUNDREDTH; } }
+    public float GetPlayerAttackSpeed { get { return attackSpeed * ONE_HUNDREDTH; } }
 
     /// <summary>
     /// 이미 무기 최대 무기를 가지고있을 때 대비하기
@@ -104,16 +108,18 @@ public class PlayerManager : Singleton<PlayerManager>
         // 초기화
         maxHp = 0;
         regenHp = 0;
-        shortDamage = 0;
-        longDamage = 0;
+        damage = 0;
+        speed = 0;
+        attackSpeed = 0;
 
         int count = playerPassiveItem.Count;
         for (int i = 0; i < count; i++)
         {
             maxHp += playerPassiveItem[i].maxHp;
             regenHp += playerPassiveItem[i].regenHp;
-            shortDamage += playerPassiveItem[i].shortDamage;
-            longDamage += playerPassiveItem[i].longDamage;
+            damage += playerPassiveItem[i].damage;
+            speed += playerPassiveItem[i].speed;
+            attackSpeed += playerPassiveItem[i].attackSpeed;
         }
     }
 }

@@ -16,6 +16,8 @@ public class PlayerController : BasePlayerController
     private SpriteRenderer playerSprite;
     private Animator playerAnim;
 
+    private PlayerManager playerManager = null;
+
     private AABB curAABB;
 
     public AABB GetPlayerAABB
@@ -48,6 +50,8 @@ public class PlayerController : BasePlayerController
         playerAnim = _transform.gameObject.GetComponent<Animator>();
 
         playerSprite.sprite = Resources.Load<Sprite>($"Player/player_0");
+
+        playerManager = PlayerManager.getInstance;
     }
 
     public Vector3 SetMapSize
@@ -86,7 +90,7 @@ public class PlayerController : BasePlayerController
         bool isLeft = _dir.x < 0f;
         playerSprite.flipX = !isLeft;
 
-        _speed *= speed;
+        _speed *= speed + (speed + playerManager.GetPlayerSpeed);
 
         base.OnMove(_dir, _speed);
     }

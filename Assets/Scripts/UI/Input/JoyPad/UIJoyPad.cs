@@ -34,7 +34,7 @@ public class UIJoyPad : MoveHandler
         }
     }
 
-    private void Update()
+    private void MoveUpdate()
     {
         OnMove(direction, joypadInputSpeed);
     }
@@ -46,7 +46,7 @@ public class UIJoyPad : MoveHandler
         float distanceInput = Vector2.Distance(joypadBackgroundPos, _inputPos);
         //Debug.Log($"distanceInput / {distanceInput}");
 
-        // ¹æÇâ º¤ÅÍ
+        // ë°©í–¥ ë²¡í„°
         direction = (_inputPos - joypadBackgroundPos).normalized;
 
         UpdateJoypadUI(joypadBackgroundPos, distanceInput, direction);
@@ -54,11 +54,11 @@ public class UIJoyPad : MoveHandler
         distance = Vector2.Distance(joypadBackgroundRectTransform.position, joypadStickRectTransform.position);
         //Debug.Log($"distance / {distance}");
 
-        // speed¸¦ 0~1·Î °è»ê
-        joypadInputSpeed = distance / maxDistance;
+        // speedë¥¼ 0~1ë¡œ ê³„ì‚°
+        // joypadInputSpeed = distance / maxDistance; // ì¡°ì´ìŠ¤í‹±ì˜ ì›€ì§ì„ ë°˜ì˜
         joypadInputSpeed = 1f;
-        // »ı°¢ ÇÊ¿ä
-        Update();
+
+        MoveUpdate();
     }
 
     private void UpdateJoypadUI(Vector2 _joypadBackgroundPos, float _distanceInput, Vector2 _direction)
@@ -88,7 +88,7 @@ public class UIJoyPad : MoveHandler
         return;
 
         #region Joypad Fix
-        // Á¶ÀÌÆĞµå °íÁ¤ÀÏ¶§ Á¶ÀÌÆĞµå À§Ä¡ È®ÀÎ
+        // ì¡°ì´íŒ¨ë“œ ê³ ì •ì¼ë•Œ ì¡°ì´íŒ¨ë“œ ìœ„ì¹˜ í™•ì¸
         //Vector2 joypadPos = new Vector2(joypadBackgroundRectTransform.position.x - (joypadRect.width * HALF), joypadBackgroundRectTransform.position.y - (joypadRect.height * HALF));
 
         //if (joypadPos.x < _inputPos.x && joypadPos.x + joypadRect.width > _inputPos.x

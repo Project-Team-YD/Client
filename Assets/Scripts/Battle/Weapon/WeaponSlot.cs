@@ -15,6 +15,8 @@ public class WeaponSlot : MonoBehaviour
     private WeaponType type;
     private WeaponInfo info;
 
+    private PlayerManager playerManager = null;
+
     private int weaponId;
     private string weaponName;
     private float attackPower;
@@ -68,6 +70,8 @@ public class WeaponSlot : MonoBehaviour
         weaponSprite.sprite = Resources.Load<Sprite>($"Weapon/{type}");
         gameSceneController = _controller;
         isRightWeapon = _isRight;
+
+        playerManager = PlayerManager.getInstance;
     }
     /// <summary>
     /// 플레이어 Transform 저장함수.
@@ -113,7 +117,8 @@ public class WeaponSlot : MonoBehaviour
                     {
                         if (playerTransform != null)
                         {
-                            coolTime = 360 / attackSpeed;
+                            var attackSpeeds = attackSpeed + (attackSpeed * playerManager.GetPlayerAttackSpeed);
+                            coolTime = 360 / attackSpeeds;
                             transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
 
                             // 라인그리기
@@ -153,7 +158,8 @@ public class WeaponSlot : MonoBehaviour
                     {
                         if (playerTransform != null)
                         {
-                            coolTime = 360 / attackSpeed;
+                            var attackSpeeds = attackSpeed + (attackSpeed * playerManager.GetPlayerAttackSpeed);
+                            coolTime = 360 / attackSpeeds;
                             transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
 
                             // 라인그리기
@@ -209,6 +215,7 @@ public class WeaponSlot : MonoBehaviour
                             gameSceneController.FireBullet(enemy, this).Forget();
 
                             var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
+                            attackSpeeds = (int)(attackSpeeds + (attackSpeeds * playerManager.GetPlayerAttackSpeed));
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
@@ -228,6 +235,7 @@ public class WeaponSlot : MonoBehaviour
                             gameSceneController.FireBullet(enemy, this).Forget();
 
                             var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
+                            attackSpeeds = (int)(attackSpeeds + (attackSpeeds * playerManager.GetPlayerAttackSpeed));
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
@@ -244,8 +252,8 @@ public class WeaponSlot : MonoBehaviour
     }
 
     private async UniTaskVoid BossAttackDelay()
-    {        
-        await UniTask.Delay(1000);        
+    {
+        await UniTask.Delay(1000);
         isBossAttack = false;
     }
 

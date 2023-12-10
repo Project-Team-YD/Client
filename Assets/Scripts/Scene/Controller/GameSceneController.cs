@@ -55,6 +55,7 @@ public class GameSceneController : BaseSceneController
     private CancellationTokenSource getTargetEnemyCancel = new CancellationTokenSource();
     private CancellationTokenSource timeManagerCancel;
     private CancellationTokenSource damageTextCancel;
+    private CancellationTokenSource regenHpCancel;
     #endregion
 
     #region InGameUI
@@ -234,7 +235,7 @@ public class GameSceneController : BaseSceneController
     /// <summary>
     /// Wave 시작할때 호출.
     /// </summary>
-    private async void StartGameWave()
+    private void StartGameWave()
     {
         SetGoldText(playerManager.SetCurrentGold);
 
@@ -279,9 +280,11 @@ public class GameSceneController : BaseSceneController
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
         timeManager.PlayTime();
-        currentPlayerHp = playerMaxHp;
+        currentPlayerHp = playerMaxHp + (playerMaxHp * playerManager.GetPlayerMaxHP);
         SetWaveText(gameWave);
         SetHpText(currentPlayerHp);
+
+        RegenHp(regenHpCancel = new CancellationTokenSource()).Forget();
     }
     /// <summary>
     /// Wave 끝났을때 호출.
@@ -325,6 +328,7 @@ public class GameSceneController : BaseSceneController
         {
             timeManagerCancel.Cancel();
             monsterMoveCancel.Cancel();
+            regenHpCancel.Cancel();
             monsterCheckCollisionCancel.Cancel();
 
             EndGameWave();
@@ -996,7 +1000,7 @@ public class GameSceneController : BaseSceneController
             ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
         }
 
-        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);
 
         monster.SetDamage(damage);
 
@@ -1033,7 +1037,7 @@ public class GameSceneController : BaseSceneController
             ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
         }
 
-        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);
 
         bossMonster.SetDamage(damage);
 
@@ -1119,6 +1123,7 @@ public class GameSceneController : BaseSceneController
             monsterCheckCollisionCancel.Cancel();
             monsterRegenCancel.Cancel();
             damageTextCancel.Cancel();
+            regenHpCancel.Cancel();
 
             bossMonster = null;
 
@@ -1136,6 +1141,27 @@ public class GameSceneController : BaseSceneController
             PoolManager.getInstance.RemoveObjectPool<DamageText>();
 
             timeManager.PauseTime();
+        }
+    }
+
+    private async UniTaskVoid RegenHp(CancellationTokenSource _cancellationToken)
+    {
+        while (!_cancellationToken.IsCancellationRequested)
+        {
+            var regenHp = playerManager.GetPlayerMaxHP;
+            if (regenHp > 0)
+            {
+                var maxHp = playerMaxHp + (playerMaxHp * regenHp);
+                if (currentPlayerHp < maxHp)
+                {
+                    currentPlayerHp += regenHp;
+                    if (currentPlayerHp > maxHp)
+                    {
+                        currentPlayerHp = maxHp;
+                    }
+                }
+            }
+            await UniTask.Delay(5000);
         }
     }
 }
