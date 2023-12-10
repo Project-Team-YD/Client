@@ -42,6 +42,8 @@ public class StartScene : Scene
             //-- 게임서버 연결
             ServerManager.GetInstance.ConnectToGrpcGameServer();
 
+            PlayerManager.getInstance.SetUserName = loginResponse.userName;
+
             try
             {
                 //-- 게임서버로부터 받을 메시지들 처리
@@ -60,7 +62,7 @@ public class StartScene : Scene
         tablemanager.SetTableShop(tables.shopTable);
         tablemanager.SetTableEnhant(tables.weaponEnchantTable);
 
-        bool isTableLoadSuccess = false;        
+        bool isTableLoadSuccess = false;
 
         isTableLoadSuccess = await TableLoading();
 
@@ -72,15 +74,13 @@ public class StartScene : Scene
 
         isInitialized = true;
 
-        //PlayerManager.getInstance.SetUserName = // 결과를 넣어주세용
-
         SceneHelper.getInstance.ChangeScene(typeof(IntroScene));
     }
     private async UniTask<bool> TableLoading()
     {
         await UniTask.WhenAll(EnemyTable.getInstance.Initialize()
             , MapTable.getInstance.Initialize()
-            , WeaponTable.getInstance.Initialize()
+            // , WeaponTable.getInstance.Initialize()
             , StageTable.getInstance.Initialize());
         return true;
     }
