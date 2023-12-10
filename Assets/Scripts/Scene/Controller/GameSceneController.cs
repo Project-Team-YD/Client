@@ -235,7 +235,7 @@ public class GameSceneController : BaseSceneController
     /// <summary>
     /// Wave 시작할때 호출.
     /// </summary>
-    private void StartGameWave()
+    private async void StartGameWave()
     {
         SetGoldText(playerManager.SetCurrentGold);
 

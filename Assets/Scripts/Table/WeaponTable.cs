@@ -23,24 +23,26 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
     {
         tableManager = TableManager.getInstance;
         int count = tableManager.GetWeaponData();
+        weaponInfos = new WeaponInfo[count];
         for (int i = 0; i < count; i++)
         {
             WeaponInfo weapon = new WeaponInfo
             {
-                weaponId = tableManager.GetItemInfo(i + 1).id,
-                weaponName = tableManager.GetItemInfo(i + 1).itemName,
-                attackPower = tableManager.GetWeaponItem(i + 1).damage,
-                attackRange = tableManager.GetWeaponItem(i + 1).range,
-                attackSpeed = tableManager.GetWeaponItem(i + 1).speed,                
+                weaponId = tableManager.GetItemInfo(i).id,
+                weaponName = tableManager.GetItemInfo(i).itemName,
+                attackPower = tableManager.GetWeaponItem(i).damage,
+                attackRange = tableManager.GetWeaponItem(i).range,
+                attackSpeed = tableManager.GetWeaponItem(i).speed,
+                enhance = 0
             };
-            if (inventoryItem.Count <= i)
-            {
-                weapon.enhance = inventoryItem[i + 1].enchant;
-            }
-            else
-            {
-                weapon.enhance = 0;
-            }
+            //if (inventoryItem.Count > i)
+            //{
+            //    weapon.enhance = inventoryItem[i + 1].enchant;
+            //}
+            //else
+            //{
+            //    weapon.enhance = 0;
+            //}
             weaponInfos[i] = weapon;
         }
     }    
