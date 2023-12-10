@@ -40,6 +40,7 @@ namespace Packet
     public class ResponseLogin : Response
     {
         public string UUID;
+        public string userName;
         public string heartBeat;
     }
     #endregion
@@ -210,7 +211,11 @@ namespace Packet
         public Effect[] effect;
     }
     #endregion
-    #region
+    #region 닉네임
+    public class RequestUserName
+    {
+        public string userName;
+    }
     #endregion
     #region
     #endregion

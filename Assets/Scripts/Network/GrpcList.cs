@@ -105,5 +105,16 @@ public partial class GrpcManager
         var response = JsonConvert.DeserializeObject<ResponseBuyIngameItem>(result);
         return response;
     }
+
+    public async Task<Response> UserName(RequestUserName requestPacket)
+    {
+        string rpcKey = "user_name";
+        string jsonData = JsonConvert.SerializeObject(requestPacket);
+
+        string result = await SendRpcAsync(rpcKey, jsonData);
+
+        var response = JsonConvert.DeserializeObject<Response>(result);
+        return response;
+    }
 }
 
