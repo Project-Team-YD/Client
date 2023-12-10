@@ -52,6 +52,7 @@ public class NickNamePanelController : UIBaseController
 
         Initialize();
 
+        nickNameInputText.interactable = true;
         checkButton.interactable = false;
     }
 
@@ -65,16 +66,23 @@ public class NickNamePanelController : UIBaseController
 
     private async void OnClickCheckButton()
     {
+        nickNameInputText.interactable = false;
         // 서버 연결 통신
         RequestUserName userName = new RequestUserName();
         userName.userName = nickNameInputText.text;
         var check = await GrpcManager.GetInstance.UserName(userName);
 
-        //if(check.)
-        SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
-        // 실패시
-        checkButton.interactable = false;
-        // + 오류 메세지
+        if ((MessageCode)check.code == MessageCode.Success)
+        {
+            PlayerManager.getInstance.SetUserName = nickNameInputText.text;
+            SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
+        }
+        else
+        {
+            nickNameInputWarningText.text = NICKNAME_CHECK_OVERLAP_TEXT;
+            checkButton.interactable = false;
+            nickNameInputText.interactable = true;
+        }
     }
 
     private void InputFieldValueChanged(string _text)
