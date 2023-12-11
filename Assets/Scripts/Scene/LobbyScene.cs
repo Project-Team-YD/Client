@@ -10,7 +10,7 @@ public class LobbyScene : Scene
     {
         TimeManager.getInstance.PlayTime();
         var result = await GrpcManager.GetInstance.LoadInventory();
-        WeaponTable.getInstance.SetinventoryData(result.items);
+        WeaponTable.getInstance.SetInventoryData(result.items);
         WeaponTable.getInstance.InitWeaponInfo();
         //SceneHelper.getInstance.ChangeScene(typeof(GameScene));
     }

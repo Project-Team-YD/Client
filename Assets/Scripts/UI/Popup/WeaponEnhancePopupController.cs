@@ -9,6 +9,7 @@ using HSMLibrary.Extensions;
 using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
+using Packet;
 
 public class WeaponEnhancePopupController : UIBaseController, IPopup
 {
@@ -21,10 +22,13 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     [SerializeField] private TextMeshProUGUI enhanceText = null;
     [SerializeField] private TextMeshProUGUI enhanceButtonText = null;
     [SerializeField] private TextMeshProUGUI costText = null;
+    [SerializeField] private Button EnhanceInfoBtn = null;
+    [SerializeField] private GameObject EnhanceInfoPopup = null;
 
-    private UIManager uiMgr = null;
-    private int costValue = 100000000;
+    private UIManager uiMgr = null;    
     private WeaponInfo[] weaponInfos = null;
+    private InventoryItem item = null;
+    private TableManager tableMgr = null;    
 
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
@@ -33,28 +37,34 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     {
         base.Awake();
         uiMgr = UIManager.getInstance;
+        tableMgr = TableManager.getInstance;        
         enhanceBtn.onClick.AddListener(OnClickEnhanceButton);
+        EnhanceInfoBtn.onClick.AddListener(OnClickEnhanceInfoButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
         weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
         weaponImage.enabled = false;
         enhanceText.enabled = false;
+        EnhanceInfoPopup.SetActive(false);
+        enhanceBtn.interactable = false;
         Initialize();
     }
 
     protected override void Initialize()
     {
-        int weaponCount = weaponInfos.Length;        
+        int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
         for (int i = 0; i < weaponCount; i++)
         {
+            item = WeaponTable.getInstance.GetInventoryData(i);
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
-            var componenet = newObject.GetComponent<InventorySlotView>();            
+            var componenet = newObject.GetComponent<InventorySlotView>();
+            weaponInfos[i].enhance = item.enchant;
             componenet.InitWeaponInfo(weaponInfos[i]);
             componenet.SetWeaponImage();
             componenet.SetWeaponEnhanceController(this);
         }
         enhancePopupText.text = ENHANCE_POPUP_TEXT;
         enhanceButtonText.text = ENHANCE_TEXT;
-        costText.text = string.Format("비용 : {0:0,0}", costValue);
+        costText.text = string.Format("비용 : {0}", 0);
     }
     /// <summary>
     /// 무기강화 팝업 인벤토리에서 무기 선택시 해당 무기의 이미지셋팅과 정보를 가져오는 함수.
@@ -62,9 +72,15 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <param name="_slotIndex">인벤토리 무기 슬릇의 인덱스</param>
     public void SetSelectSlotWeaponImage(int _slotIndex)
     {
+        int price = tableMgr.GetWeaponEnchantInfo(weaponInfos[_slotIndex].enhance + 1).price;
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
+        costText.text = string.Format("비용 : {0:0,0}", price);
+        if(PlayerManager.getInstance.CurrentMoney >= price)
+        {
+            enhanceBtn.interactable = true;
+        }
     }
     /// <summary>
     /// 팝업정보들 초기상태도 되돌림.
@@ -74,6 +90,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         weaponImage.sprite = null;
+        costText.text = string.Format("비용 : {0}", 0);
     }
     /// <summary>
     /// 무기 강화 버튼 클릭시 호출되는 함수.
@@ -81,6 +98,11 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     private void OnClickEnhanceButton()
     {
 
+    }
+
+    private void OnClickEnhanceInfoButton()
+    {
+        EnhanceInfoPopup.SetActive(true);
     }
 
     private void OnClickCloseButton()

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,6 +9,7 @@ public class InventorySlotView : MonoBehaviour
 {
     [SerializeField] private Image weaponImage = null;
     [SerializeField] private Button slotBtn = null;
+    [SerializeField] private TextMeshProUGUI enhanceText = null;
 
     private WeaponEnhancePopupController weaponEnhancePopupController = null;
     private WeaponSelectPopupController weaponSelectPopupController = null;
@@ -27,6 +29,7 @@ public class InventorySlotView : MonoBehaviour
     public void InitWeaponInfo(WeaponInfo _info)
     {
         info = _info;
+        enhanceText.text = $"+{info.enhance}";
         slotBtn.onClick.AddListener(OnClickSlot);
     }
     /// <summary>

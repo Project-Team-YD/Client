@@ -61,6 +61,7 @@ public class StartScene : Scene
         tablemanager.SetTableEffect(tables.itemEffectTable);
         tablemanager.SetTableShop(tables.shopTable);
         tablemanager.SetTableEnhant(tables.weaponEnchantTable);
+        PlayerManager.getInstance.CurrentMoney = tables.money;
 
         bool isTableLoadSuccess = false;
 

@@ -9,6 +9,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private string userName = null;
 
+    private float currentMoney;
     private float currentGold;
 
     private float maxHp = 0;
@@ -30,6 +31,8 @@ public class PlayerManager : Singleton<PlayerManager>
     public List<WeaponInfo> SetPlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
 
     public List<PassiveItemInfo> SetPlayerPassiveItem { get { return playerPassiveItem; } set { playerPassiveItem = value; } }
+
+    public float CurrentMoney { get { return currentMoney; } set { currentMoney = value; } }
 
     public float SetCurrentGold { get { return currentGold; } set { currentGold = value; } }
 

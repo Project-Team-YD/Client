@@ -24,7 +24,7 @@ public class TableManager : Singleton<TableManager>
         return itemTable[_key];
     }
 
-    public int GetWeaponData()
+    public int GetWeaponDataCount()
     {
         return itemWeaponTable.Count;
     }
@@ -67,5 +67,10 @@ public class TableManager : Singleton<TableManager>
     public WeaponEnchant GetWeaponEnchantInfo(int _key)
     {
         return weaponEnchantTable[_key];
+    }
+
+    public int GetEnchantInfoCount()
+    {
+        return weaponEnchantTable.Count;
     }
 }

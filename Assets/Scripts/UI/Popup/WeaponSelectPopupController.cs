@@ -9,6 +9,7 @@ using HSMLibrary.Extensions;
 using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
+using Packet;
 
 public class WeaponSelectPopupController : UIBaseController, IPopup
 {
@@ -26,6 +27,8 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private TextMeshProUGUI joinText = null;
     private UIManager uiMgr = null;
     private WeaponInfo[] weaponInfos = null;
+    private InventoryItem item = null;
+    private TableManager tableMgr = null;
 
     private const string DUNGEON_JOIN_TEXT = "던전입장";
     private const string EQUIP_TEXT = "착용중";
@@ -38,6 +41,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     {
         base.Awake();
         uiMgr = UIManager.getInstance;
+        tableMgr = TableManager.getInstance;
         joinBtn.onClick.AddListener(OnClickJoinButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
         equipmentText = equipBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
@@ -53,11 +57,13 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
 
     protected override void Initialize()
     {
-        int weaponCount = weaponInfos.Length;
+        int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
         for (int i = 0; i < weaponCount; i++)
         {
+            item = WeaponTable.getInstance.GetInventoryData(i);
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
             var componenet = newObject.GetComponent<InventorySlotView>();
+            weaponInfos[i].enhance = item.enchant;
             componenet.InitWeaponInfo(weaponInfos[i]);
             componenet.SetWeaponImage();
             componenet.SetWeaponSelectController(this);

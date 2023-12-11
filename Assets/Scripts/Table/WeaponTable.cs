@@ -22,7 +22,7 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
     public void InitWeaponInfo()
     {
         tableManager = TableManager.getInstance;
-        int count = tableManager.GetWeaponData();
+        int count = tableManager.GetWeaponDataCount();
         weaponInfos = new WeaponInfo[count];
         for (int i = 0; i < count; i++)
         {
@@ -47,9 +47,19 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
         }
     }    
 
-    public void SetinventoryData(Dictionary<int, InventoryItem> _dictionary)
+    public void SetInventoryData(Dictionary<int, InventoryItem> _dictionary)
     {
         inventoryItem = _dictionary;
+    }
+
+    public InventoryItem GetInventoryData(int _key)
+    {
+        return inventoryItem[_key];
+    }
+
+    public int GetInventoryCount()
+    {
+        return inventoryItem.Count;
     }
 
     public WeaponInfo GetWeaponInfoByIndex(int _index)

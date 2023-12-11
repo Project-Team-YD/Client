@@ -12,6 +12,7 @@ public class LobbySceneController : BaseSceneController
     [SerializeField] Button enhanceBtn = null;
     [SerializeField] Button rankingBtn = null;
     [SerializeField] Button gameStartBtn = null;
+    [SerializeField] TextMeshProUGUI moneyText = null;
     [SerializeField] TextMeshProUGUI playerNickName = null;
 
     private UIManager uiMgr = null;
@@ -24,6 +25,7 @@ public class LobbySceneController : BaseSceneController
         rankingBtn.onClick.AddListener(OnClickRankingButton);
         gameStartBtn.onClick.AddListener(OnClickDungeonButton);
         playerNickName.text = PlayerManager.getInstance.UserName;
+        moneyText.text = $"{PlayerManager.getInstance.CurrentMoney}";
     }
     private void Start()
     {
