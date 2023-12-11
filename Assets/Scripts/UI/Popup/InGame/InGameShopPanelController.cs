@@ -9,6 +9,7 @@ using HSMLibrary.Extensions;
 using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using TMPro;
+using Packet;
 
 public class InGameShopPanelController : UIBaseController
 {
@@ -79,6 +80,7 @@ public class InGameShopPanelController : UIBaseController
     private Action callBack = null;
 
     private int selectItemIndex;
+    private int gameStage;
 
     protected override void Awake()
     {
@@ -96,7 +98,7 @@ public class InGameShopPanelController : UIBaseController
         Initialized();
 
         // 플레이어가 가질수있는 최대 무기 개수
-        MAX_PLAYER_WEAPON_COUNT = playerManager.SetPlayerWeaponController.GetWeapons.Length;
+        MAX_PLAYER_WEAPON_COUNT = playerManager.PlayerWeaponController.GetWeapons.Length;
 
         weaponItemList = new List<InGameShopItemController>(MAX_PLAYER_WEAPON_COUNT);
 
@@ -117,6 +119,16 @@ public class InGameShopPanelController : UIBaseController
             var item = GameObject.Instantiate(shopItemController, itemSlotTransform);
             item.gameObject.SetActive(false);
             passiveItemList.Add(item);
+        }
+
+
+        shopItemList = new List<InGameShopItemController>(MAX_SHOP_ITEM_COUNT);
+
+        for (int i = 0; i < MAX_SHOP_ITEM_COUNT; i++)
+        {
+            var item = GameObject.Instantiate(shopItemController, itemShopSlotTransform);
+            item.gameObject.SetActive(false);
+            shopItemList.Add(item);
         }
 
         buyObjectGroup.SetActive(false);
@@ -145,43 +157,47 @@ public class InGameShopPanelController : UIBaseController
     /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
     /// 서버에서 데이터 받는 메서드 따로 만들 필요 있음
     /// </summary>
-    public void SetData(Action _callback)
+    public async void SetData(Action _callback, int _gameStage)
     {
         callBack = _callback;
+        gameStage = _gameStage;
 
-        possessionGoldText.text = $"{playerManager.SetCurrentGold}";
+        possessionGoldText.text = $"{playerManager.CurrentGold}";
 
         UpdateMyWeaponData();
         UpdateMyPassiveItemData();
 
-        // MAX_PLAYER_WEAPON_COUNT와 비교해서 무기는 더이상 안나오게 바꿔야함 혹은 구매 못하게 해야함
-        if (shopItemList == null)
-        {
-            shopItemList = new List<InGameShopItemController>(MAX_SHOP_ITEM_COUNT);
 
-            for (int i = 0; i < MAX_SHOP_ITEM_COUNT; i++)
+        RequestLoadIngameShop loadIngameShop = new RequestLoadIngameShop();
+        loadIngameShop.currentStage = gameStage;
+        loadIngameShop.gold = (int)playerManager.CurrentGold;
+        var result = await GrpcManager.GetInstance.LoadIngameShop(loadIngameShop);
+
+        if ((MessageCode)result.code == MessageCode.Success)
+        {
+            int count = result.items.Length;
+
+            var items = result.items;
+            for (int i = 0; i < count; i++)
             {
-                var item = GameObject.Instantiate(shopItemController, itemShopSlotTransform);
-                item.SetWeaponInfo = weaponInfos[i];
+                // item 정보 가져와서 넣어주기
+                // shopItemList[i]
+                //shopItemList[i].SetItemExplanation = $"{idx}번 아이템 설명";
                 var idx = i;
-                item.SetItemExplanation = $"{idx}번 아이템 설명";
-                item.SetItemPrice = idx * 1000;
-                item.SetIndex = idx;
-                item.SetShopItemData(OnClickItem);
-                shopItemList.Add(item);
+                shopItemList[i].SetItemId = items[i].id;
+                shopItemList[i].SetIndex = idx;
+                shopItemList[i].SetItemPrice = items[i].price;
+                shopItemList[i].SetShopItemData(OnClickItem);
+                shopItemList[i].ActiveEnhance(false);
+                shopItemList[i].gameObject.SetActive(true);
             }
+
+            OnClickItem(0);
         }
-
-
-
-        // 임시 
-        var count = weaponInfos.Length;
-        for (int i = 0; i < count; i++)
+        else
         {
-            shopItemList[i].ActiveEnhance(false);
+            Debug.Log("ServerError");
         }
-
-        OnClickItem(0);
     }
 
     /// <summary>
@@ -191,7 +207,7 @@ public class InGameShopPanelController : UIBaseController
     // 내가 장착중인 아이템 불러오기
     private void UpdateMyWeaponData()
     {
-        var items = playerManager.SetPlayerWeapons;
+        var items = playerManager.PlayerWeapons;
         int count = items.Count;
 
         for (int i = 0; i < count; i++)
@@ -203,7 +219,7 @@ public class InGameShopPanelController : UIBaseController
                 weapon.gameObject.SetActive(true);
             }
 
-            weapon.SetWeaponInfo = GetWeapon(items[i].weaponId);
+            weapon.SetItemId = items[i].weaponId;
             var idx = i;
             weapon.SetItemExplanation = $"{idx}번 아이템 설명";
             weapon.SetIndex = idx;
@@ -215,7 +231,7 @@ public class InGameShopPanelController : UIBaseController
 
     private void UpdateMyPassiveItemData()
     {
-        var items = playerManager.SetPlayerPassiveItem;
+        var items = playerManager.PlayerPassiveItem;
         int count = items.Count;
 
         for (int i = 0; i < count; i++)
@@ -227,7 +243,7 @@ public class InGameShopPanelController : UIBaseController
                 item.gameObject.SetActive(true);
             }
 
-            item.SetPassiveItemInfo = items[i];
+            item.SetItemId = items[i].passiveItemId;
             var idx = i;
             item.SetItemExplanation = $"{idx}번 아이템 설명";
             item.SetIndex = idx;
@@ -274,17 +290,40 @@ public class InGameShopPanelController : UIBaseController
     /// <summary>
     /// 구매 버튼
     /// </summary>
-    private void OnClickBuyButton()
+    private async void OnClickBuyButton()
     {
-        var addItem = shopItemList[selectItemIndex].SetWeaponInfo;
-        playerManager.AddPlayerWeapon(addItem);
+        RequestBuyIngameItem buyIngameItem = new RequestBuyIngameItem();
+        buyIngameItem.itemId = shopItemList[selectItemIndex].SetItemId;
+        buyIngameItem.currentStage = gameStage;
+        var result = await GrpcManager.GetInstance.BuyIngameItem(buyIngameItem);
+        if ((MessageCode)result.code == MessageCode.Success)
+        {
+            var addItem = GetWeapon(shopItemList[selectItemIndex].SetItemId);
+            playerManager.AddPlayerWeapon(addItem);
 
-        buyObjectGroup.SetActive(true);
+            // 플레이어 무기 id enchant
+            for (int i = 0; i < result.slot.Length; i++)
+            {
+                Debug.Log($"Slot {i} / Id: {result.slot[i].id} / Enchant : {result.slot[i].enchant}");
+            }
+            // 플레이어 passive item id enchant
+            for (int i = 0; i < result.effect.Length; i++)
+            {
+                Debug.Log($"Effect {i} / Id: {result.effect[i].id} / Count : {result.effect[i].count}");
+            }
 
-        playerManager.SetPlayerWeaponController.UpdateWeapon();
 
-        playerManager.SetCurrentGold -= shopItemList[selectItemIndex].SetItemPrice;
-        possessionGoldText.text = $"{playerManager.SetCurrentGold}";
+            buyObjectGroup.SetActive(true);
+
+            playerManager.PlayerWeaponController.UpdateWeapon();
+
+            playerManager.CurrentGold = result.gold;
+            possessionGoldText.text = $"{playerManager.CurrentGold}";
+        }
+        else
+        {
+            Debug.Log("ServerError");
+        }
     }
 
     #region 구매완료 팝업

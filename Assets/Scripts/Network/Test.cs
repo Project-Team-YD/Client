@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 public class Test : MonoBehaviour
 {
-
+    // 랭킹 관련 변수 float 낮은 순서대로
     private async void Start()
     {
         ServerManager.GetInstance.ConnectToGrpcLoginServer();

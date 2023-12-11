@@ -26,15 +26,15 @@ public class PlayerManager : Singleton<PlayerManager>
 
     public string UserName { get { return userName; } set { userName = value; } }
 
-    public WeaponController SetPlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
+    public WeaponController PlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
 
-    public List<WeaponInfo> SetPlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
+    public List<WeaponInfo> PlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
 
-    public List<PassiveItemInfo> SetPlayerPassiveItem { get { return playerPassiveItem; } set { playerPassiveItem = value; } }
+    public List<PassiveItemInfo> PlayerPassiveItem { get { return playerPassiveItem; } set { playerPassiveItem = value; } }
 
     public float CurrentMoney { get { return currentMoney; } set { currentMoney = value; } }
 
-    public float SetCurrentGold { get { return currentGold; } set { currentGold = value; } }
+    public float CurrentGold { get { return currentGold; } set { currentGold = value; } }
 
     public float GetPlayerMaxHP { get { return maxHp * ONE_HUNDREDTH; } }
     public float GetPlayerRegenHp { get { return regenHp; } }

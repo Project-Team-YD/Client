@@ -107,7 +107,7 @@ public class GameSceneController : BaseSceneController
         hpStringBuilder.Clear();
         goldStringBuilder.Clear();
         waveStringBuilder.Clear();
-        playerManager.SetCurrentGold = 0;
+        playerManager.CurrentGold = 0;
         gameWave = 0;
         endWave = StageTable.getInstance.GetEndWave();
     }
@@ -163,7 +163,7 @@ public class GameSceneController : BaseSceneController
 
         StartGameWave();
 
-        playerManager.SetPlayerWeaponController.StartAttack();
+        playerManager.PlayerWeaponController.StartAttack();
     }
 
     private void LateUpdate()
@@ -237,7 +237,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void StartGameWave()
     {
-        SetGoldText(playerManager.SetCurrentGold);
+        SetGoldText(playerManager.CurrentGold);
 
         damageTextCancel = new CancellationTokenSource();
 
@@ -257,7 +257,7 @@ public class GameSceneController : BaseSceneController
 #endif
         StartMoveMonster();
         StartCheckMonster();
-        weapons = playerManager.SetPlayerWeaponController.GetWeapons;
+        weapons = playerManager.PlayerWeaponController.GetWeapons;
         isTouch = false;
     }
 
@@ -275,7 +275,7 @@ public class GameSceneController : BaseSceneController
         gameWave++;
         StartGameWave();
 
-        playerManager.SetPlayerWeaponController.StartAttack();
+        playerManager.PlayerWeaponController.StartAttack();
 
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
@@ -293,7 +293,7 @@ public class GameSceneController : BaseSceneController
     {
         damageTextCancel.Cancel();
 
-        playerManager.SetPlayerWeaponController.StopAttack();
+        playerManager.PlayerWeaponController.StopAttack();
 
         SetPlaying(false);
 
@@ -313,7 +313,7 @@ public class GameSceneController : BaseSceneController
         else
         {
             var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-            popup.SetData(StartNextWave);
+            popup.SetData(StartNextWave, gameWave);
         }
 
         joypadController.OnJoypadUp();
@@ -350,7 +350,7 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private void SetPlayTime()
     {
-        sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.SetTime / 60, timeManager.SetTime % 60));
+        sb.Append(string.Format("{0}:{1:N3}", (int)timeManager.GetTime / 60, timeManager.GetTime % 60));
         timeText.text = sb.ToString();
         sb.Clear();
     }
@@ -1010,8 +1010,8 @@ public class GameSceneController : BaseSceneController
             monsterPool.EnqueueObject(monsterList[_index]);
             monsterList.RemoveAt(_index);
             deathCount++;
-            playerManager.SetCurrentGold += 100;
-            SetGoldText(playerManager.SetCurrentGold);
+            playerManager.CurrentGold += 100;
+            SetGoldText(playerManager.CurrentGold);
             CheckGameWaveEnd(deathCount >= MAX_WAVE_MONSTER);
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();

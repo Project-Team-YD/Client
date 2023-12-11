@@ -11,21 +11,18 @@ public class InGameShopItemController : MonoBehaviour
     [SerializeField] private Button thisButton = null;
     [SerializeField] private TextMeshProUGUI enhance = null;
 
-    private WeaponInfo weaponInfo;
-    private PassiveItemInfo passiveItemInfo;
-
     private string explanation;
     private int price;
     private int idx;
+    private int itemId;
 
     private Action<int> callBack = null;
 
-    public WeaponInfo SetWeaponInfo { get { return weaponInfo; } set { weaponInfo = value; } }
-    public PassiveItemInfo SetPassiveItemInfo { get { return passiveItemInfo; } set { passiveItemInfo = value; } }
     public string SetItemExplanation { get { return explanation; } set { explanation = value; } }
     public int SetItemPrice { get { return price; } set { price = value; } }
     public int SetIndex { get { return idx; } set { idx = value; } }
     public string SetEnhance { set { enhance.text = value; } }
+    public int SetItemId { get { return itemId; } set { itemId = value; } }
 
     private void Awake()
     {
@@ -57,12 +54,12 @@ public class InGameShopItemController : MonoBehaviour
 
     public void UpdateWeaponItemImage()
     {
-        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)weaponInfo.weaponId}");
+        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");
     }
 
     public void UpdatePassiveItemImage()
     {
-        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)weaponInfo.weaponId}");
+        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");
     }
 
     public void ActiveEnhance(bool _isActive)

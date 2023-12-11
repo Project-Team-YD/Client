@@ -9,7 +9,7 @@ public class TimeManager : Singleton<TimeManager>
 {
     private float time;
 
-    public float SetTime { get { return time; } set { time = value; } }
+    public float GetTime { get { return time; } }
 
     public void ResetTime()
     {
@@ -41,7 +41,7 @@ public class TimeManager : Singleton<TimeManager>
         {
             time += Time.deltaTime;
 
-            await UniTask.Yield();            
+            await UniTask.Yield();
         }
     }
 }

@@ -25,7 +25,7 @@ public class WeaponController : MonoBehaviour
 
         playerTransform = gameObject.transform.parent.transform;
 
-        var startWeapon = playerManager.SetPlayerWeapons[START_WEAPON_NUM];
+        var startWeapon = playerManager.PlayerWeapons[START_WEAPON_NUM];
         isRight = false;
         slot[START_WEAPON_NUM].InitWeapon(startWeapon, gameSceneController, isRight);
         slot[START_WEAPON_NUM].SetTarget(playerTransform);
@@ -47,12 +47,12 @@ public class WeaponController : MonoBehaviour
             weaponLocalPos[i] = localPos;
         }
 
-        playerManager.SetPlayerWeaponController = this;
+        playerManager.PlayerWeaponController = this;
     }
 
     public void StartAttack()
     {
-        int weaponCount = playerManager.SetPlayerWeapons.Count;
+        int weaponCount = playerManager.PlayerWeapons.Count;
         for (int i = 0; i < weaponCount; i++)
         {
             slot[i].WeaponAttack();
@@ -70,10 +70,10 @@ public class WeaponController : MonoBehaviour
 
     public void UpdateWeapon()
     {
-        int weaponCount = playerManager.SetPlayerWeapons.Count;
+        int weaponCount = playerManager.PlayerWeapons.Count;
         for (int i = 0; i < weaponCount; i++)
         {
-            var weapons = playerManager.SetPlayerWeapons[i];
+            var weapons = playerManager.PlayerWeapons[i];
             isRight = i == 0 ? false : true;
             slot[i].InitWeapon(weapons, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
