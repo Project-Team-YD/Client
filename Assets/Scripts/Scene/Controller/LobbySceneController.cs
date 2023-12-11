@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using HSMLibrary.Manager;
+using TMPro;
 
 public class LobbySceneController : BaseSceneController
 {
@@ -11,6 +12,7 @@ public class LobbySceneController : BaseSceneController
     [SerializeField] Button enhanceBtn = null;
     [SerializeField] Button rankingBtn = null;
     [SerializeField] Button gameStartBtn = null;
+    [SerializeField] TextMeshProUGUI playerNickName = null;
 
     private UIManager uiMgr = null;
 
@@ -21,6 +23,7 @@ public class LobbySceneController : BaseSceneController
         enhanceBtn.onClick.AddListener(OnClickEnhanceButton);
         rankingBtn.onClick.AddListener(OnClickRankingButton);
         gameStartBtn.onClick.AddListener(OnClickDungeonButton);
+        playerNickName.text = PlayerManager.getInstance.UserName;
     }
     private void Start()
     {

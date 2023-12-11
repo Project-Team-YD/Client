@@ -42,7 +42,7 @@ public class StartScene : Scene
             //-- 게임서버 연결
             ServerManager.GetInstance.ConnectToGrpcGameServer();
 
-            PlayerManager.getInstance.SetUserName = loginResponse.userName;
+            PlayerManager.getInstance.UserName = loginResponse.userName;
 
             try
             {

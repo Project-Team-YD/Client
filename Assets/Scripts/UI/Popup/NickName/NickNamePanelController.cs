@@ -74,7 +74,7 @@ public class NickNamePanelController : UIBaseController
 
         if ((MessageCode)check.code == MessageCode.Success)
         {
-            PlayerManager.getInstance.SetUserName = nickNameInputText.text;
+            PlayerManager.getInstance.UserName = nickNameInputText.text;
             SceneHelper.getInstance.ChangeScene(typeof(LobbyScene));
         }
         else

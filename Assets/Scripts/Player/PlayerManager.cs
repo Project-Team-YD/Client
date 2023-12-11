@@ -23,7 +23,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private List<PassiveItemInfo> playerPassiveItem = new List<PassiveItemInfo>();
 
-    public string SetUserName { get { return userName; } set { userName = value; } }
+    public string UserName { get { return userName; } set { userName = value; } }
 
     public WeaponController SetPlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
 

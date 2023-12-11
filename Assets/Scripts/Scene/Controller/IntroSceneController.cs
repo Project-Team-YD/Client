@@ -21,7 +21,7 @@ public class IntroSceneController : BaseSceneController
     /// </summary>
     public void OnClickGameStart()
     {
-        var userName = PlayerManager.getInstance.SetUserName;
+        var userName = PlayerManager.getInstance.UserName;
 
         if (string.IsNullOrEmpty(userName))
         {
