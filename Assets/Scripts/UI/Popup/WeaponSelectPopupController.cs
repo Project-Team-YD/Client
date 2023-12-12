@@ -66,17 +66,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
             componenet.SetWeaponImage();
             componenet.SetWeaponSelectController(this);
         }
-        //int weaponCount = WeaponTable.getInstance.GetInventoryData(); //weaponInfos.Length;
-        //for (int i = 0; i < weaponCount; i++)
-        //{
-        //    item = WeaponTable.getInstance.GetInventoryData(i);
-        //    GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
-        //    var componenet = newObject.GetComponent<InventorySlotView>();
-        //    weaponInfos[i].enhance = item.enchant;
-        //    componenet.InitWeaponInfo(weaponInfos[i]);
-        //    componenet.SetWeaponImage();
-        //    componenet.SetWeaponSelectController(this);
-        //}
+        
         dungeonJoinText.text = DUNGEON_JOIN_TEXT;
         equipText.text = EQUIP_TEXT;
         equipmentText.text = EQUIPMENT_TEXT;

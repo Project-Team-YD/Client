@@ -21,7 +21,10 @@ public class TableManager : Singleton<TableManager>
 
     public Item GetItemInfo(int _key)
     {
-        return itemTable[_key];
+        if (itemTable.ContainsKey(_key))
+            return itemTable[_key];
+        else
+            return null;
     }
 
     public int GetWeaponDataCount()
@@ -36,7 +39,10 @@ public class TableManager : Singleton<TableManager>
 
     public ItemWeapon GetWeaponItem(int _key)
     {
-        return itemWeaponTable[_key];
+        if (itemWeaponTable.ContainsKey(_key))
+            return itemWeaponTable[_key];
+        else
+            return null;
     }
 
     public void SetTableEffect(Dictionary<int, ItemEffect> _dictionary)
@@ -46,7 +52,10 @@ public class TableManager : Singleton<TableManager>
 
     public ItemEffect GetEffectItem(int _key)
     {
-        return itemEffectTable[_key];
+        if (itemEffectTable.ContainsKey(_key))
+            return itemEffectTable[_key];
+        else
+            return null;
     }
 
     public void SetTableShop(Dictionary<int, ShopItem> _dictionary)
@@ -56,7 +65,15 @@ public class TableManager : Singleton<TableManager>
 
     public ShopItem GetShopItem(int _key)
     {
-        return shopTable[_key];
+        if (shopTable.ContainsKey(_key))
+            return shopTable[_key];
+        else
+            return null;
+    }
+
+    public int GetShopDataCount()
+    {
+        return shopTable.Count;
     }
 
     public void SetTableEnhant(Dictionary<int, WeaponEnchant> _dictionary)
@@ -66,7 +83,10 @@ public class TableManager : Singleton<TableManager>
 
     public WeaponEnchant GetWeaponEnchantInfo(int _key)
     {
-        return weaponEnchantTable[_key];
+        if (weaponEnchantTable.ContainsKey(_key))
+            return weaponEnchantTable[_key];
+        else
+            return null;
     }
 
     public int GetEnchantInfoCount()

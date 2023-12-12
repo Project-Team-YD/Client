@@ -59,17 +59,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
             componenet.SetWeaponImage();
             componenet.SetWeaponEnhanceController(this);
         }
-        //int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
-        //for (int i = 0; i < weaponCount; i++)
-        //{
-        //    item = WeaponTable.getInstance.GetInventoryData(i);
-        //    GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
-        //    var componenet = newObject.GetComponent<InventorySlotView>();
-        //    weaponInfos[i].enhance = item.enchant;
-        //    componenet.InitWeaponInfo(weaponInfos[i]);
-        //    componenet.SetWeaponImage();
-        //    componenet.SetWeaponEnhanceController(this);
-        //}
+        
         enhancePopupText.text = ENHANCE_POPUP_TEXT;
         enhanceButtonText.text = ENHANCE_TEXT;
         costText.text = string.Format("비용 : {0}", 0);
