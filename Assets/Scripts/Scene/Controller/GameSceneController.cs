@@ -255,6 +255,8 @@ public class GameSceneController : BaseSceneController
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
 #endif
+        RegenHp(regenHpCancel = new CancellationTokenSource()).Forget();
+
         StartMoveMonster();
         StartCheckMonster();
         weapons = playerManager.PlayerWeaponController.GetWeapons;
@@ -276,15 +278,12 @@ public class GameSceneController : BaseSceneController
         StartGameWave();
 
         playerManager.PlayerWeaponController.StartAttack();
-
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
 
         timeManager.PlayTime();
         currentPlayerHp = playerMaxHp + (playerMaxHp * playerManager.GetPlayerMaxHP);
         SetWaveText(gameWave);
         SetHpText(currentPlayerHp);
-
-        RegenHp(regenHpCancel = new CancellationTokenSource()).Forget();
     }
     /// <summary>
     /// Wave 끝났을때 호출.
@@ -1148,7 +1147,7 @@ public class GameSceneController : BaseSceneController
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
-            var regenHp = playerManager.GetPlayerMaxHP;
+            var regenHp = playerManager.GetPlayerRegenHp;
             if (regenHp > 0)
             {
                 var maxHp = playerMaxHp + (playerMaxHp * regenHp);

@@ -70,6 +70,7 @@ public class InGameShopPanelController : UIBaseController
 
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
+    private InGameManager inGameManager = null;
 
     private List<InGameShopItemController> shopItemList = null;
     private List<InGameShopItemController> weaponItemList = null;
@@ -88,6 +89,7 @@ public class InGameShopPanelController : UIBaseController
 
         uiManager = UIManager.getInstance;
         playerManager = PlayerManager.getInstance;
+        inGameManager = InGameManager.getInstance;
 
         refreshButton?.onClick.AddListener(OnClickRefreshButton);
         buyButton.onClick.AddListener(OnClickBuyButton);
@@ -169,10 +171,11 @@ public class InGameShopPanelController : UIBaseController
 
 
         RequestLoadIngameShop loadIngameShop = new RequestLoadIngameShop();
-        loadIngameShop.currentStage = gameStage;
+        loadIngameShop.currentStage = gameStage + 1;
         loadIngameShop.gold = (int)playerManager.CurrentGold;
         var result = await GrpcManager.GetInstance.LoadIngameShop(loadIngameShop);
-
+        Debug.Log($"{gameStage}");
+        Debug.Log($"{InGameManager.getInstance.CurrentStage}");
         if ((MessageCode)result.code == MessageCode.Success)
         {
             int count = result.items.Length;
@@ -208,7 +211,7 @@ public class InGameShopPanelController : UIBaseController
     private void UpdateMyWeaponData()
     {
         var items = playerManager.PlayerWeapons;
-        int count = items.Count;
+        int count = items.Length;
 
         for (int i = 0; i < count; i++)
         {
@@ -219,12 +222,12 @@ public class InGameShopPanelController : UIBaseController
                 weapon.gameObject.SetActive(true);
             }
 
-            weapon.ItemId = items[i].weaponId;
+            weapon.ItemId = items[i].id;
             var idx = i;
             weapon.SetIndex = idx;
             weapon.SetWeaponItemData(OnClickWeaponData);
-            weapon.ItemExplanation = $"{items[i].weaponId}번 아이템 설명";
-            weapon.SetEnhance = $"+{items[i].enhance}";
+            weapon.ItemExplanation = $"{items[i].id}번 아이템 설명";
+            weapon.SetEnhance = $"+{items[i].enchant}";
             weapon.ActiveEnhance(true);
         }
     }
@@ -232,25 +235,28 @@ public class InGameShopPanelController : UIBaseController
     private void UpdateMyPassiveItemData()
     {
         var items = playerManager.PlayerPassiveItem;
-        int count = items.Count;
-
-        for (int i = 0; i < count; i++)
+        if (items != null)
         {
-            var item = passiveItemList[i];
+            int count = items.Length;
 
-            if (item.gameObject.activeSelf == false)
+            for (int i = 0; i < count; i++)
             {
-                item.gameObject.SetActive(true);
+                var item = passiveItemList[i];
+
+                if (item.gameObject.activeSelf == false)
+                {
+                    item.gameObject.SetActive(true);
+                }
+
+                item.ItemId = items[i].id;
+                var idx = i;
+                item.SetIndex = idx;
+                item.ItemExplanation = $"{items[i].id}번 아이템 설명";
+                item.SetWeaponItemData(OnClickPassiveItemData);
+                // 여긴 확인필요
+                item.SetEnhance = $"+{items[i].count}";
+                item.ActiveEnhance(true);
             }
-
-            item.ItemId = items[i].passiveItemId;
-            var idx = i;
-            item.SetIndex = idx;
-            item.ItemExplanation = $"{items[i].passiveItemId}번 아이템 설명";
-            item.SetWeaponItemData(OnClickPassiveItemData);
-
-            item.SetEnhance = $"+{items[i].enhance}";
-            item.ActiveEnhance(true);
         }
     }
 
@@ -298,8 +304,10 @@ public class InGameShopPanelController : UIBaseController
         var result = await GrpcManager.GetInstance.BuyIngameItem(buyIngameItem);
         if ((MessageCode)result.code == MessageCode.Success)
         {
-            var addItem = GetWeapon(shopItemList[selectItemIndex].ItemId);
-            playerManager.AddPlayerWeapon(addItem);
+            inGameManager.CurrentStage = result.currentStage;
+            playerManager.CurrentGold = result.gold;
+
+            playerManager.UpdatePlayerWeapon(result.slot, result.effect);
 
             // 플레이어 무기 id enchant
             for (int i = 0; i < result.slot.Length; i++)

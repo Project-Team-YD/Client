@@ -90,7 +90,7 @@ public class PlayerController : BasePlayerController
         bool isLeft = _dir.x < 0f;
         playerSprite.flipX = !isLeft;
 
-        _speed *= speed + (speed + playerManager.GetPlayerSpeed);
+        _speed *= speed + (speed * playerManager.GetPlayerSpeed);
 
         base.OnMove(_dir, _speed);
     }

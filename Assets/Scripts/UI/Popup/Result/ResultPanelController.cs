@@ -95,8 +95,6 @@ public class ResultPanelController : UIBaseController
 
     private void OnClickTitleButton()
     {
-        playerManager.ClearPlayerWeapon();
-
         uiManager.Hide();
 
         // 타이틀로 돌아가기

@@ -85,8 +85,9 @@ namespace Packet
     {
         public int maxHp;
         public int regenHp;
-        public int shortDamage;
-        public int longDamage;
+        public int damage;
+        public int speed;
+        public int attackSpeed;
     }
 
     //-- 무기 강화비용 및 확률 정보

@@ -9,6 +9,7 @@ public class WeaponController : MonoBehaviour
     [SerializeField] private GameSceneController gameSceneController;
 
     private PlayerManager playerManager = null;
+    private WeaponTable weaponTable = null;
 
     private readonly float rotate = 45f;
     private Transform playerTransform = null;
@@ -22,12 +23,16 @@ public class WeaponController : MonoBehaviour
     private void Awake()
     {
         playerManager = PlayerManager.getInstance;
-
+        weaponTable = WeaponTable.getInstance;
         playerTransform = gameObject.transform.parent.transform;
 
         var startWeapon = playerManager.PlayerWeapons[START_WEAPON_NUM];
         isRight = false;
-        slot[START_WEAPON_NUM].InitWeapon(startWeapon, gameSceneController, isRight);
+
+        var data = weaponTable.GetWeaponInfo(startWeapon.id);
+        data.enhance = startWeapon.enchant;
+
+        slot[START_WEAPON_NUM].InitWeapon(data, gameSceneController, isRight);
         slot[START_WEAPON_NUM].SetTarget(playerTransform);
         var type = slot[START_WEAPON_NUM].GetWeaponType();
         if (type == WeaponType.dagger || type == WeaponType.sword)
@@ -52,7 +57,7 @@ public class WeaponController : MonoBehaviour
 
     public void StartAttack()
     {
-        int weaponCount = playerManager.PlayerWeapons.Count;
+        int weaponCount = playerManager.PlayerWeapons.Length;
         for (int i = 0; i < weaponCount; i++)
         {
             slot[i].WeaponAttack();
@@ -70,12 +75,16 @@ public class WeaponController : MonoBehaviour
 
     public void UpdateWeapon()
     {
-        int weaponCount = playerManager.PlayerWeapons.Count;
+        int weaponCount = playerManager.PlayerWeapons.Length;
         for (int i = 0; i < weaponCount; i++)
         {
             var weapons = playerManager.PlayerWeapons[i];
             isRight = i == 0 ? false : true;
-            slot[i].InitWeapon(weapons, gameSceneController, isRight);
+
+            var data = weaponTable.GetWeaponInfo(weapons.id);
+            data.enhance = weapons.enchant;
+
+            slot[i].InitWeapon(data, gameSceneController, isRight);
             slot[i].SetTarget(playerTransform);
             var type = slot[i].GetWeaponType();
 

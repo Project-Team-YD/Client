@@ -1,4 +1,5 @@
 using HSMLibrary.Generics;
+using Packet;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,22 +19,21 @@ public class PlayerManager : Singleton<PlayerManager>
     private float damage = 0;
     private float attackSpeed = 0;
 
+    private TableManager tableManager = TableManager.getInstance;
+    private WeaponTable weaponTable = WeaponTable.getInstance;
     private WeaponController playerWeaponController = null;
-
-    private List<WeaponInfo> playerWeapons = new List<WeaponInfo>();
-
-    private List<PassiveItemInfo> playerPassiveItem = new List<PassiveItemInfo>();
+    private Weapon[] playerWeapons;
+    private Effect[] playerPassiveItem;
 
     public string UserName { get { return userName; } set { userName = value; } }
 
     public WeaponController PlayerWeaponController { get { return playerWeaponController; } set { playerWeaponController = value; } }
 
-    public List<WeaponInfo> PlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
+    public Weapon[] PlayerWeapons { get { return playerWeapons; } set { playerWeapons = value; } }
 
-    public List<PassiveItemInfo> PlayerPassiveItem { get { return playerPassiveItem; } set { playerPassiveItem = value; } }
+    public Effect[] PlayerPassiveItem { get { return playerPassiveItem; } set { playerPassiveItem = value; } }
 
     public float CurrentMoney { get { return currentMoney; } set { currentMoney = value; } }
-
     public float CurrentGold { get { return currentGold; } set { currentGold = value; } }
 
     public float GetPlayerMaxHP { get { return maxHp * ONE_HUNDREDTH; } }
@@ -41,74 +41,6 @@ public class PlayerManager : Singleton<PlayerManager>
     public float GetPlayerSpeed { get { return speed * ONE_HUNDREDTH; } }
     public float GetPlayerDamage { get { return damage * ONE_HUNDREDTH; } }
     public float GetPlayerAttackSpeed { get { return attackSpeed * ONE_HUNDREDTH; } }
-
-    /// <summary>
-    /// 이미 무기 최대 무기를 가지고있을 때 대비하기
-    /// </summary>
-    /// <param name="_weapon"></param>
-    public void AddPlayerWeapon(WeaponInfo _weapon)
-    {
-        var weapon = EnhanceWeapon(_weapon.weaponId);
-        if (!weapon)
-        {
-            playerWeapons.Add(_weapon);
-        }
-    }
-
-    private bool EnhanceWeapon(int _id)
-    {
-        int count = playerWeapons.Count;
-        for (int i = 0; i < count; i++)
-        {
-            if (playerWeapons[i].weaponId == _id)
-            {
-                var weapons = playerWeapons[i];
-                weapons.enhance += 1;
-                playerWeapons[i] = weapons;
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public void ClearPlayerWeapon()
-    {
-        playerWeapons.Clear();
-    }
-
-    public void AddPlayerPassiveItem(int _key)
-    {
-        var isPossess = EnhancePassiveItem(_key);
-
-        if (isPossess == false)
-        {
-            // 테이블에서 데이터 가져와서 넣어주기
-            PassiveItemInfo item = new PassiveItemInfo();
-            item.passiveItemId = _key;
-
-            playerPassiveItem.Add(item);
-        }
-
-        PassiveItemApply();
-    }
-
-    private bool EnhancePassiveItem(int _id)
-    {
-        int count = playerPassiveItem.Count;
-        for (int i = 0; i < count; i++)
-        {
-            if (playerPassiveItem[i].passiveItemId == _id)
-            {
-                var item = playerPassiveItem[i];
-                item.enhance += 1;
-                playerPassiveItem[i] = item;
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     private void PassiveItemApply()
     {
@@ -119,14 +51,41 @@ public class PlayerManager : Singleton<PlayerManager>
         speed = 0;
         attackSpeed = 0;
 
-        int count = playerPassiveItem.Count;
+        int count = playerPassiveItem.Length;
         for (int i = 0; i < count; i++)
         {
-            maxHp += playerPassiveItem[i].maxHp;
-            regenHp += playerPassiveItem[i].regenHp;
-            damage += playerPassiveItem[i].damage;
-            speed += playerPassiveItem[i].speed;
-            attackSpeed += playerPassiveItem[i].attackSpeed;
+            var data = playerPassiveItem[i];
+            var item = tableManager.GetEffectItem(data.id);
+            maxHp += item.maxHp;// + (item.maxHp * data.count);
+            regenHp += item.regenHp;// + (item.regenHp * data.count);
+            damage += item.damage;// + (item.damage * data.count);
+            speed += item.speed;// + (item.speed * data.count);
+            attackSpeed += item.attackSpeed + (item.attackSpeed * data.count);
+        }
+    }
+
+    public void UpdatePlayerWeapon(Weapon[] _weapon, Effect[] _passive)
+    {
+        playerWeapons = _weapon;
+
+        playerPassiveItem = _passive;
+        if (playerPassiveItem != null)
+            PassiveItemApply();
+
+
+        if (playerPassiveItem != null)
+        {
+            Debug.Log($"시작");
+            for (int i = 0; i < _weapon.Length; i++)
+            {
+                Debug.Log($"Slot {i} / Id: {_weapon[i].id} / Enchant : {_weapon[i].enchant}");
+            }
+            Debug.Log("-----------------------");
+            for (int i = 0; i < _passive.Length; i++)
+            {
+                Debug.Log($"Effect {i} / Id: {_passive[i].id} / Count : {_passive[i].count}");
+            }
+            Debug.Log($"끝");
         }
     }
 }
