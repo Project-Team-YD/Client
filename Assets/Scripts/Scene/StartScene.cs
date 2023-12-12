@@ -54,6 +54,11 @@ public class StartScene : Scene
                 Debug.Log("클라이언트에서 루프가 중지 되었습니다.");
             }
         }
+        else
+        {
+            var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
+            panel.InitPopup("서버와 연결을 실패했습니다.\n게임을 다시 시작해주세요!", Application.Quit);
+        }
         tablemanager = TableManager.getInstance;
         var tables = await GrpcManager.GetInstance.LoadTables();
         tablemanager.SetTableItem(tables.itemTable);

@@ -64,14 +64,9 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
         RequestJoinGame joinGame = new RequestJoinGame();
         joinGame.itemId = selectWeaponsId;
         var result = await GrpcManager.GetInstance.JoinGame(joinGame);
-
         if ((MessageCode)result.code == MessageCode.Success)
         {
-            InGameManager.getInstance.CurrentStage = result.currentStage;
-            playerManager.CurrentGold = result.gold;
-
             // playerManager.AddPlayerWeapon(selectWeaponsId);
-            playerManager.UpdatePlayerWeapon(result.slot, result.effect);
             uiMgr.ClearAllCachedPanel();
             uiMgr.ClearAllPanelStack();
             SceneHelper.getInstance.ChangeScene(typeof(GameScene));
