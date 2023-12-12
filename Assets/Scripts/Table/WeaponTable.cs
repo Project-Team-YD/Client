@@ -10,6 +10,7 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
 {
     private WeaponInfo[] weaponInfos = null;
     private Dictionary<int, InventoryItem> inventoryItem;
+    private Dictionary<int, WeaponInfo> weaponInfoDic;
     private TableManager tableManager;
 
     public async UniTask<bool> Initialize()
@@ -45,11 +46,36 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
             //}
             weaponInfos[i] = weapon;
         }
-    }    
+
+
+
+        weaponInfoDic = new Dictionary<int, WeaponInfo>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            WeaponInfo weapon = new WeaponInfo
+            {
+                weaponId = tableManager.GetItemInfo(i).id,
+                weaponName = tableManager.GetItemInfo(i).itemName,
+                attackPower = tableManager.GetWeaponItem(i).damage,
+                attackRange = tableManager.GetWeaponItem(i).range,
+                attackSpeed = tableManager.GetWeaponItem(i).speed,
+                enhance = 0
+            };
+
+            if (weaponInfoDic.ContainsKey(weapon.weaponId) == false)
+                weaponInfoDic.Add(weapon.weaponId, weapon);
+        }
+    }
 
     public void SetInventoryData(Dictionary<int, InventoryItem> _dictionary)
     {
         inventoryItem = _dictionary;
+    }
+
+    public Dictionary<int, InventoryItem> GetInventory()
+    {
+        return inventoryItem;
     }
 
     public InventoryItem GetInventoryData(int _key)
@@ -72,5 +98,10 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
     public WeaponInfo[] GetWeaponInfos()
     {
         return weaponInfos;
+    }
+
+    public WeaponInfo GetWeaponInfo(int _key)
+    {
+        return weaponInfoDic[_key];
     }
 }

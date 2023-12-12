@@ -182,11 +182,11 @@ public class InGameShopPanelController : UIBaseController
             {
                 // item 정보 가져와서 넣어주기
                 // shopItemList[i]
-                //shopItemList[i].SetItemExplanation = $"{idx}번 아이템 설명";
                 var idx = i;
-                shopItemList[i].SetItemId = items[i].id;
+                shopItemList[i].ItemId = items[i].id;
                 shopItemList[i].SetIndex = idx;
-                shopItemList[i].SetItemPrice = items[i].price;
+                shopItemList[i].ItemPrice = items[i].price;
+                shopItemList[i].ItemExplanation = $"{items[i].id}번 아이템 설명";
                 shopItemList[i].SetShopItemData(OnClickItem);
                 shopItemList[i].ActiveEnhance(false);
                 shopItemList[i].gameObject.SetActive(true);
@@ -219,11 +219,11 @@ public class InGameShopPanelController : UIBaseController
                 weapon.gameObject.SetActive(true);
             }
 
-            weapon.SetItemId = items[i].weaponId;
+            weapon.ItemId = items[i].weaponId;
             var idx = i;
-            weapon.SetItemExplanation = $"{idx}번 아이템 설명";
             weapon.SetIndex = idx;
             weapon.SetWeaponItemData(OnClickWeaponData);
+            weapon.ItemExplanation = $"{items[i].weaponId}번 아이템 설명";
             weapon.SetEnhance = $"+{items[i].enhance}";
             weapon.ActiveEnhance(true);
         }
@@ -243,10 +243,10 @@ public class InGameShopPanelController : UIBaseController
                 item.gameObject.SetActive(true);
             }
 
-            item.SetItemId = items[i].passiveItemId;
+            item.ItemId = items[i].passiveItemId;
             var idx = i;
-            item.SetItemExplanation = $"{idx}번 아이템 설명";
             item.SetIndex = idx;
+            item.ItemExplanation = $"{items[i].passiveItemId}번 아이템 설명";
             item.SetWeaponItemData(OnClickPassiveItemData);
 
             item.SetEnhance = $"+{items[i].enhance}";
@@ -293,12 +293,12 @@ public class InGameShopPanelController : UIBaseController
     private async void OnClickBuyButton()
     {
         RequestBuyIngameItem buyIngameItem = new RequestBuyIngameItem();
-        buyIngameItem.itemId = shopItemList[selectItemIndex].SetItemId;
+        buyIngameItem.itemId = shopItemList[selectItemIndex].ItemId;
         buyIngameItem.currentStage = gameStage;
         var result = await GrpcManager.GetInstance.BuyIngameItem(buyIngameItem);
         if ((MessageCode)result.code == MessageCode.Success)
         {
-            var addItem = GetWeapon(shopItemList[selectItemIndex].SetItemId);
+            var addItem = GetWeapon(shopItemList[selectItemIndex].ItemId);
             playerManager.AddPlayerWeapon(addItem);
 
             // 플레이어 무기 id enchant
@@ -342,13 +342,10 @@ public class InGameShopPanelController : UIBaseController
     {
         var data = shopItemList[_idx];
 
-        descriptionText.text = data.SetItemExplanation;
-        priceText.text = $"{data.SetItemPrice}";
+        descriptionText.text = data.ItemExplanation;
+        priceText.text = $"{data.ItemPrice}";
 
-        // 토글이 아닌 버튼으로 되어있어서 초기화시 선택된 index를 기억하여 초기버튼선택상태 초기화 해줘야함
-        // 선택된 아이템 기억하기
         selectItemIndex = _idx;
-        // 선택된 아이템 표시
     }
 
     private WeaponInfo GetWeapon(int _id)

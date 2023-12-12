@@ -13,23 +13,23 @@ public class InventorySlotView : MonoBehaviour
 
     private WeaponEnhancePopupController weaponEnhancePopupController = null;
     private WeaponSelectPopupController weaponSelectPopupController = null;
-    private WeaponInfo info;    
+    private int id;
 
     /// <summary>
     /// 무기 이미지 지정 함수.
     /// </summary>
     public void SetWeaponImage()
     {
-        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)info.weaponId}");
+        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)id}");
     }
     /// <summary>
     /// 무기 객체정보 저장 및 버튼에 함수 추가.
     /// </summary>
     /// <param name="_info">무기 객체정보</param>
-    public void InitWeaponInfo(WeaponInfo _info)
+    public void InitWeaponInfo(int _id, int _enchant)
     {
-        info = _info;
-        enhanceText.text = $"+{info.enhance}";
+        id = _id;
+        enhanceText.text = $"+{_enchant}";
         slotBtn.onClick.AddListener(OnClickSlot);
     }
     /// <summary>
@@ -46,6 +46,7 @@ public class InventorySlotView : MonoBehaviour
     /// <param name="_controller">WeaponSelectPopupController</param>
     public void SetWeaponSelectController(WeaponSelectPopupController _controller)
     {
+        weaponEnhancePopupController = null;
         weaponSelectPopupController = _controller;
     }
     /// <summary>
@@ -55,11 +56,11 @@ public class InventorySlotView : MonoBehaviour
     {
         if (weaponEnhancePopupController != null)
         {
-            weaponEnhancePopupController.SetSelectSlotWeaponImage(info.weaponId);
+            weaponEnhancePopupController.SetSelectSlotWeaponImage(id);
         }
         else
         {
-            weaponSelectPopupController.SetSelectSlotWeaponImage(info.weaponId);
+            weaponSelectPopupController.SetSelectSlotWeaponImage(id);
         }
     }
 }

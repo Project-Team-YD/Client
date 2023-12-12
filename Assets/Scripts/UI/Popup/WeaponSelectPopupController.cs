@@ -26,7 +26,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private TextMeshProUGUI equipmentText = null;
     private TextMeshProUGUI joinText = null;
     private UIManager uiMgr = null;
-    private WeaponInfo[] weaponInfos = null;
+    private Dictionary<int, WeaponInfo> weaponInfoDic = null;
     private InventoryItem item = null;
     private TableManager tableMgr = null;
 
@@ -35,7 +35,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private const string EQUIPMENT_TEXT = "착용하기";
     private const string JOIN_TEXT = "입장하기";
 
-    private int weaponIndex;
+    private int weaponId;
 
     protected override void Awake()
     {
@@ -46,7 +46,6 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         closeBtn.onClick.AddListener(OnClickCloseButton);
         equipmentText = equipBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         joinText = joinBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
         weaponImage.enabled = false;
         enhanceText.enabled = false;
 
@@ -57,17 +56,27 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
 
     protected override void Initialize()
     {
-        int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
-        for (int i = 0; i < weaponCount; i++)
+        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
+        while(invenEnumerator.MoveNext())
         {
-            item = WeaponTable.getInstance.GetInventoryData(i);
+            item = invenEnumerator.Current.Value;
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
             var componenet = newObject.GetComponent<InventorySlotView>();
-            weaponInfos[i].enhance = item.enchant;
-            componenet.InitWeaponInfo(weaponInfos[i]);
+            componenet.InitWeaponInfo(item.id, item.enchant);
             componenet.SetWeaponImage();
             componenet.SetWeaponSelectController(this);
         }
+        //int weaponCount = WeaponTable.getInstance.GetInventoryData(); //weaponInfos.Length;
+        //for (int i = 0; i < weaponCount; i++)
+        //{
+        //    item = WeaponTable.getInstance.GetInventoryData(i);
+        //    GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
+        //    var componenet = newObject.GetComponent<InventorySlotView>();
+        //    weaponInfos[i].enhance = item.enchant;
+        //    componenet.InitWeaponInfo(weaponInfos[i]);
+        //    componenet.SetWeaponImage();
+        //    componenet.SetWeaponSelectController(this);
+        //}
         dungeonJoinText.text = DUNGEON_JOIN_TEXT;
         equipText.text = EQUIP_TEXT;
         equipmentText.text = EQUIPMENT_TEXT;
@@ -89,18 +98,19 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     /// <summary>
     /// 게임 입장 전 들고 갈 무기 선택시 슬릇에 선택 무기 이미지 설정 및 정보 가져오는 함수.
     /// </summary>
-    /// <param name="_slotIndex">인벤토리 무기 슬릇 인덱스</param>
-    public void SetSelectSlotWeaponImage(int _slotIndex)
+    /// <param name="_key">인벤토리 무기 슬릇 인덱스</param>
+    public void SetSelectSlotWeaponImage(int _key)
     {
         weaponImage.enabled = true;
         enhanceText.enabled = true;
-        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
+        var data = WeaponTable.getInstance.GetInventoryData(_key);
+        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
 
         joinBtn.interactable = true;
 
-        enhanceText.text = $"+{weaponInfos[_slotIndex].enhance}";
+        enhanceText.text = $"+{data.enchant}";
 
-        weaponIndex = _slotIndex;
+        weaponId = _key;
     }
     /// <summary>
     /// 팝업 데이터 초기화.
@@ -118,7 +128,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     {
         var panel = await uiMgr.Show<DungeonSelectPopupController>("DungeonSelectPopup");
         /// 나중에 보유 무기에서 들고와야함(서버 반영 필요)
-        panel.SetWeapon(weaponInfos[weaponIndex]);
+        panel.SetWeapon(weaponId);
     }
 
     private void OnClickCloseButton()

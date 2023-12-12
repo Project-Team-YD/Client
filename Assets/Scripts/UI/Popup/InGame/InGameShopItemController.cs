@@ -18,11 +18,11 @@ public class InGameShopItemController : MonoBehaviour
 
     private Action<int> callBack = null;
 
-    public string SetItemExplanation { get { return explanation; } set { explanation = value; } }
-    public int SetItemPrice { get { return price; } set { price = value; } }
+    public string ItemExplanation { get { return explanation; } set { explanation = value; } }
+    public int ItemPrice { get { return price; } set { price = value; } }
     public int SetIndex { get { return idx; } set { idx = value; } }
     public string SetEnhance { set { enhance.text = value; } }
-    public int SetItemId { get { return itemId; } set { itemId = value; } }
+    public int ItemId { get { return itemId; } set { itemId = value; } }
 
     private void Awake()
     {

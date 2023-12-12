@@ -25,23 +25,21 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     [SerializeField] private Button EnhanceInfoBtn = null;
     [SerializeField] private GameObject EnhanceInfoPopup = null;
 
-    private UIManager uiMgr = null;    
-    private WeaponInfo[] weaponInfos = null;
+    private UIManager uiMgr = null;
     private InventoryItem item = null;
-    private TableManager tableMgr = null;    
+    private TableManager tableMgr = null;
 
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
-    
+
     protected override void Awake()
     {
         base.Awake();
         uiMgr = UIManager.getInstance;
-        tableMgr = TableManager.getInstance;        
+        tableMgr = TableManager.getInstance;
         enhanceBtn.onClick.AddListener(OnClickEnhanceButton);
         EnhanceInfoBtn.onClick.AddListener(OnClickEnhanceInfoButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
-        weaponInfos = WeaponTable.getInstance.GetWeaponInfos();
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         EnhanceInfoPopup.SetActive(false);
@@ -51,17 +49,27 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
 
     protected override void Initialize()
     {
-        int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
-        for (int i = 0; i < weaponCount; i++)
+        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
+        while (invenEnumerator.MoveNext())
         {
-            item = WeaponTable.getInstance.GetInventoryData(i);
+            item = invenEnumerator.Current.Value;
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
             var componenet = newObject.GetComponent<InventorySlotView>();
-            weaponInfos[i].enhance = item.enchant;
-            componenet.InitWeaponInfo(weaponInfos[i]);
+            componenet.InitWeaponInfo(item.id, item.enchant);
             componenet.SetWeaponImage();
             componenet.SetWeaponEnhanceController(this);
         }
+        //int weaponCount = WeaponTable.getInstance.GetInventoryCount(); //weaponInfos.Length;
+        //for (int i = 0; i < weaponCount; i++)
+        //{
+        //    item = WeaponTable.getInstance.GetInventoryData(i);
+        //    GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
+        //    var componenet = newObject.GetComponent<InventorySlotView>();
+        //    weaponInfos[i].enhance = item.enchant;
+        //    componenet.InitWeaponInfo(weaponInfos[i]);
+        //    componenet.SetWeaponImage();
+        //    componenet.SetWeaponEnhanceController(this);
+        //}
         enhancePopupText.text = ENHANCE_POPUP_TEXT;
         enhanceButtonText.text = ENHANCE_TEXT;
         costText.text = string.Format("비용 : {0}", 0);
@@ -69,15 +77,16 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <summary>
     /// 무기강화 팝업 인벤토리에서 무기 선택시 해당 무기의 이미지셋팅과 정보를 가져오는 함수.
     /// </summary>
-    /// <param name="_slotIndex">인벤토리 무기 슬릇의 인덱스</param>
-    public void SetSelectSlotWeaponImage(int _slotIndex)
+    /// <param name="_key">인벤토리 무기 슬릇의 인덱스</param>
+    public void SetSelectSlotWeaponImage(int _key)
     {
-        int price = tableMgr.GetWeaponEnchantInfo(weaponInfos[_slotIndex].enhance + 1).price;
+        var data = WeaponTable.getInstance.GetInventoryData(_key);
+        int price = tableMgr.GetWeaponEnchantInfo(data.enchant + 1).price;
         weaponImage.enabled = true;
         enhanceText.enabled = true;
-        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_slotIndex}");
+        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
         costText.text = string.Format("비용 : {0:0,0}", price);
-        if(PlayerManager.getInstance.CurrentMoney >= price)
+        if (PlayerManager.getInstance.CurrentMoney >= price)
         {
             enhanceBtn.interactable = true;
         }

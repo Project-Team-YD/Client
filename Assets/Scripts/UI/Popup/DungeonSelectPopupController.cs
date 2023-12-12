@@ -10,6 +10,7 @@ using Cysharp.Threading.Tasks;
 using HSMLibrary.Manager;
 using HSMLibrary.Scene;
 using TMPro;
+using Packet;
 
 public class DungeonSelectPopupController : UIBaseController, IPopup
 {
@@ -27,7 +28,7 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
     private const string INFINITY_TEXT = "무한모드";
     private const string TIMEATTACK_TEXT = "타임어택";
 
-    private WeaponInfo selectWeapons;
+    private int selectWeaponsId;
 
     protected override void Awake()
     {
@@ -58,13 +59,22 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
     /// <summary>
     /// 타입어택 모드 버튼 클릭시 호출..게임 진입
     /// </summary>
-    private void OnClickTimeAttackButton()
+    private async void OnClickTimeAttackButton()
     {
-        playerManager.AddPlayerWeapon(selectWeapons);
-
-        uiMgr.ClearAllCachedPanel();
-        uiMgr.ClearAllPanelStack();
-        SceneHelper.getInstance.ChangeScene(typeof(GameScene));
+        RequestJoinGame joinGame = new RequestJoinGame();
+        joinGame.itemId = selectWeaponsId;
+        var result = await GrpcManager.GetInstance.JoinGame(joinGame);
+        if ((MessageCode)result.code == MessageCode.Success)
+        {
+            // playerManager.AddPlayerWeapon(selectWeaponsId);
+            uiMgr.ClearAllCachedPanel();
+            uiMgr.ClearAllPanelStack();
+            SceneHelper.getInstance.ChangeScene(typeof(GameScene));
+        }
+        else
+        {
+            Debug.Log("ServerError");
+        }
     }
     /// <summary>
     /// 무한모드 버튼 클릭시 호출..게임 진입
@@ -79,9 +89,9 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
         uiMgr.Hide();
     }
 
-    public void SetWeapon(WeaponInfo _weaponInfo)
+    public void SetWeapon(int _id)
     {
         // 초기화 만들기
-        selectWeapons = _weaponInfo;
+        selectWeaponsId = _id;
     }
 }
