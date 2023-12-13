@@ -18,15 +18,20 @@ public class MessageTwoButtonBoxPopupController : UIBaseController, IPopup
     private Action callback = null;
     private UIManager uiMgr = null;
 
+    protected override void Awake()
+    {
+        base.Awake();
+        okButton.onClick.AddListener(OnClickOkButton);
+        cancelButton.onClick.AddListener(OnClickCancelButton);
+    }
+
     public void InitPopup(string _content, Action _callback = null, string _okText = "확인", string _cancelText = "취소")
     {
         uiMgr = UIManager.getInstance;
         okBtnText.text = _okText;
         cancelBtnText.text = _cancelText;
         contentText.text = _content;
-        callback = _callback;
-        okButton.onClick.AddListener(OnClickOkButton);
-        cancelButton.onClick.AddListener(OnClickCancelButton);
+        callback = _callback;        
     }
 
     public T Show<T>() where T : IPopup

@@ -24,11 +24,20 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     [SerializeField] private TextMeshProUGUI costText = null;
     [SerializeField] private Button EnhanceInfoBtn = null;
     [SerializeField] private GameObject EnhanceInfoPopup = null;
+    [SerializeField] private TextMeshProUGUI nowEnhance = null;
+    [SerializeField] private TextMeshProUGUI nextEnhance = null;
+    [SerializeField] private TextMeshProUGUI nowEnhanceInfo = null;
+    [SerializeField] private TextMeshProUGUI nextEnhanceInfo = null;
+    [SerializeField] private TextMeshProUGUI arrowText = null;
 
     private UIManager uiMgr = null;
     private InventoryItem item = null;
     private TableManager tableMgr = null;
+    private int weaponIndex;
 
+    private const float MELEE_WEAPON_ENHANCE_POWER = 0.5f;
+    private const float RANGED_WEAPON_ENHANCE_POWER = 0.2f;
+    private const float RANGED_WEAPON_ENHANCE_SPEED = 0.2f;
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
 
@@ -43,7 +52,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         EnhanceInfoPopup.SetActive(false);
-        enhanceBtn.interactable = false;
+        enhanceBtn.interactable = false;        
         Initialize();
     }
 
@@ -70,12 +79,37 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <param name="_key">인벤토리 무기 슬릇의 인덱스</param>
     public void SetSelectSlotWeaponImage(int _key)
     {
+        weaponIndex = _key;
         var data = WeaponTable.getInstance.GetInventoryData(_key);
         int price = tableMgr.GetWeaponEnchantInfo(data.enchant + 1).price;
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
         costText.text = string.Format("비용 : {0:0,0}", price);
+        nowEnhance.text = $"+{data.enchant}";
+        nextEnhance.text = $"+{data.enchant + 1}";
+        arrowText.text = "->";
+        float attackPower = WeaponTable.getInstance.GetWeaponInfo(_key).attackPower;
+        float attackSpeed = WeaponTable.getInstance.GetWeaponInfo(_key).attackSpeed;
+        float attackRange = WeaponTable.getInstance.GetWeaponInfo(_key).attackRange;
+        if ((WeaponType)data.id == WeaponType.dagger || (WeaponType)data.id == WeaponType.sword)
+        {
+            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                $"공격범위 : {attackRange}\n" +
+                $"공격속도 : {attackSpeed}";
+            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                $"공격범위 : {attackRange}\n" +
+                $"공격속도 : {attackSpeed}";
+        }
+        else
+        {
+            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                $"공격범위 : {attackRange}\n" +
+                $"공격속도 : {attackSpeed + ((data.enchant * RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                $"공격범위 : {attackRange}\n" +
+                $"공격속도 : {attackSpeed + (((data.enchant + 1) * RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+        }
         if (PlayerManager.getInstance.CurrentMoney >= price)
         {
             enhanceBtn.interactable = true;
@@ -89,14 +123,38 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         weaponImage.sprite = null;
+        nowEnhance.text = string.Empty;
+        nextEnhance.text = string.Empty;
+        nowEnhanceInfo.text = string.Empty;
+        nextEnhanceInfo.text = string.Empty;
+        arrowText.text = string.Empty;
         costText.text = string.Format("비용 : {0}", 0);
+    }
+    /// <summary>
+    /// 강화 기능 함수.
+    /// </summary>
+    private async void Enhance()
+    {
+        RequestUpgradeItem upgradeItem = new RequestUpgradeItem();
+        upgradeItem.id = weaponIndex;
+        var result = await GrpcManager.GetInstance.UpgradeItem(upgradeItem);
+        PlayerManager.getInstance.CurrentMoney = result.money;
+
+        var inventory = await GrpcManager.GetInstance.LoadInventory();
+        WeaponTable.getInstance.SetInventoryData(inventory.items);
     }
     /// <summary>
     /// 무기 강화 버튼 클릭시 호출되는 함수.
     /// </summary>
-    private void OnClickEnhanceButton()
+    private async void OnClickEnhanceButton()
     {
-
+        var popup = await uiMgr.Show<MessageTwoButtonBoxPopupController>("MessageTwoButtonBoxPopup");
+        var data = WeaponTable.getInstance.GetInventoryData(weaponIndex);
+        popup.InitPopup($"이름 : {tableMgr.GetItemInfo(weaponIndex).itemName}\n" +
+            $"+{data.enchant} -> +{data.enchant + 1}\n" +
+            $"성공 확률 : {tableMgr.GetWeaponEnchantInfo(data.enchant + 1).probability / 10000}%\n" +
+            $"강화 비용 : {tableMgr.GetWeaponEnchantInfo(data.enchant + 1).price}\n" +
+            $"정말 강화하시겠습니까?", Enhance);
     }
 
     private void OnClickEnhanceInfoButton()
