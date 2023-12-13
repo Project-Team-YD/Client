@@ -104,6 +104,7 @@ namespace Packet
         public int id;
         public int moneyType;
         public int price;
+        public bool isBuy;
     }
 
     public class ResponseGameDB : Response
