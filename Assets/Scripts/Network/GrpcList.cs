@@ -116,5 +116,36 @@ public partial class GrpcManager
         var response = JsonConvert.DeserializeObject<Response>(result);
         return response;
     }
+
+    #region 랭킹
+    public async Task<ResponseUpdateTimeAttackRank> UpdateTimeAttackRank(RequestUpdateTimeAttackRank requestPacket)
+    {
+        string rpcKey = "update_time_attack_rank";
+        string jsonData = JsonConvert.SerializeObject(requestPacket);
+
+        string result = await SendRpcAsync(rpcKey, jsonData);
+
+        var response = JsonConvert.DeserializeObject<ResponseUpdateTimeAttackRank>(result);
+        return response;
+    }
+
+    public async Task<ResponseGameOver> GameOver()
+    {
+        string rpcKey = "game_over";
+        string result = await SendRpcAsync(rpcKey);
+
+        var response = JsonConvert.DeserializeObject<ResponseGameOver>(result);
+        return response;
+    }
+
+    public async Task<ResponseLoadTimeAttackRankTable> LoadTimeAttackRankTable()
+    {
+        string rpcKey = "load_time_attack_rank_table";
+        string result = await SendRpcAsync(rpcKey);
+
+        var response = JsonConvert.DeserializeObject<ResponseLoadTimeAttackRankTable>(result);
+        return response;
+    }
+    #endregion
 }
 

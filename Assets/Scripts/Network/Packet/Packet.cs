@@ -219,7 +219,36 @@ namespace Packet
         public string userName;
     }
     #endregion
-    #region
+    #region 랭킹
+    public class TimeAttackUser
+    {
+        public int rank;
+        public string userName;
+        public float recordTime;
+    }
+
+    public class ResponseLoadTimeAttackRankTable : Response
+    {
+        public TimeAttackUser[] rankList;
+    }
+
+
+    public class RequestUpdateTimeAttackRank
+    {
+        public float recordTime;
+    }
+
+    public class ResponseUpdateTimeAttackRank : Response
+    {
+        public float recordTime;
+        public int rank;
+        public int money;
+    }
+
+    public class ResponseGameOver : Response
+    {
+        public int money;
+    }
     #endregion
     #region
     #endregion
