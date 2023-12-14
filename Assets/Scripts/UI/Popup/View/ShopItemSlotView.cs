@@ -1,3 +1,4 @@
+using Packet;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -12,17 +13,12 @@ public class ShopItemSlotView : MonoBehaviour
 
     private int itemId;
     private Action<int> callback = null;
-    public void InitItemSlot(int _key, Action<int> _callback)
+    public void InitItemSlot(ShopItem _item, Action<int> _callback)
     {
-        itemId = _key;
+        itemId = _item.id;
         callback = _callback;
-        itemImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
-        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
-        while (invenEnumerator.MoveNext())
-        {
-            bool isbuy = invenEnumerator.Current.Value.id == _key;
-            soldOutDimObject.SetActive(isbuy);
-        }
+        itemImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");        
+        soldOutDimObject.SetActive(_item.isBuy);
         itemBtn.onClick.AddListener(OnClickItemSlot);
     }
 

@@ -54,7 +54,7 @@ public class ShopPopupController : UIBaseController, IPopup
             shopitem = tableMgr.GetShopItem(i);
             GameObject newObject = GameObject.Instantiate(shopSlot, slotRootTransform);
             var componenet = newObject.GetComponent<ShopItemSlotView>();
-            componenet.InitItemSlot(shopitem.id, SetDescriptionText);
+            componenet.InitItemSlot(shopitem, SetDescriptionText);
         }
     }
 
