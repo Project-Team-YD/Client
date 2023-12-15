@@ -21,7 +21,7 @@ public class InGameShopPanelController : UIBaseController
     private const string mountingSlotTextKey = "장착슬롯";
     private const string checkTextKey = "확인";
 
-    private const int MAX_SHOP_ITEM_COUNT = 4;
+    private const int MAX_SHOP_ITEM_COUNT = 4;    
     #endregion
 
     #region Text
@@ -71,6 +71,7 @@ public class InGameShopPanelController : UIBaseController
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
     private InGameManager inGameManager = null;
+    private TableManager tableMgr = null;
 
     private List<InGameShopItemController> shopItemList = null;
     private List<InGameShopItemController> weaponItemList = null;
@@ -90,6 +91,7 @@ public class InGameShopPanelController : UIBaseController
         uiManager = UIManager.getInstance;
         playerManager = PlayerManager.getInstance;
         inGameManager = InGameManager.getInstance;
+        tableMgr = TableManager.getInstance;
 
         refreshButton?.onClick.AddListener(OnClickRefreshButton);
         buyButton.onClick.AddListener(OnClickBuyButton);
@@ -189,7 +191,21 @@ public class InGameShopPanelController : UIBaseController
                 shopItemList[i].ItemId = items[i].id;
                 shopItemList[i].SetIndex = idx;
                 shopItemList[i].ItemPrice = items[i].price;
-                shopItemList[i].ItemExplanation = $"{items[i].id}번 아이템 설명";
+                if(items[i].id <= 3)
+                {
+                    shopItemList[i].ItemExplanation = $"이름 : {tableMgr.GetItemInfo(items[i].id).itemName}\n\n" +
+                                                      $"{tableMgr.descriptions[items[i].id]}\n\n" +
+                                                      $"공격력 : {tableMgr.GetWeaponItem(items[i].id).damage}\n" +
+                                                      $"공격범위 : {tableMgr.GetWeaponItem(items[i].id).range}\n" +
+                                                      $"공격속도 : {tableMgr.GetWeaponItem(items[i].id).speed}\n\n" +
+                                                      "이미 장착중인 아이템을 구매시 해당 무기의 +1강화만큼 수치가 증가합니다.";
+                }
+                else
+                {
+                    shopItemList[i].ItemExplanation = $"{tableMgr.descriptions[items[i].id]}\n\n" +
+                                                      $"패시브 효과 : {tableMgr.passiveDescriptions[items[i].id]}";
+                }
+                //shopItemList[i].ItemExplanation = $"{items[i].id}번 아이템 설명";
                 shopItemList[i].SetShopItemData(OnClickItem);
                 shopItemList[i].ActiveEnhance(false);
                 shopItemList[i].gameObject.SetActive(true);
@@ -226,7 +242,26 @@ public class InGameShopPanelController : UIBaseController
             var idx = i;
             weapon.SetIndex = idx;
             weapon.SetShopItemData(OnClickWeaponData);
-            weapon.ItemExplanation = $"{items[i].id}번 아이템 설명";
+            float attackPower = WeaponTable.getInstance.GetWeaponInfo(items[i].id).attackPower;
+            float attackSpeed = WeaponTable.getInstance.GetWeaponInfo(items[i].id).attackSpeed;
+            float attackRange = WeaponTable.getInstance.GetWeaponInfo(items[i].id).attackRange;
+            if ((WeaponType)items[i].id == WeaponType.dagger || (WeaponType)items[i].id == WeaponType.sword)
+            {                
+                weapon.ItemExplanation = $"이름 : {tableMgr.GetItemInfo(items[i].id).itemName}\n\n" +
+                                         $"{tableMgr.descriptions[items[i].id]}\n\n" +
+                                         $"공격력 : {attackPower + ((items[i].enchant * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                                         $"공격범위 : {attackRange}\n" +
+                                         $"공격속도 : {attackSpeed}";
+            }
+            else
+            {
+                weapon.ItemExplanation = $"이름 : {tableMgr.GetItemInfo(items[i].id).itemName}\n\n" +
+                                         $"{tableMgr.descriptions[items[i].id]}\n\n" +
+                                         $"공격력 : {attackPower + ((items[i].enchant * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                                         $"공격범위 : {attackRange}\n" +
+                                         $"공격속도 : {attackSpeed + ((items[i].enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+            }
+            //weapon.ItemExplanation = $"{items[i].id}번 아이템 설명";
             weapon.SetEnhance = $"+{items[i].enchant}";
             weapon.ActiveEnhance(true);
         }
@@ -251,7 +286,9 @@ public class InGameShopPanelController : UIBaseController
                 item.ItemId = items[i].id;
                 var idx = i;
                 item.SetIndex = idx;
-                item.ItemExplanation = $"{items[i].id}번 아이템 설명";
+                item.ItemExplanation = $"{tableMgr.descriptions[items[i].id]}\n\n" +
+                                       $"패시브 효과 : {tableMgr.passiveDescriptions[items[i].id]}";
+                //item.ItemExplanation = $"{items[i].id}번 아이템 설명";
                 item.SetShopItemData(OnClickPassiveItemData);
                 // 여긴 확인필요
                 item.SetEnhance = $"+{items[i].count}";

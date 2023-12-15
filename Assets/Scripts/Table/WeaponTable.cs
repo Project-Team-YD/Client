@@ -13,6 +13,9 @@ public class WeaponTable : Singleton<WeaponTable>, ITable
     private Dictionary<int, WeaponInfo> weaponInfoDic;
     private TableManager tableManager;
 
+    public const float MELEE_WEAPON_ENHANCE_POWER = 0.5f;
+    public const float RANGED_WEAPON_ENHANCE_POWER = 0.2f;
+    public const float RANGED_WEAPON_ENHANCE_SPEED = 0.2f;
     public async UniTask<bool> Initialize()
     {
         weaponInfos = await TableLoader.getInstance.LoadTableJson<WeaponInfo[]>("WeaponInfo");

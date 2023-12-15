@@ -34,10 +34,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     private InventoryItem item = null;
     private TableManager tableMgr = null;
     private int weaponIndex;
-
-    private const float MELEE_WEAPON_ENHANCE_POWER = 0.5f;
-    private const float RANGED_WEAPON_ENHANCE_POWER = 0.2f;
-    private const float RANGED_WEAPON_ENHANCE_SPEED = 0.2f;
+    
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
 
@@ -94,21 +91,21 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         float attackRange = WeaponTable.getInstance.GetWeaponInfo(_key).attackRange;
         if ((WeaponType)data.id == WeaponType.dagger || (WeaponType)data.id == WeaponType.sword)
         {
-            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
                 $"공격범위 : {attackRange}\n" +
                 $"공격속도 : {attackSpeed}";
-            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
                 $"공격범위 : {attackRange}\n" +
                 $"공격속도 : {attackSpeed}";
         }
         else
         {
-            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
                 $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed + ((data.enchant * RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
-            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                $"공격속도 : {attackSpeed + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
                 $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed + (((data.enchant + 1) * RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+                $"공격속도 : {attackSpeed + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
         }
         if (PlayerManager.getInstance.CurrentMoney >= price)
         {

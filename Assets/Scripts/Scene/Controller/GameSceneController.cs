@@ -9,10 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GameSceneController : BaseSceneController
-{
-    private const float MELEE_WEAPON_ENHANCE_POWER = 0.5f;
-    private const float RANGED_WEAPON_ENHANCE_POWER = 0.2f;
-
+{   
     #region Enemy
     [SerializeField] private Transform monsterPoolRoot;
     private ObjectPool<IPoolable> monsterPool = null;
@@ -992,11 +989,11 @@ public class GameSceneController : BaseSceneController
         float ENHANCE_POWER;
         if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
         {
-            ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
+            ENHANCE_POWER = WeaponTable.RANGED_WEAPON_ENHANCE_POWER;
         }
         else
         {
-            ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
+            ENHANCE_POWER = WeaponTable.MELEE_WEAPON_ENHANCE_POWER;
         }
 
         var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);
@@ -1029,11 +1026,11 @@ public class GameSceneController : BaseSceneController
         float ENHANCE_POWER;
         if (_weapon.GetWeaponType() == WeaponType.gun || _weapon.GetWeaponType() == WeaponType.ninjastar)
         {
-            ENHANCE_POWER = RANGED_WEAPON_ENHANCE_POWER;
+            ENHANCE_POWER = WeaponTable.RANGED_WEAPON_ENHANCE_POWER;
         }
         else
         {
-            ENHANCE_POWER = MELEE_WEAPON_ENHANCE_POWER;
+            ENHANCE_POWER = WeaponTable.MELEE_WEAPON_ENHANCE_POWER;
         }
 
         var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);

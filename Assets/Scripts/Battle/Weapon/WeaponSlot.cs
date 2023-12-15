@@ -5,9 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 
 public class WeaponSlot : MonoBehaviour
-{
-    private const float ENHANCE_SPEED = 0.2f;
-
+{   
     private Transform playerTransform = null;
     private SpriteRenderer weaponSprite = null;
     private GameSceneController gameSceneController = null;
@@ -214,7 +212,7 @@ public class WeaponSlot : MonoBehaviour
                             }
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * ENHANCE_SPEED) * attackSpeed));
+                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
                             attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
@@ -234,7 +232,7 @@ public class WeaponSlot : MonoBehaviour
                         {
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * ENHANCE_SPEED) * attackSpeed));
+                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
                             attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
