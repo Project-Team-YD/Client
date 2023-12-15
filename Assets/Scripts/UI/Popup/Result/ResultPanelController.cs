@@ -39,6 +39,10 @@ public class ResultPanelController : UIBaseController
     [SerializeField] private GameObject resultGroup = null;
     [SerializeField] private GameObject gameOverGroup = null;
     [SerializeField] private TextMeshProUGUI gameOverText = null;
+    [SerializeField] private TextMeshProUGUI gameOverRecordTitleText = null;
+    [SerializeField] private TextMeshProUGUI gameOverRecordText = null;
+    [SerializeField] private TextMeshProUGUI gameOverCompensationTitleText = null;
+    [SerializeField] private TextMeshProUGUI gameOverCompensationText = null;
 
     private UIManager uiManager = null;
     private PlayerManager playerManager = null;
@@ -69,6 +73,8 @@ public class ResultPanelController : UIBaseController
         rankTitleText.text = RANK_TITLE_TEXT;
 
         gameOverText.text = GAMEOVER_TITLE_TEXT;
+        gameOverRecordTitleText.text = RECORD_TITLE_TEXT;
+        gameOverCompensationTitleText.text = COMPENSATION_TITLE_TEXT;
     }
 
     /// <summary>
@@ -83,7 +89,6 @@ public class ResultPanelController : UIBaseController
         rankGroup.SetActive(false);
 
         var record = TimeManager.getInstance.GetTime;
-        recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
 
         if (_isClear)
         {
@@ -92,6 +97,7 @@ public class ResultPanelController : UIBaseController
             var result = await GrpcManager.GetInstance.UpdateTimeAttackRank(requestUpdateTimeAttackRank);
             if ((MessageCode)result.code == MessageCode.Success)
             {
+                recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
                 bestRecordText.text = string.Format("{0}:{1:N3}", (int)result.recordTime / 60, result.recordTime % 60);
                 compensationText.text = $"{result.money}";
                 // 외부 ui 갱신
@@ -112,9 +118,9 @@ public class ResultPanelController : UIBaseController
             var result = await GrpcManager.GetInstance.GameOver();
             if ((MessageCode)result.code == MessageCode.Success)
             {
-                // 외부 ui 갱신
-                // ui 생각해보기
                 playerManager.CurrentMoney += result.money;
+                gameOverCompensationText.text = $"{result.money}";
+                gameOverRecordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
             }
             else
             {

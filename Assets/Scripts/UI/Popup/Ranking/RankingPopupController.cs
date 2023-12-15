@@ -73,15 +73,27 @@ public class RankingPopupController : UIBaseController, IPopup
         throw new NotImplementedException();
     }
 
-    public void SetData()
+    public async void SetData()
     {
         // 서버에서 받아오기
         // 임시 데이터
+        var result = await GrpcManager.GetInstance.LoadTimeAttackRankTable();
 
-        for (int i = 0; i < 5; i++)
+        if ((MessageCode)result.code == MessageCode.Success)
         {
-            rankingElementControllers[i].gameObject.SetActive(true);
-            rankingElementControllers[i].SetData(i.ToString(), $"{i}번", $"{i},00,000");
+            var count = result.rankList.Length > MAX_RANKING_ELEMENT_COUNT ? MAX_RANKING_ELEMENT_COUNT : result.rankList.Length;
+
+            for (int i = 0; i < count; i++)
+            {
+                var data = result.rankList[i];
+                var record = string.Format("{0}:{1:N3}", (int)data.recordTime / 60, data.recordTime % 60);
+                rankingElementControllers[i].gameObject.SetActive(true);
+                rankingElementControllers[i].SetData($"{data.rank}", data.userName, record);
+            }
+        }
+        else
+        {
+            Debug.Log("Server Error");
         }
     }
 }
