@@ -98,8 +98,9 @@ public class ResultPanelController : UIBaseController
                 if (result.rank != 0)
                 {
                     rankText.text = $"랭킹 {result.rank}위";
-                    rankGroup.SetActive(true);
+                    rankGroup.SetActive(true);                    
                 }
+                playerManager.CurrentMoney += result.money;
             }
             else
             {
@@ -113,6 +114,7 @@ public class ResultPanelController : UIBaseController
             {
                 // 외부 ui 갱신
                 // ui 생각해보기
+                playerManager.CurrentMoney += result.money;
             }
             else
             {
