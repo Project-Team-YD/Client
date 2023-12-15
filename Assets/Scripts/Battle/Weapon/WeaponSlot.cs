@@ -214,8 +214,8 @@ public class WeaponSlot : MonoBehaviour
                             }
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
-                            attackSpeeds = (int)(attackSpeeds + (attackSpeeds * playerManager.GetPlayerAttackSpeed));
+                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * ENHANCE_SPEED) * attackSpeed));
+                            attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
@@ -234,8 +234,8 @@ public class WeaponSlot : MonoBehaviour
                         {
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)((attackSpeed + ((info.enhance * ENHANCE_SPEED) * attackSpeed)) * 1000);
-                            attackSpeeds = (int)(attackSpeeds + (attackSpeeds * playerManager.GetPlayerAttackSpeed));
+                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * ENHANCE_SPEED) * attackSpeed));
+                            attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
                             await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 

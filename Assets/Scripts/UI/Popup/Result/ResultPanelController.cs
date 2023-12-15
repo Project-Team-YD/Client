@@ -4,6 +4,7 @@ using HSMLibrary.UI;
 using HSMLibrary.Scene;
 using HSMLibrary.Manager;
 using TMPro;
+using Packet;
 
 public class ResultPanelController : UIBaseController
 {
@@ -14,7 +15,7 @@ public class ResultPanelController : UIBaseController
     private const string RANK_BUTTON_TITLE_TEXT = "랭킹 등록";
     private const string TITLE_BUTTON_TITLE_TEXT = "로비로 돌아가기";
     private const string GAMEOVER_TITLE_TEXT = "GAME OVER";
-    private const string RANK_TITLE_TEXT = "GAME OVER";
+    private const string RANK_TITLE_TEXT = "랭킹 갱신";
 
     [SerializeField] private TextMeshProUGUI resultTitleText = null;
     [SerializeField] private TextMeshProUGUI recordTitleText = null;
@@ -76,13 +77,51 @@ public class ResultPanelController : UIBaseController
     /// 보상 정산 어떻게 할지
     /// 클리어 여부로 랭킹 등록 버튼 활성화
     /// </summary>
-    public void SetData(bool _isClear = false)
+    public async void SetData(bool _isClear = false)
     {
-        gameOverGroup.SetActive(!_isClear);
-        resultGroup.SetActive(_isClear);
-
         // 조건 서버에서 랭킹 갱신됐는지 받아오기
         rankGroup.SetActive(false);
+
+        var record = TimeManager.getInstance.GetTime;
+        recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
+
+        if (_isClear)
+        {
+            RequestUpdateTimeAttackRank requestUpdateTimeAttackRank = new RequestUpdateTimeAttackRank();
+            requestUpdateTimeAttackRank.recordTime = record;
+            var result = await GrpcManager.GetInstance.UpdateTimeAttackRank(requestUpdateTimeAttackRank);
+            if ((MessageCode)result.code == MessageCode.Success)
+            {
+                bestRecordText.text = string.Format("{0}:{1:N3}", (int)result.recordTime / 60, result.recordTime % 60);
+                compensationText.text = $"{result.money}";
+                // 외부 ui 갱신
+                if (result.rank != 0)
+                {
+                    rankText.text = $"랭킹 {result.rank}위";
+                    rankGroup.SetActive(true);
+                }
+            }
+            else
+            {
+                Debug.Log("Server Error");
+            }
+        }
+        else
+        {
+            var result = await GrpcManager.GetInstance.GameOver();
+            if ((MessageCode)result.code == MessageCode.Success)
+            {
+                // 외부 ui 갱신
+                // ui 생각해보기
+            }
+            else
+            {
+                Debug.Log("Server Error");
+            }
+        }
+
+        gameOverGroup.SetActive(!_isClear);
+        resultGroup.SetActive(_isClear);
     }
 
     /// <summary>

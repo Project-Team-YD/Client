@@ -16,35 +16,27 @@ public class InGameShopItemController : MonoBehaviour
     private int idx;
     private int itemId;
 
+    private TableManager tableManager = null;
+
     private Action<int> callBack = null;
 
     public string ItemExplanation { get { return explanation; } set { explanation = value; } }
     public int ItemPrice { get { return price; } set { price = value; } }
-    public int SetIndex { get { return idx; } set { idx = value; } }
+    public int SetIndex { set { idx = value; } }
     public string SetEnhance { set { enhance.text = value; } }
     public int ItemId { get { return itemId; } set { itemId = value; } }
 
     private void Awake()
     {
+        tableManager = TableManager.getInstance;
         thisButton.onClick.AddListener(OnClickButton);
     }
 
     public void SetShopItemData(Action<int> _callBack)
     {
         callBack = _callBack;
-        UpdateWeaponItemImage();
-    }
 
-    public void SetWeaponItemData(Action<int> _callBack)
-    {
-        callBack = _callBack;
-        UpdateWeaponItemImage();
-    }
-
-    public void SetPassvieItemData(Action<int> _callBack)
-    {
-        callBack = _callBack;
-        UpdatePassiveItemImage();
+        UpdateItemImage();
     }
 
     private void OnClickButton()
@@ -52,14 +44,18 @@ public class InGameShopItemController : MonoBehaviour
         callBack(idx);
     }
 
-    public void UpdateWeaponItemImage()
+    public void UpdateItemImage()
     {
-        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");
-    }
+        var item = tableManager.GetItemInfo(itemId);
 
-    public void UpdatePassiveItemImage()
-    {
-        thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");
+        if (item.itemType == 0)
+        {
+            thisImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)itemId}");
+        }
+        else
+        {
+            thisImage.sprite = Resources.Load<Sprite>($"Passive/{(PassiveType)itemId}");
+        }
     }
 
     public void ActiveEnhance(bool _isActive)

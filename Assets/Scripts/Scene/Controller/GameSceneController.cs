@@ -1150,7 +1150,7 @@ public class GameSceneController : BaseSceneController
             var regenHp = playerManager.GetPlayerRegenHp;
             if (regenHp > 0)
             {
-                var maxHp = playerMaxHp + (playerMaxHp * regenHp);
+                var maxHp = playerMaxHp + regenHp;
                 if (currentPlayerHp < maxHp)
                 {
                     currentPlayerHp += regenHp;
@@ -1160,7 +1160,7 @@ public class GameSceneController : BaseSceneController
                     }
                 }
             }
-            await UniTask.Delay(5000);
+            await UniTask.Delay(5000, cancellationToken: _cancellationToken.Token);
         }
     }
 }

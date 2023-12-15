@@ -56,11 +56,11 @@ public class PlayerManager : Singleton<PlayerManager>
         {
             var data = playerPassiveItem[i];
             var item = tableManager.GetEffectItem(data.id);
-            maxHp += item.maxHp;// + (item.maxHp * data.count);
-            regenHp += item.regenHp;// + (item.regenHp * data.count);
-            damage += item.damage;// + (item.damage * data.count);
-            speed += item.speed;// + (item.speed * data.count);
-            attackSpeed += item.attackSpeed + (item.attackSpeed * data.count);
+            maxHp += item.maxHp * data.count;
+            regenHp += item.regenHp * data.count;
+            damage += item.damage * data.count;
+            speed += item.speed * data.count;
+            attackSpeed += item.attackSpeed * data.count;
         }
     }
 

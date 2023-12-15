@@ -225,7 +225,7 @@ public class InGameShopPanelController : UIBaseController
             weapon.ItemId = items[i].id;
             var idx = i;
             weapon.SetIndex = idx;
-            weapon.SetWeaponItemData(OnClickWeaponData);
+            weapon.SetShopItemData(OnClickWeaponData);
             weapon.ItemExplanation = $"{items[i].id}번 아이템 설명";
             weapon.SetEnhance = $"+{items[i].enchant}";
             weapon.ActiveEnhance(true);
@@ -252,7 +252,7 @@ public class InGameShopPanelController : UIBaseController
                 var idx = i;
                 item.SetIndex = idx;
                 item.ItemExplanation = $"{items[i].id}번 아이템 설명";
-                item.SetWeaponItemData(OnClickPassiveItemData);
+                item.SetShopItemData(OnClickPassiveItemData);
                 // 여긴 확인필요
                 item.SetEnhance = $"+{items[i].count}";
                 item.ActiveEnhance(true);
@@ -300,7 +300,7 @@ public class InGameShopPanelController : UIBaseController
     {
         RequestBuyIngameItem buyIngameItem = new RequestBuyIngameItem();
         buyIngameItem.itemId = shopItemList[selectItemIndex].ItemId;
-        buyIngameItem.currentStage = gameStage;
+        buyIngameItem.currentStage = gameStage + 1;
         var result = await GrpcManager.GetInstance.BuyIngameItem(buyIngameItem);
         if ((MessageCode)result.code == MessageCode.Success)
         {
@@ -315,9 +315,12 @@ public class InGameShopPanelController : UIBaseController
                 Debug.Log($"Slot {i} / Id: {result.slot[i].id} / Enchant : {result.slot[i].enchant}");
             }
             // 플레이어 passive item id enchant
-            for (int i = 0; i < result.effect.Length; i++)
+            if (result.effect != null)
             {
-                Debug.Log($"Effect {i} / Id: {result.effect[i].id} / Count : {result.effect[i].count}");
+                for (int i = 0; i < result.effect.Length; i++)
+                {
+                    Debug.Log($"Effect {i} / Id: {result.effect[i].id} / Count : {result.effect[i].count}");
+                }
             }
 
 

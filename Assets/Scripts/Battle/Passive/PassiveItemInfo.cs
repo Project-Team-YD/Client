@@ -1,3 +1,13 @@
+
+public enum PassiveType
+{
+    steak = 4,
+    devil_blood = 5,
+    green_potion = 6,
+    dragon_ball = 7,
+    brave_potion = 8
+}
+
 public class PassiveItemInfo
 {
     public int passiveItemId;
