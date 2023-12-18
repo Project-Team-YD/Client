@@ -181,6 +181,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <summary>
     /// 인벤토리 새로고침 함수.
     /// </summary>
+    /// <param name="_money">로비 재화 텍스트</param>
     public void RefreshInventorys(TextMeshProUGUI _money = null)
     {
         int inventoryCount = WeaponTable.getInstance.GetInventoryCount();
