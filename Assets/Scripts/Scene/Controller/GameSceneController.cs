@@ -999,7 +999,8 @@ public class GameSceneController : BaseSceneController
             ENHANCE_POWER = WeaponTable.MELEE_WEAPON_ENHANCE_POWER;
         }
 
-        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) ;
+        damage = damage + (damage * playerManager.GetPlayerDamage);
 
         monster.SetDamage(damage);
 
@@ -1036,7 +1037,8 @@ public class GameSceneController : BaseSceneController
             ENHANCE_POWER = WeaponTable.MELEE_WEAPON_ENHANCE_POWER;
         }
 
-        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) + (weapon.attackPower * playerManager.GetPlayerDamage);
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
+        damage = damage + (damage * playerManager.GetPlayerDamage);
 
         bossMonster.SetDamage(damage);
 
