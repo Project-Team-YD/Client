@@ -96,14 +96,14 @@ public class ResultPanelController : UIBaseController
             {
                 recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
                 bestRecordText.text = string.Format("{0}:{1:N3}", (int)result.recordTime / 60, result.recordTime % 60);
-                compensationText.text = $"{result.money}";
+                compensationText.text = $"{result.rewardMoney}";
                 
                 if (result.rank != 0)
                 {
                     rankText.text = $"랭킹 {result.rank}위";
                     rankGroup.SetActive(true);                    
                 }
-                playerManager.CurrentMoney += result.money;
+                playerManager.CurrentMoney = result.money;
             }
             else
             {
@@ -115,8 +115,8 @@ public class ResultPanelController : UIBaseController
             var result = await GrpcManager.GetInstance.GameOver();
             if ((MessageCode)result.code == MessageCode.Success)
             {
-                playerManager.CurrentMoney += result.money;
-                gameOverCompensationText.text = $"{result.money}";
+                playerManager.CurrentMoney = result.money;
+                gameOverCompensationText.text = $"{result.rewardMoney}";
                 gameOverRecordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
             }
             else

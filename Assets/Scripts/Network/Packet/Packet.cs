@@ -243,11 +243,13 @@ namespace Packet
         public float recordTime;
         public int rank;
         public int money;
+        public int rewardMoney;
     }
 
     public class ResponseGameOver : Response
     {
         public int money;
+        public int rewardMoney;
     }
     #endregion
     #region
