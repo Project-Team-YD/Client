@@ -79,7 +79,19 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <param name="_key">인벤토리 무기 슬릇의 인덱스</param>
     public void SetSelectSlotWeaponImage(int _key)
     {
-        weaponIndex = _key;
+        weaponIndex = _key;        
+        weaponImage.enabled = true;
+        enhanceText.enabled = true;        
+        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
+        
+        SetEnhanceWeaponInfo(weaponIndex);        
+    }
+    /// <summary>
+    /// 무기 강화 정보 셋팅 함수.
+    /// </summary>
+    /// <param name="_key">현재 무기 id</param>
+    private void SetEnhanceWeaponInfo(int _key)
+    {
         int price = 0;
         var data = WeaponTable.getInstance.GetInventoryData(_key);
         if (tableMgr.GetWeaponEnchantInfo(data.enchant + 1) != null)
@@ -92,36 +104,63 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
             price = int.MaxValue;
             costText.text = "비용 : MAX";
         }
-        weaponImage.enabled = true;
-        enhanceText.enabled = true;
-        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");        
-        nowEnhance.text = $"+{data.enchant}";
-        nextEnhance.text = $"+{data.enchant + 1}";
-        arrowText.text = "->";
+        enhanceText.text = $"+{data.enchant}";
+        bool isMax = data.enchant + 1 > tableMgr.GetEnchantInfoCount();
         float attackPower = WeaponTable.getInstance.GetWeaponInfo(_key).attackPower;
         float attackSpeed = WeaponTable.getInstance.GetWeaponInfo(_key).attackSpeed;
         float attackRange = WeaponTable.getInstance.GetWeaponInfo(_key).attackRange;
-        if ((WeaponType)data.id == WeaponType.dagger || (WeaponType)data.id == WeaponType.sword)
+        if (!isMax)
         {
-            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
-                $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed}";
-            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
-                $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed}";
+            nowEnhance.text = $"+{data.enchant}";
+            nextEnhance.text = $"+{data.enchant + 1}";
+            arrowText.text = "->";
+            nextEnhanceInfo.fontSize = 45f;
+            if ((WeaponType)data.id == WeaponType.dagger || (WeaponType)data.id == WeaponType.sword)
+            {
+                nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed}";
+                nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed}";
+            }
+            else
+            {
+                nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+                nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+            }
         }
         else
         {
-            nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
-                $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
-            nextEnhanceInfo.text = $"공격력 : {attackPower + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
-                $"공격범위 : {attackRange}\n" +
-                $"공격속도 : {attackSpeed + (((data.enchant + 1) * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
+            nowEnhance.text = $"+{data.enchant}";
+            nextEnhance.text = string.Empty;
+            arrowText.text = string.Empty;
+            if ((WeaponType)data.id == WeaponType.dagger || (WeaponType)data.id == WeaponType.sword)
+            {
+                nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.MELEE_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed}";
+            }
+            else
+            {
+                nowEnhanceInfo.text = $"공격력 : {attackPower + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_POWER) * attackPower)}\n" +
+                    $"공격범위 : {attackRange}\n" +
+                    $"공격속도 : {attackSpeed + ((data.enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";                
+            }
+            nextEnhanceInfo.fontSize = 100f;
+            nextEnhanceInfo.text = "(MAX)";
         }
         if (PlayerManager.getInstance.CurrentMoney >= price)
         {
             enhanceBtn.interactable = true;
+        }
+        else
+        {
+            enhanceBtn.interactable = false;
         }
     }
     /// <summary>
@@ -160,7 +199,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
             inventorys[index].InitWeaponInfo(item.id, item.enchant);
             inventorys[index].SetWeaponImage();
             index++;
-        }
+        }        
         if (_money != null)
         {
             lobbyMoneyText = _money;
@@ -180,6 +219,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         var inventory = await GrpcManager.GetInstance.LoadInventory();
         WeaponTable.getInstance.SetInventoryData(inventory.items);
         RefreshInventorys();
+        SetEnhanceWeaponInfo(weaponIndex);
         lobbyMoneyText.text = $"{PlayerManager.getInstance.CurrentMoney}";
     }
     /// <summary>
