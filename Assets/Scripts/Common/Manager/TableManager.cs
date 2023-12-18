@@ -87,6 +87,18 @@ public class TableManager : Singleton<TableManager>
             return null;
     }
 
+    public void SetShopItemRefresh(int _key)
+    {
+        if (shopTable.ContainsKey(_key))
+        {
+            shopTable[_key].isBuy = true;
+        }
+        else
+        {
+            Debug.Log("해당하는 상점 아이템 키값이 없습니다.");
+        }
+    }
+
     public int GetShopDataCount()
     {
         return shopTable.Count;

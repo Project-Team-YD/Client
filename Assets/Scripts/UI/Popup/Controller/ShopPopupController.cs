@@ -101,10 +101,9 @@ public class ShopPopupController : UIBaseController, IPopup
 
         var inventory = await GrpcManager.GetInstance.LoadInventory();
         WeaponTable.getInstance.SetInventoryData(inventory.items);
-
-        var tables = await GrpcManager.GetInstance.LoadTables();
-        tableMgr.SetTableShop(tables.shopTable);
-        RefreshShopItem();        
+        
+        tableMgr.SetShopItemRefresh(itemIndex);
+        RefreshShopItem();
     }
     /// <summary>
     /// 상점 구매하기 버튼 이벤트
