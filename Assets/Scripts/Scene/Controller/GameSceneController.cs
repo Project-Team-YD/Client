@@ -831,7 +831,11 @@ public class GameSceneController : BaseSceneController
         }
         _enemy.SetState(MonsterState.Chase);
     }
-
+    /// <summary>
+    /// 보스 공격 패턴
+    /// </summary>
+    /// <param name="_enemy"></param> boss
+    /// <param name="_direction"></param> attack direction
     private void BossBodyAttack(EnemyObject _enemy, Vector3 _direction)
     {
         _enemy.SetState(MonsterState.Attack);
@@ -1109,6 +1113,9 @@ public class GameSceneController : BaseSceneController
         }
     }
 
+    /// <summary>
+    /// gameover check
+    /// </summary>
     private async void CheckGameOver()
     {
         // 게임을 일시 정지 시킬지 고민 필요
@@ -1140,6 +1147,11 @@ public class GameSceneController : BaseSceneController
         }
     }
 
+    /// <summary>
+    /// hp regen item effect
+    /// </summary>
+    /// <param name="_cancellationToken"></param>
+    /// <returns></returns>
     private async UniTaskVoid RegenHp(CancellationTokenSource _cancellationToken)
     {
         while (!_cancellationToken.IsCancellationRequested)

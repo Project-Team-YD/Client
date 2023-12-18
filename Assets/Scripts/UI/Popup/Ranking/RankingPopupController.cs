@@ -75,8 +75,6 @@ public class RankingPopupController : UIBaseController, IPopup
 
     public async void SetData()
     {
-        // 서버에서 받아오기
-        // 임시 데이터
         var result = await GrpcManager.GetInstance.LoadTimeAttackRankTable();
 
         if ((MessageCode)result.code == MessageCode.Success)

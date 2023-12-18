@@ -159,7 +159,6 @@ public class InGameShopPanelController : UIBaseController
 
     /// <summary>
     /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
-    /// 서버에서 데이터 받는 메서드 따로 만들 필요 있음
     /// </summary>
     public async void SetData(Action _callback, int _gameStage)
     {
@@ -170,7 +169,6 @@ public class InGameShopPanelController : UIBaseController
 
         UpdateMyWeaponData();
         UpdateMyPassiveItemData();
-
 
         RequestLoadIngameShop loadIngameShop = new RequestLoadIngameShop();
         loadIngameShop.currentStage = gameStage + 1;
@@ -185,8 +183,6 @@ public class InGameShopPanelController : UIBaseController
             var items = result.items;
             for (int i = 0; i < count; i++)
             {
-                // item 정보 가져와서 넣어주기
-                // shopItemList[i]
                 var idx = i;
                 shopItemList[i].ItemId = items[i].id;
                 shopItemList[i].SetIndex = idx;
@@ -205,7 +201,6 @@ public class InGameShopPanelController : UIBaseController
                     shopItemList[i].ItemExplanation = $"{tableMgr.descriptions[items[i].id]}\n\n" +
                                                       $"패시브 효과 : {tableMgr.passiveDescriptions[(items[i].id - 4)]}";
                 }
-                //shopItemList[i].ItemExplanation = $"{items[i].id}번 아이템 설명";
                 shopItemList[i].SetShopItemData(OnClickItem);
                 shopItemList[i].ActiveEnhance(false);
                 shopItemList[i].gameObject.SetActive(true);
@@ -218,10 +213,6 @@ public class InGameShopPanelController : UIBaseController
             Debug.Log("ServerError");
         }
     }
-
-    /// <summary>
-    /// 충돌처리할때 어떤무기가 충돌됬는지
-    /// </summary>
 
     // 내가 장착중인 아이템 불러오기
     private void UpdateMyWeaponData()
@@ -261,7 +252,6 @@ public class InGameShopPanelController : UIBaseController
                                          $"공격범위 : {attackRange}\n" +
                                          $"공격속도 : {attackSpeed + ((items[i].enchant * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed)}";
             }
-            //weapon.ItemExplanation = $"{items[i].id}번 아이템 설명";
             weapon.SetEnhance = $"+{items[i].enchant}";
             weapon.ActiveEnhance(true);
         }
@@ -331,7 +321,7 @@ public class InGameShopPanelController : UIBaseController
     }
 
     /// <summary>
-    /// 구매 버튼
+    /// 구매 버튼 서버 연동
     /// </summary>
     private async void OnClickBuyButton()
     {

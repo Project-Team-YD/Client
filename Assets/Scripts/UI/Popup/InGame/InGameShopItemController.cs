@@ -44,6 +44,9 @@ public class InGameShopItemController : MonoBehaviour
         callBack(idx);
     }
 
+    /// <summary>
+    /// image update
+    /// </summary>
     public void UpdateItemImage()
     {
         var item = tableManager.GetItemInfo(itemId);
@@ -58,6 +61,10 @@ public class InGameShopItemController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 강화 ui active
+    /// </summary>
+    /// <param name="_isActive"></param>
     public void ActiveEnhance(bool _isActive)
     {
         enhance.gameObject.SetActive(_isActive);

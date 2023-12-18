@@ -64,6 +64,9 @@ public class NickNamePanelController : UIBaseController
         nickNameInputCheckText.text = NICKNAME_CHECK_TEXT;
     }
 
+    /// <summary>
+    /// 닉네임 체크 및 업데이트
+    /// </summary>
     private async void OnClickCheckButton()
     {
         nickNameInputText.interactable = false;
@@ -85,6 +88,10 @@ public class NickNamePanelController : UIBaseController
         }
     }
 
+    /// <summary>
+    /// 닉네임 입력 제한
+    /// </summary>
+    /// <param name="_text"></param>
     private void InputFieldValueChanged(string _text)
     {
         if (_text.Length < MIN_TEXT)

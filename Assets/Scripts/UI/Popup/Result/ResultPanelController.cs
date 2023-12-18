@@ -78,14 +78,11 @@ public class ResultPanelController : UIBaseController
     }
 
     /// <summary>
-    /// 현재 기록 가져오기 
-    /// 기존 최고기록 기억한거 들고오기
-    /// 보상 정산 어떻게 할지
-    /// 클리어 여부로 랭킹 등록 버튼 활성화
+    /// 클리어 결과 서버 연동
     /// </summary>
+    /// <param name="_isClear"></param> 클리어 여부
     public async void SetData(bool _isClear = false)
-    {
-        // 조건 서버에서 랭킹 갱신됐는지 받아오기
+    {        
         rankGroup.SetActive(false);
 
         var record = TimeManager.getInstance.GetTime;
@@ -140,6 +137,9 @@ public class ResultPanelController : UIBaseController
         rankGroup.SetActive(false);
     }
 
+    /// <summary>
+    /// 로비신 이동
+    /// </summary>
     private void OnClickTitleButton()
     {
         uiManager.Hide();
