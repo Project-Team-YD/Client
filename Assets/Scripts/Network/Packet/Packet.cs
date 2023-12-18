@@ -123,7 +123,7 @@ namespace Packet
     public class InventoryItem
     {
         public int id;
-        public int count; // 없애도될듯...안씀.
+        public int count;
         public int enchant;
     }
 

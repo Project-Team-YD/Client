@@ -34,6 +34,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     private InventoryItem item = null;
     private TableManager tableMgr = null;
     private int weaponIndex;
+    private List<InventorySlotView> inventorys = new List<InventorySlotView>();
     
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
@@ -54,7 +55,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     }
 
     protected override void Initialize()
-    {
+    {        
         var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
         while (invenEnumerator.MoveNext())
         {
@@ -64,6 +65,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
             componenet.InitWeaponInfo(item.id, item.enchant);
             componenet.SetWeaponImage();
             componenet.SetWeaponEnhanceController(this);
+            inventorys.Add(componenet);
         }
         
         enhancePopupText.text = ENHANCE_POPUP_TEXT;
@@ -113,7 +115,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         }
     }
     /// <summary>
-    /// 팝업정보들 초기상태도 되돌림.
+    /// 팝업 데이터 초기화.
     /// </summary>
     private void DataInitialization()
     {
@@ -128,6 +130,20 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         costText.text = string.Format("비용 : {0}", 0);
     }
     /// <summary>
+    /// 인벤토리 새로고침 함수.
+    /// </summary>
+    private void RefreshInventorys()
+    {
+        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
+        int index = 0;
+        while (invenEnumerator.MoveNext())
+        {
+            item = invenEnumerator.Current.Value;            
+            inventorys[index].InitWeaponInfo(item.id, item.enchant);
+            index++;
+        }
+    }
+    /// <summary>
     /// 강화 기능 함수.
     /// </summary>
     private async void Enhance()
@@ -139,6 +155,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
 
         var inventory = await GrpcManager.GetInstance.LoadInventory();
         WeaponTable.getInstance.SetInventoryData(inventory.items);
+        RefreshInventorys();
     }
     /// <summary>
     /// 무기 강화 버튼 클릭시 호출되는 함수.

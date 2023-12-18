@@ -22,6 +22,11 @@ public class ShopItemSlotView : MonoBehaviour
         itemBtn.onClick.AddListener(OnClickItemSlot);
     }
 
+    public void RefreshItemSlot(bool _isBuy)
+    {
+        soldOutDimObject.SetActive(_isBuy);
+    }
+
     private void OnClickItemSlot()
     {
         callback?.Invoke(itemId);

@@ -25,8 +25,9 @@ public class ShopPopupController : UIBaseController, IPopup
     private TableManager tableMgr = null;
     private ShopItem shopitem = null;
     private int itemIndex;
+    private List<ShopItemSlotView> items = new List<ShopItemSlotView>();
 
-    private const string BUY_TEXT = "구매";    
+    private const string BUY_TEXT = "구매";
 
     protected override void Awake()
     {
@@ -36,7 +37,7 @@ public class ShopPopupController : UIBaseController, IPopup
         buyBtn.onClick.AddListener(OnClickBuyButton);
         closeBtn.onClick.AddListener(OnClickCloseButton);
         buyBtn.interactable = false;
-        Initialize();
+        Initialize();        
     }
     protected override void Initialize()
     {
@@ -50,9 +51,13 @@ public class ShopPopupController : UIBaseController, IPopup
             GameObject newObject = GameObject.Instantiate(shopSlot, slotRootTransform);
             var componenet = newObject.GetComponent<ShopItemSlotView>();
             componenet.InitItemSlot(shopitem, SetDescriptionText);
+            items.Add(componenet);
         }
     }
-
+    /// <summary>
+    /// 상점 아이템 설명 셋팅 함수.
+    /// </summary>
+    /// <param name="_id">아이템 id</param>
     private void SetDescriptionText(int _id)
     {
         itemIndex = _id;
@@ -72,6 +77,21 @@ public class ShopPopupController : UIBaseController, IPopup
             buyBtn.interactable = true;
         }
     }
+    /// <summary>
+    /// 상점 아이템 새로고침.
+    /// </summary>
+    private void RefreshShopItem()
+    {
+        int itemCount = tableMgr.GetShopDataCount();
+        for (int i = 0; i < itemCount; i++)
+        {
+            shopitem = tableMgr.GetShopItem(i);
+            items[i].RefreshItemSlot(shopitem.isBuy);
+        }
+    }
+    /// <summary>
+    /// 상점 구매 기능.
+    /// </summary>
     private async void BuyItem()
     {
         RequestBuyItem buyItem = new RequestBuyItem();
@@ -81,7 +101,14 @@ public class ShopPopupController : UIBaseController, IPopup
 
         var inventory = await GrpcManager.GetInstance.LoadInventory();
         WeaponTable.getInstance.SetInventoryData(inventory.items);
+
+        var tables = await GrpcManager.GetInstance.LoadTables();
+        tableMgr.SetTableShop(tables.shopTable);
+        RefreshShopItem();        
     }
+    /// <summary>
+    /// 상점 구매하기 버튼 이벤트
+    /// </summary>
     private async void OnClickBuyButton()
     {
         var popup = await uiMgr.Show<MessageTwoButtonBoxPopupController>("MessageTwoButtonBoxPopup");
