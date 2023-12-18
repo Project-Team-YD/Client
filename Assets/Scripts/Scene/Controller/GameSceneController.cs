@@ -1158,7 +1158,7 @@ public class GameSceneController : BaseSceneController
             var regenHp = playerManager.GetPlayerRegenHp;
             if (regenHp > 0)
             {
-                var maxHp = playerMaxHp + regenHp;
+                var maxHp = playerMaxHp + +(playerMaxHp * playerManager.GetPlayerMaxHP);
                 if (currentPlayerHp < maxHp)
                 {
                     currentPlayerHp += regenHp;

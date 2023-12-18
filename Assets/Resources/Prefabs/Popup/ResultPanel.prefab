@@ -1028,7 +1028,7 @@ MonoBehaviour:
   rankButton: {fileID: 6015961078063723341}
   titleButton: {fileID: 6088741946048425465}
   resultGroup: {fileID: 8731708511919469836}
-  gameOverGroup: {fileID: 4910761991163178031}
+  gameOverGroup: {fileID: 6137166997501178809}
   gameOverText: {fileID: 4373496702035059940}
   gameOverRecordTitleText: {fileID: 6879579052022283270}
   gameOverRecordText: {fileID: 2674986825568833387}
