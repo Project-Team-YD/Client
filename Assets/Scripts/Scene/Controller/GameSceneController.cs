@@ -1168,6 +1168,7 @@ public class GameSceneController : BaseSceneController
                     {
                         currentPlayerHp = maxHp;
                     }
+                    SetHpText(currentPlayerHp);
                 }
             }
             await UniTask.Delay(5000, cancellationToken: _cancellationToken.Token);
