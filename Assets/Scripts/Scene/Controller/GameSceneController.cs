@@ -9,7 +9,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class GameSceneController : BaseSceneController
-{   
+{
+    private const int STAGE_CORRECTION = 1;
+
     #region Enemy
     [SerializeField] private Transform monsterPoolRoot;
     private ObjectPool<IPoolable> monsterPool = null;
@@ -79,10 +81,10 @@ public class GameSceneController : BaseSceneController
     private readonly int DAMAGE_TEXT_COUNT = 30;
 
     private TimeManager timeManager = null;
-    private int gameWave;
     private int endWave;
     private UIManager uIManager = null;
     private PlayerManager playerManager = null;
+    private InGameManager inGameManager = null;
     private WeaponSlot[] weapons = null;
     public List<EnemyObject> GetEnemyList { get { return monsterList; } }
 
@@ -96,6 +98,7 @@ public class GameSceneController : BaseSceneController
         uIManager = UIManager.getInstance;
         timeManager = TimeManager.getInstance;
         playerManager = PlayerManager.getInstance;
+        inGameManager = InGameManager.getInstance;
         timeManager.ResetTime();
         timeManager.UpdateTime(timeManagerCancel = new CancellationTokenSource()).Forget();
         gameStopButton.onClick.AddListener(OnClickGameStopButton);
@@ -105,7 +108,6 @@ public class GameSceneController : BaseSceneController
         goldStringBuilder.Clear();
         waveStringBuilder.Clear();
         playerManager.CurrentGold = 0;
-        gameWave = 0;
         endWave = StageTable.getInstance.GetEndWave();
     }
 
@@ -147,7 +149,7 @@ public class GameSceneController : BaseSceneController
             currentPlayerHp = playerMaxHp;
         }
         SetHpText(playerMaxHp);
-        SetWaveText(gameWave);
+        SetWaveText((inGameManager.CurrentStage - STAGE_CORRECTION));
         // 화면 크기에서의 퍼센트
         topPanel = Screen.height * 0.75f;
         var bossHpHeight = bossHp.GetComponent<RectTransform>().rect.height;
@@ -247,7 +249,7 @@ public class GameSceneController : BaseSceneController
         gameWave = endWave;
         CheckGameWaveEnd(true);
 #endif
-        stage = StageTable.getInstance.GetStageInfoByIndex(gameWave);
+        stage = StageTable.getInstance.GetStageInfoByIndex(inGameManager.CurrentStage - STAGE_CORRECTION);
 #if !CHEAT_BOSS
         await CreateMonster();
         RegenMonster(monsterRegenCancel = new CancellationTokenSource()).Forget();
@@ -271,7 +273,6 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private void StartNextWave()
     {
-        gameWave++;
         StartGameWave();
 
         playerManager.PlayerWeaponController.StartAttack();
@@ -279,7 +280,7 @@ public class GameSceneController : BaseSceneController
 
         timeManager.PlayTime();
         currentPlayerHp = playerMaxHp + (playerMaxHp * playerManager.GetPlayerMaxHP);
-        SetWaveText(gameWave);
+        SetWaveText(inGameManager.CurrentStage - STAGE_CORRECTION);
         SetHpText(currentPlayerHp);
     }
     /// <summary>
@@ -297,7 +298,7 @@ public class GameSceneController : BaseSceneController
         EndWaveActiveDamageTextObjectEnqueue();
 
         // 조건 게임이 끝났는지        
-        if (gameWave >= endWave)
+        if ((inGameManager.CurrentStage - STAGE_CORRECTION) >= endWave)
         {
             // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
@@ -309,7 +310,7 @@ public class GameSceneController : BaseSceneController
         else
         {
             var popup = await uIManager.Show<InGameShopPanelController>("InGameShopPanel");
-            popup.SetData(StartNextWave, gameWave);
+            popup.SetData(StartNextWave);
         }
 
         joypadController.OnJoypadUp();
@@ -320,6 +321,7 @@ public class GameSceneController : BaseSceneController
 
     private void CheckGameWaveEnd(bool _endWave)
     {
+        var gameWave = inGameManager.CurrentStage - STAGE_CORRECTION;
         if (_endWave && gameWave != endWave)
         {
             timeManagerCancel.Cancel();
@@ -425,7 +427,7 @@ public class GameSceneController : BaseSceneController
             obj.transform.localPosition = monsterPosition;
             obj.OnActivate();
             obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount]));
-            obj.WaveEnhanceMonster(gameWave);
+            obj.WaveEnhanceMonster(inGameManager.CurrentStage - STAGE_CORRECTION);
             monsterList.Add(obj);
             monsterCount++;
         }
@@ -458,7 +460,7 @@ public class GameSceneController : BaseSceneController
                     obj.transform.localPosition = monsterPosition;
                     obj.OnActivate();
                     obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(stage.MonsterInfo[monsterCount]));
-                    obj.WaveEnhanceMonster(gameWave);
+                    obj.WaveEnhanceMonster(inGameManager.CurrentStage - STAGE_CORRECTION);
                     monsterList.Add(obj);
                     monsterCount++;
                 }

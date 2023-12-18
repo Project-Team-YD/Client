@@ -66,7 +66,7 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private Button nextButton = null;
 
     private int MAX_PLAYER_WEAPON_COUNT;
-    private int MAX_PLAYER_PASSIVE_ITEM_COUNT;
+    private const int MAX_PLAYER_PASSIVE_ITEM_COUNT = 4; 
 
     private WeaponInfo[] weaponInfos = null;
     private UIManager uiManager = null;
@@ -82,7 +82,6 @@ public class InGameShopPanelController : UIBaseController
     private Action callBack = null;
 
     private int selectItemIndex;
-    private int gameStage;
 
     protected override void Awake()
     {
@@ -112,9 +111,6 @@ public class InGameShopPanelController : UIBaseController
             item.gameObject.SetActive(false);
             weaponItemList.Add(item);
         }
-
-        // 임시
-        MAX_PLAYER_PASSIVE_ITEM_COUNT = 4;
 
         passiveItemList = new List<InGameShopItemController>(MAX_PLAYER_PASSIVE_ITEM_COUNT);
 
@@ -160,10 +156,9 @@ public class InGameShopPanelController : UIBaseController
     /// <summary>
     /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
     /// </summary>
-    public async void SetData(Action _callback, int _gameStage)
+    public async void SetData(Action _callback)
     {
         callBack = _callback;
-        gameStage = _gameStage;
 
         possessionGoldText.text = $"{playerManager.CurrentGold}";
 
@@ -171,10 +166,9 @@ public class InGameShopPanelController : UIBaseController
         UpdateMyPassiveItemData();
 
         RequestLoadIngameShop loadIngameShop = new RequestLoadIngameShop();
-        loadIngameShop.currentStage = gameStage + 1;
+        loadIngameShop.currentStage = inGameManager.CurrentStage;
         loadIngameShop.gold = (int)playerManager.CurrentGold;
         var result = await GrpcManager.GetInstance.LoadIngameShop(loadIngameShop);
-        Debug.Log($"{gameStage}");
         Debug.Log($"{InGameManager.getInstance.CurrentStage}");
         if ((MessageCode)result.code == MessageCode.Success)
         {
@@ -327,7 +321,7 @@ public class InGameShopPanelController : UIBaseController
     {
         RequestBuyIngameItem buyIngameItem = new RequestBuyIngameItem();
         buyIngameItem.itemId = shopItemList[selectItemIndex].ItemId;
-        buyIngameItem.currentStage = gameStage + 1;
+        buyIngameItem.currentStage = inGameManager.CurrentStage;
         var result = await GrpcManager.GetInstance.BuyIngameItem(buyIngameItem);
         if ((MessageCode)result.code == MessageCode.Success)
         {
@@ -335,21 +329,6 @@ public class InGameShopPanelController : UIBaseController
             playerManager.CurrentGold = result.gold;
 
             playerManager.UpdatePlayerWeapon(result.slot, result.effect);
-
-            // 플레이어 무기 id enchant
-            for (int i = 0; i < result.slot.Length; i++)
-            {
-                Debug.Log($"Slot {i} / Id: {result.slot[i].id} / Enchant : {result.slot[i].enchant}");
-            }
-            // 플레이어 passive item id enchant
-            if (result.effect != null)
-            {
-                for (int i = 0; i < result.effect.Length; i++)
-                {
-                    Debug.Log($"Effect {i} / Id: {result.effect[i].id} / Count : {result.effect[i].count}");
-                }
-            }
-
 
             buyObjectGroup.SetActive(true);
 
