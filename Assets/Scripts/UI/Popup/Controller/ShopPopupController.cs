@@ -26,6 +26,7 @@ public class ShopPopupController : UIBaseController, IPopup
     private ShopItem shopitem = null;
     private int itemIndex;
     private List<ShopItemSlotView> items = new List<ShopItemSlotView>();
+    private TextMeshProUGUI lobbyMoneyText = null;
 
     private const string BUY_TEXT = "구매";
 
@@ -80,13 +81,18 @@ public class ShopPopupController : UIBaseController, IPopup
     /// <summary>
     /// 상점 아이템 새로고침.
     /// </summary>
-    private void RefreshShopItem()
+    public void RefreshShopItem(TextMeshProUGUI _money = null)
     {
         int itemCount = tableMgr.GetShopDataCount();
         for (int i = 0; i < itemCount; i++)
         {
             shopitem = tableMgr.GetShopItem(i);
             items[i].RefreshItemSlot(shopitem.isBuy);
+        }
+        if (_money != null)
+        {
+            lobbyMoneyText = _money;
+            _money.text = $"{PlayerManager.getInstance.CurrentMoney}";
         }
     }
     /// <summary>
@@ -104,6 +110,8 @@ public class ShopPopupController : UIBaseController, IPopup
         
         tableMgr.SetShopItemRefresh(itemIndex);
         RefreshShopItem();
+        goodsText.text = $"{PlayerManager.getInstance.CurrentMoney}";
+        lobbyMoneyText.text = $"{PlayerManager.getInstance.CurrentMoney}";
     }
     /// <summary>
     /// 상점 구매하기 버튼 이벤트

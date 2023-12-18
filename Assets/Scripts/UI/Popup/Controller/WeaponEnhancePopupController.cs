@@ -35,6 +35,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     private TableManager tableMgr = null;
     private int weaponIndex;
     private List<InventorySlotView> inventorys = new List<InventorySlotView>();
+    private TextMeshProUGUI lobbyMoneyText = null;
     
     private const string ENHANCE_POPUP_TEXT = "장비강화";
     private const string ENHANCE_TEXT = "강화하기";
@@ -79,12 +80,21 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     public void SetSelectSlotWeaponImage(int _key)
     {
         weaponIndex = _key;
+        int price = 0;
         var data = WeaponTable.getInstance.GetInventoryData(_key);
-        int price = tableMgr.GetWeaponEnchantInfo(data.enchant + 1).price;
+        if (tableMgr.GetWeaponEnchantInfo(data.enchant + 1) != null)
+        {
+            price = tableMgr.GetWeaponEnchantInfo(data.enchant + 1).price;
+            costText.text = string.Format("비용 : {0:0,0}", price);
+        }
+        else
+        {
+            price = int.MaxValue;
+            costText.text = "비용 : MAX";
+        }
         weaponImage.enabled = true;
         enhanceText.enabled = true;
-        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");
-        costText.text = string.Format("비용 : {0:0,0}", price);
+        weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)_key}");        
         nowEnhance.text = $"+{data.enchant}";
         nextEnhance.text = $"+{data.enchant + 1}";
         arrowText.text = "->";
@@ -132,15 +142,29 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <summary>
     /// 인벤토리 새로고침 함수.
     /// </summary>
-    private void RefreshInventorys()
+    public void RefreshInventorys(TextMeshProUGUI _money = null)
     {
-        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
+        for (int i = inventorys.Count; i < WeaponTable.getInstance.GetInventoryCount(); i++)
+        {
+            GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
+            var componenet = newObject.GetComponent<InventorySlotView>();
+            //componenet.InitWeaponInfo(item.id, item.enchant);            
+            componenet.SetWeaponEnhanceController(this);
+            inventorys.Add(componenet);
+        }
         int index = 0;
+        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
         while (invenEnumerator.MoveNext())
         {
             item = invenEnumerator.Current.Value;            
             inventorys[index].InitWeaponInfo(item.id, item.enchant);
+            inventorys[index].SetWeaponImage();
             index++;
+        }
+        if (_money != null)
+        {
+            lobbyMoneyText = _money;
+            _money.text = $"{PlayerManager.getInstance.CurrentMoney}";
         }
     }
     /// <summary>
@@ -156,6 +180,7 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
         var inventory = await GrpcManager.GetInstance.LoadInventory();
         WeaponTable.getInstance.SetInventoryData(inventory.items);
         RefreshInventorys();
+        lobbyMoneyText.text = $"{PlayerManager.getInstance.CurrentMoney}";
     }
     /// <summary>
     /// 무기 강화 버튼 클릭시 호출되는 함수.

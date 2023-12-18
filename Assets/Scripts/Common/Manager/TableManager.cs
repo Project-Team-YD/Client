@@ -95,7 +95,9 @@ public class TableManager : Singleton<TableManager>
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log("해당하는 상점 아이템 키값이 없습니다.");
+#endif
         }
     }
 

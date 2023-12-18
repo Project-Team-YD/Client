@@ -43,14 +43,16 @@ public class LobbySceneController : BaseSceneController
     /// </summary>
     public async void OnClickEnhanceButton()
     {
-        await uiMgr.Show<WeaponEnhancePopupController>("WeaponEnhancePopup");
+        var popup = await uiMgr.Show<WeaponEnhancePopupController>("WeaponEnhancePopup");
+        popup.RefreshInventorys(moneyText);
     }
     /// <summary>
     /// 상점 버튼 이벤트.
     /// </summary>
     public async void OnClickShopButton()
     {
-        await uiMgr.Show<ShopPopupController>("ShopPopup");
+        var popup = await uiMgr.Show<ShopPopupController>("ShopPopup");
+        popup.RefreshShopItem(moneyText);
     }
     /// <summary>
     /// 랭킹 버튼 이벤트.
