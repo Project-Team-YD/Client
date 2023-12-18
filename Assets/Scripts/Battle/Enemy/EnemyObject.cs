@@ -212,7 +212,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
             curAABB = new AABB(this.transform, size);
         }
 
-        // 라인그리기
+#if UNITY_EDITOR
         var aabb = curAABB;
         var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
         var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
@@ -223,7 +223,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         Debug.DrawLine(rightTop, rightBottom, Color.black);
         Debug.DrawLine(rightBottom, leftBottom, Color.black);
         Debug.DrawLine(leftBottom, leftTop, Color.black);
-
+#endif
         return curAABB.CheckCollisionOBB(_other);
     }
     /// <summary>

@@ -71,21 +71,5 @@ public class PlayerManager : Singleton<PlayerManager>
         playerPassiveItem = _passive;
         if (playerPassiveItem != null)
             PassiveItemApply();
-
-
-        if (playerPassiveItem != null)
-        {
-            Debug.Log($"시작");
-            for (int i = 0; i < _weapon.Length; i++)
-            {
-                Debug.Log($"Slot {i} / Id: {_weapon[i].id} / Enchant : {_weapon[i].enchant}");
-            }
-            Debug.Log("-----------------------");
-            for (int i = 0; i < _passive.Length; i++)
-            {
-                Debug.Log($"Effect {i} / Id: {_passive[i].id} / Count : {_passive[i].count}");
-            }
-            Debug.Log($"끝");
-        }
     }
 }

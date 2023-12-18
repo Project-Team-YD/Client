@@ -76,8 +76,8 @@ public class Bullet : MonoBehaviour, IPoolable
     }
 
     public void SetBossMonsterBulletSprite(Vector3 _direction, int _rotationAngle)
-    {        
-        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");        
+    {
+        spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");
         float angle = Mathf.Atan2(_direction.y, _direction.x) * Mathf.Rad2Deg;
         transform.rotation = Quaternion.AngleAxis(angle + 90 + (_rotationAngle * 45), Vector3.forward);
 
@@ -112,24 +112,23 @@ public class Bullet : MonoBehaviour, IPoolable
             curAABB = new AABB(this.transform, size);
         }
 
-        // 라인그리기
+#if UNITY_EDITOR
         var aabb = GetBulletAABB;
         var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
         var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
         var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
         var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
 
-        // 45도로 회전한 AABB의 네 꼭짓점 계산
         Vector3 leftTop2 = aabb.RotatePoint(leftTop);
         Vector3 rightTop2 = aabb.RotatePoint(rightTop);
         Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
         Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
 
-        // 회전된 AABB를 라인으로 그리기
         Debug.DrawLine(leftTop2, rightTop2, Color.blue);
         Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
         Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
         Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
+#endif
 
         return curAABB.CheckCollisionOBB(_other);
     }

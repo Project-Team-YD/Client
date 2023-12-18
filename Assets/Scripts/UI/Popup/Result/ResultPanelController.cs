@@ -97,7 +97,7 @@ public class ResultPanelController : UIBaseController
                 recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
                 bestRecordText.text = string.Format("{0}:{1:N3}", (int)result.recordTime / 60, result.recordTime % 60);
                 compensationText.text = $"{result.money}";
-                // 외부 ui 갱신
+                
                 if (result.rank != 0)
                 {
                     rankText.text = $"랭킹 {result.rank}위";

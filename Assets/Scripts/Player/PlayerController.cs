@@ -29,7 +29,7 @@ public class PlayerController : BasePlayerController
                 curAABB = new AABB(this.transform, playerSprite.size);
             }
 
-            // 라인그리기
+#if UNITY_EDITOR
             var leftTop = new Vector3(curAABB.GetLeft, curAABB.GetTop, 0);
             var rightTop = new Vector3(curAABB.GetRight, curAABB.GetTop, 0);
             var leftBottom = new Vector3(curAABB.GetLeft, curAABB.GetBottom, 0);
@@ -39,7 +39,7 @@ public class PlayerController : BasePlayerController
             Debug.DrawLine(rightTop, rightBottom, Color.black);
             Debug.DrawLine(rightBottom, leftBottom, Color.black);
             Debug.DrawLine(leftBottom, leftTop, Color.black);
-
+#endif
             return curAABB;
         }
     }
