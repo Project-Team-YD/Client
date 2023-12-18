@@ -144,11 +144,11 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// </summary>
     public void RefreshInventorys(TextMeshProUGUI _money = null)
     {
-        for (int i = inventorys.Count; i < WeaponTable.getInstance.GetInventoryCount(); i++)
+        int inventoryCount = WeaponTable.getInstance.GetInventoryCount();
+        for (int i = inventorys.Count; i < inventoryCount; i++)
         {
             GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
-            var componenet = newObject.GetComponent<InventorySlotView>();
-            //componenet.InitWeaponInfo(item.id, item.enchant);            
+            var componenet = newObject.GetComponent<InventorySlotView>();                        
             componenet.SetWeaponEnhanceController(this);
             inventorys.Add(componenet);
         }

@@ -29,6 +29,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     private Dictionary<int, WeaponInfo> weaponInfoDic = null;
     private InventoryItem item = null;
     private TableManager tableMgr = null;
+    private List<InventorySlotView> inventorys = new List<InventorySlotView>();
 
     private const string DUNGEON_JOIN_TEXT = "던전입장";
     private const string EQUIP_TEXT = "착용중";
@@ -65,6 +66,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
             componenet.InitWeaponInfo(item.id, item.enchant);
             componenet.SetWeaponImage();
             componenet.SetWeaponSelectController(this);
+            inventorys.Add(componenet);
         }
         
         dungeonJoinText.text = DUNGEON_JOIN_TEXT;
@@ -84,7 +86,29 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         // 초기화
         joinBtn.interactable = false;
     }
-
+    /// <summary>
+    /// 인벤토리 새로고침 함수.
+    /// </summary>
+    public void RefreshInventorys()
+    {
+        int inventoryCount = WeaponTable.getInstance.GetInventoryCount();
+        for (int i = inventorys.Count; i < inventoryCount; i++)
+        {
+            GameObject newObject = GameObject.Instantiate(inventorySlot, slotRootTransform);
+            var componenet = newObject.GetComponent<InventorySlotView>();
+            componenet.SetWeaponSelectController(this);
+            inventorys.Add(componenet);
+        }
+        int index = 0;
+        var invenEnumerator = WeaponTable.getInstance.GetInventory().GetEnumerator();
+        while (invenEnumerator.MoveNext())
+        {
+            item = invenEnumerator.Current.Value;
+            inventorys[index].InitWeaponInfo(item.id, item.enchant);
+            inventorys[index].SetWeaponImage();
+            index++;
+        }        
+    }
     /// <summary>
     /// 게임 입장 전 들고 갈 무기 선택시 슬릇에 선택 무기 이미지 설정 및 정보 가져오는 함수.
     /// </summary>

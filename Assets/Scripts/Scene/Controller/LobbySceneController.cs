@@ -36,7 +36,8 @@ public class LobbySceneController : BaseSceneController
     /// </summary>
     public async void OnClickDungeonButton()
     {
-        await uiMgr.Show<WeaponSelectPopupController>("WeaponSelectPopup");
+        var popup = await uiMgr.Show<WeaponSelectPopupController>("WeaponSelectPopup");
+        popup.RefreshInventorys();
     }
     /// <summary>
     /// 강화 버튼 이벤트.
