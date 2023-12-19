@@ -79,6 +79,12 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// <param name="_key">인벤토리 무기 슬릇의 인덱스</param>
     public void SetSelectSlotWeaponImage(int _key)
     {
+        int inventorysCount = inventorys.Count;
+        for (int i = 0; i < inventorysCount; i++)
+        {
+            bool isOn = i == _key;
+            inventorys[i].OnOffChoiceEffectImage(isOn);            
+        }
         weaponIndex = _key;        
         weaponImage.enabled = true;
         enhanceText.enabled = true;        
@@ -168,6 +174,11 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     /// </summary>
     private void DataInitialization()
     {
+        int inventorysCount = inventorys.Count;
+        for (int i = 0; i < inventorysCount; i++)
+        {            
+            inventorys[i].OnOffChoiceEffectImage(false);
+        }
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         weaponImage.sprite = null;

@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class InGameShopItemController : MonoBehaviour
 {
+    [SerializeField] private Image choiceEffect = null;
     [SerializeField] private Image thisImage = null;
     [SerializeField] private Button thisButton = null;
     [SerializeField] private TextMeshProUGUI enhance = null;
@@ -15,6 +16,7 @@ public class InGameShopItemController : MonoBehaviour
     private int price;
     private int idx;
     private int itemId;
+    private bool isChoice;
 
     private TableManager tableManager = null;
 
@@ -30,6 +32,7 @@ public class InGameShopItemController : MonoBehaviour
     {
         tableManager = TableManager.getInstance;
         thisButton.onClick.AddListener(OnClickButton);
+        isChoice = false;
     }
 
     public void SetShopItemData(Action<int> _callBack)
@@ -42,8 +45,13 @@ public class InGameShopItemController : MonoBehaviour
     private void OnClickButton()
     {
         callBack(idx);
+        isChoice = true;
     }
 
+    public void OnOffChoiceEffectImage(bool _isOn)
+    {
+        choiceEffect.enabled = _isOn;
+    }
     /// <summary>
     /// image update
     /// </summary>

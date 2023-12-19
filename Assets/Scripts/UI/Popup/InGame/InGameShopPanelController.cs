@@ -357,6 +357,12 @@ public class InGameShopPanelController : UIBaseController
 
     private void OnClickItem(int _idx)
     {
+        int shopItemCount = shopItemList.Count;
+        for (int i = 0; i < shopItemCount; i++)
+        {
+            shopItemList[i].OnOffChoiceEffectImage(false);
+        }
+        shopItemList[_idx].OnOffChoiceEffectImage(true);
         var data = shopItemList[_idx];
 
         descriptionText.text = data.ItemExplanation;

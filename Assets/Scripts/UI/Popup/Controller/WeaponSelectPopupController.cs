@@ -112,9 +112,15 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     /// <summary>
     /// 게임 입장 전 들고 갈 무기 선택시 슬릇에 선택 무기 이미지 설정 및 정보 가져오는 함수.
     /// </summary>
-    /// <param name="_key">인벤토리 무기 슬릇 인덱스</param>
+    /// <param name="_key">인벤토리 무기 슬릇 id</param>
     public void SetSelectSlotWeaponImage(int _key)
     {
+        int inventorysCount = inventorys.Count;
+        for (int i = 0; i < inventorysCount; i++)
+        {
+            bool isOn = i == _key;
+            inventorys[i].OnOffChoiceEffectImage(isOn);
+        }
         weaponImage.enabled = true;
         enhanceText.enabled = true;
         var data = WeaponTable.getInstance.GetInventoryData(_key);
@@ -131,6 +137,11 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
     /// </summary>
     private void DataInitialization()
     {
+        int inventorysCount = inventorys.Count;
+        for (int i = 0; i < inventorysCount; i++)
+        {            
+            inventorys[i].OnOffChoiceEffectImage(false);
+        }
         weaponImage.enabled = false;
         enhanceText.enabled = false;
         weaponImage.sprite = null;

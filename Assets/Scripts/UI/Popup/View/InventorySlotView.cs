@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class InventorySlotView : MonoBehaviour
 {
+    [SerializeField] private Image choiceImage = null;
     [SerializeField] private Image weaponImage = null;
     [SerializeField] private Button slotBtn = null;
     [SerializeField] private TextMeshProUGUI enhanceText = null;
@@ -20,6 +21,7 @@ public class InventorySlotView : MonoBehaviour
     /// </summary>
     public void SetWeaponImage()
     {
+        weaponImage.color = Color.white;
         weaponImage.sprite = Resources.Load<Sprite>($"Weapon/{(WeaponType)id}");
     }
     /// <summary>
@@ -48,6 +50,14 @@ public class InventorySlotView : MonoBehaviour
     {
         weaponEnhancePopupController = null;
         weaponSelectPopupController = _controller;
+    }
+    /// <summary>
+    /// 슬릇 선택 효과 이미지 On / Off 함수.
+    /// </summary>
+    /// <param name="_isOn">슬릇 선택 On / Off값</param>
+    public void OnOffChoiceEffectImage(bool _isOn)
+    {
+        choiceImage.enabled = _isOn;
     }
     /// <summary>
     /// 슬릇 버튼 클릭 이벤트.
