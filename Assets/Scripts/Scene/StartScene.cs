@@ -62,8 +62,16 @@ public class StartScene : Scene
             var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
             panel.InitPopup("서버와 연결을 실패했습니다.\n게임을 다시 시작해주세요!", Application.Quit);
         }
+
         tablemanager = TableManager.getInstance;
+
         var tables = await GrpcManager.GetInstance.LoadTables();
+        if (tables.code != (int)MessageCode.Success)
+        {
+            var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
+            panel.InitPopup("서버와 연결을 실패했습니다.\n게임을 다시 시작해주세요!", Application.Quit);
+        }
+
         tablemanager.SetTableItem(tables.itemTable);
         tablemanager.SetTableWeapon(tables.itemWeaponTable);
         tablemanager.SetTableEffect(tables.itemEffectTable);
