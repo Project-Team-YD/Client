@@ -290,7 +290,10 @@ public class GameSceneController : BaseSceneController
         monsterMoveCancel.Cancel();
         monsterCheckCollisionCancel.Cancel();
         timeManagerCancel.Cancel();
-        bossMonsterAttackCancel.Cancel();
+        if (bossMonster != null)
+        {
+            bossMonsterAttackCancel.Cancel();
+        }
         regenHpCancel.Cancel();
         damageTextCancel.Cancel();
 
