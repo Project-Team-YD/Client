@@ -234,7 +234,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     {
         // TODO :: 여기서는 공격 범위 오브젝트만 컨트롤하고 공격 기능은 GameScene에서 관리할까?? 모든 공격이 GameScene에서 이루어지고 있음. return값으로 공격 가능인지 체크.
         BossMonsterAttackPattern pattern = (BossMonsterAttackPattern)_Pattern;
-        if (BossAttackPattern.activeSelf)
+        if (BossAttackPattern != null && BossAttackPattern.activeSelf)
         {
             switch (pattern)
             {
