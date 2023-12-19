@@ -21,6 +21,9 @@ public class StartScene : Scene
         {
             return;
         }
+
+        var loadingPanel = UIManager.getInstance.Show<LoadingPanelController>("LoadingPanel");
+
         ServerManager.GetInstance.ConnectToGrpcLoginServer();
 
         //-- 로그인서버 접근하여 로그인 요청
@@ -79,6 +82,8 @@ public class StartScene : Scene
         }
 
         isInitialized = true;
+
+        UIManager.getInstance.Hide();
 
         SceneHelper.getInstance.ChangeScene(typeof(IntroScene));
     }
