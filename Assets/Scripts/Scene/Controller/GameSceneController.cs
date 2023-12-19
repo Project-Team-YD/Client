@@ -648,7 +648,6 @@ public class GameSceneController : BaseSceneController
 
                     if (isCollision)
                     {
-                        Debug.Log($"충돌 / {i}번");
                         SetDamageText(monsterList[i].GetAttackPower(), PlayerHUDTransform.position, Color.red).Forget();
                         currentPlayerHp -= monsterList[i].GetAttackPower();
                         SetHpText(currentPlayerHp);

@@ -11,9 +11,15 @@ public class DamageText : MonoBehaviour, IPoolable
     [SerializeField] Material outlineWhite = null;
     [SerializeField] Material outlineBlack = null;
 
+    private RectTransform thisRectTransform = null;
+    private Canvas thisCanvas = null;
+
     private void Awake()
     {
         damageText = GetComponent<TextMeshProUGUI>();
+        thisRectTransform = gameObject.GetComponent<RectTransform>();
+        thisCanvas = gameObject.GetComponentInParent<Transform>().GetComponentInParent<Canvas>();
+
         transitionManager = TransitionManager.getInstance;
     }
     /// <summary>
@@ -24,9 +30,12 @@ public class DamageText : MonoBehaviour, IPoolable
     /// <param name="_color">데미지 텍스트 컬러</param>
     public void SetDamage(float _damage, Vector3 _position, Color _color)
     {
-        gameObject.transform.position = _position;
+        //gameObject.transform.position = _position;
+        var pos = new Vector3(_position.x - thisCanvas.transform.localPosition.x, _position.y - thisCanvas.transform.localPosition.y, 0);
+        thisRectTransform.anchoredPosition = pos;
+
         damageText.text = _damage.ToString();
-        if(_color == Color.red)
+        if (_color == Color.red)
         {
             damageText.fontMaterial = outlineWhite;
         }
@@ -36,13 +45,13 @@ public class DamageText : MonoBehaviour, IPoolable
         }
         damageText.color = _color;
         OnActivate();
-        transitionManager.Play(TransitionManager.TransitionType.Invisible, 1.5f, Vector3.zero, gameObject);                
+        transitionManager.Play(TransitionManager.TransitionType.Invisible, 1.5f, Vector3.zero, gameObject);
     }
     /// <summary>
     /// Damage Text 리셋 함수.
     /// </summary>
     public void ResetText()
-    {        
+    {
         damageText.alpha = 1f;
         OnDeactivate();
     }
