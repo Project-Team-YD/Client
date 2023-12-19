@@ -55,6 +55,7 @@ public class GameSceneController : BaseSceneController
     private CancellationTokenSource timeManagerCancel;
     private CancellationTokenSource damageTextCancel;
     private CancellationTokenSource regenHpCancel;
+    private CancellationTokenSource bossMonsterAttackCancel;
     #endregion
 
     #region InGameUI
@@ -289,6 +290,7 @@ public class GameSceneController : BaseSceneController
         monsterMoveCancel.Cancel();
         monsterCheckCollisionCancel.Cancel();
         timeManagerCancel.Cancel();
+        bossMonsterAttackCancel.Cancel();
         regenHpCancel.Cancel();
         damageTextCancel.Cancel();
 
@@ -371,15 +373,15 @@ public class GameSceneController : BaseSceneController
         obj.Init(EnemyTable.getInstance.GetEnemyInfoByIndex(2));
         bossMonster = obj;
         bossMonster.SetBossTarget(playerTransform);
-        BossMonsterAttackStart().Forget();
+        BossMonsterAttackStart(bossMonsterAttackCancel = new CancellationTokenSource()).Forget();
     }
     /// <summary>
     /// 보스 몬스터 공격범위의 따른 공격가능 여부와 공격패턴 시작.
     /// </summary>
     /// <returns></returns>
-    private async UniTask BossMonsterAttackStart()
+    private async UniTask BossMonsterAttackStart(CancellationTokenSource _cancellationToken)
     {
-        while (true)
+        while (!_cancellationToken.IsCancellationRequested)
         {
             int pattern = Random.Range(0, (int)BossMonsterAttackPattern.Max);
             BossMonsterAttackPattern attackPattern = (BossMonsterAttackPattern)pattern;
@@ -398,7 +400,7 @@ public class GameSceneController : BaseSceneController
                         break;
                 }
             }
-            await UniTask.Delay(2000);
+            await UniTask.Delay(2000, cancellationToken: _cancellationToken.Token);
         }
     }
     /// <summary>
@@ -997,7 +999,7 @@ public class GameSceneController : BaseSceneController
             ENHANCE_POWER = WeaponTable.MELEE_WEAPON_ENHANCE_POWER;
         }
 
-        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower) ;
+        var damage = weapon.attackPower + ((weapon.enhance * ENHANCE_POWER) * weapon.attackPower);
         damage = damage + (damage * playerManager.GetPlayerDamage);
 
         monster.SetDamage(damage);
@@ -1127,8 +1129,11 @@ public class GameSceneController : BaseSceneController
             damageTextCancel.Cancel();
             regenHpCancel.Cancel();
 
-            bossMonster = null;
-
+            if (bossMonster != null)
+            {
+                bossMonsterAttackCancel.Cancel();
+                bossMonster = null;
+            }
             SetPlaying(false);
 
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");

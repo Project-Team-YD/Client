@@ -15,7 +15,8 @@ public class ResultPanelController : UIBaseController
     private const string RANK_BUTTON_TITLE_TEXT = "랭킹 등록";
     private const string TITLE_BUTTON_TITLE_TEXT = "로비로 돌아가기";
     private const string GAMEOVER_TITLE_TEXT = "GAME OVER";
-    private const string RANK_TITLE_TEXT = "랭킹 갱신";
+    private const string RANK_TITLE_TEXT = "랭킹";
+    private const string RANK_TITLE_BEST_RECORD_TEXT = "최고기록갱신";
 
     [SerializeField] private TextMeshProUGUI resultTitleText = null;
     [SerializeField] private TextMeshProUGUI recordTitleText = null;
@@ -82,7 +83,7 @@ public class ResultPanelController : UIBaseController
     /// </summary>
     /// <param name="_isClear"></param> 클리어 여부
     public async void SetData(bool _isClear = false)
-    {        
+    {
         rankGroup.SetActive(false);
 
         var record = TimeManager.getInstance.GetTime;
@@ -94,15 +95,29 @@ public class ResultPanelController : UIBaseController
             var result = await GrpcManager.GetInstance.UpdateTimeAttackRank(requestUpdateTimeAttackRank);
             if ((MessageCode)result.code == MessageCode.Success)
             {
+                var bestRecord = result.recordTime;
+                var rank = result.rank;
+
                 recordText.text = string.Format("{0}:{1:N3}", (int)record / 60, record % 60);
-                bestRecordText.text = string.Format("{0}:{1:N3}", (int)result.recordTime / 60, result.recordTime % 60);
+                bestRecordText.text = string.Format("{0}:{1:N3}", (int)bestRecord / 60, bestRecord % 60);
                 compensationText.text = $"{result.rewardMoney}";
-                
-                if (result.rank != 0)
+
+                if (record == bestRecord)
                 {
-                    rankText.text = $"랭킹 {result.rank}위";
-                    rankGroup.SetActive(true);                    
+                    rankTitleText.text = RANK_TITLE_BEST_RECORD_TEXT;
+                    rankText.text = rank != 0 ? $"현재 {rank}위" : $"개인기록갱신";
+                    rankGroup.SetActive(true);
                 }
+                else
+                {
+                    if (rank != 0)
+                    {
+                        rankTitleText.text = RANK_TITLE_TEXT;
+                        rankText.text = $"현재 {rank}위";
+                        rankGroup.SetActive(true);
+                    }
+                }
+
                 playerManager.CurrentMoney = result.money;
             }
             else
