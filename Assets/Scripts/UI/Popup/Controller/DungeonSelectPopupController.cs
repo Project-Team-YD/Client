@@ -70,6 +70,8 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
             playerManager.CurrentGold = result.gold;
 
             playerManager.UpdatePlayerWeapon(result.slot, result.effect);
+            playerManager.PassiveStateReset();
+
             uiMgr.ClearAllCachedPanel();
             uiMgr.ClearAllPanelStack();
             SceneHelper.getInstance.ChangeScene(typeof(GameScene));

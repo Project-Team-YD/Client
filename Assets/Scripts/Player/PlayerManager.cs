@@ -44,12 +44,7 @@ public class PlayerManager : Singleton<PlayerManager>
 
     private void PassiveItemApply()
     {
-        // 초기화
-        maxHp = 0;
-        regenHp = 0;
-        damage = 0;
-        speed = 0;
-        attackSpeed = 0;
+        PassiveStateReset();
 
         int count = playerPassiveItem.Length;
         for (int i = 0; i < count; i++)
@@ -71,5 +66,15 @@ public class PlayerManager : Singleton<PlayerManager>
         playerPassiveItem = _passive;
         if (playerPassiveItem != null)
             PassiveItemApply();
+    }
+
+    public void PassiveStateReset()
+    {
+        // 초기화
+        maxHp = 0;
+        regenHp = 0;
+        damage = 0;
+        speed = 0;
+        attackSpeed = 0;
     }
 }
