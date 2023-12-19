@@ -286,6 +286,10 @@ public class GameSceneController : BaseSceneController
     /// </summary>
     private async void EndGameWave()
     {
+        monsterMoveCancel.Cancel();
+        monsterCheckCollisionCancel.Cancel();
+        timeManagerCancel.Cancel();
+        regenHpCancel.Cancel();
         damageTextCancel.Cancel();
 
         playerManager.PlayerWeaponController.StopAttack();
@@ -322,11 +326,6 @@ public class GameSceneController : BaseSceneController
         var gameWave = inGameManager.CurrentStage - STAGE_CORRECTION;
         if (_endWave && gameWave != endWave)
         {
-            timeManagerCancel.Cancel();
-            monsterMoveCancel.Cancel();
-            regenHpCancel.Cancel();
-            monsterCheckCollisionCancel.Cancel();
-
             EndGameWave();
         }
         else if (_endWave && gameWave == endWave)
@@ -1045,7 +1044,7 @@ public class GameSceneController : BaseSceneController
         {
             bossMonster.SetState(MonsterState.Die);
             monsterPool.EnqueueObject(bossMonster);
-            // TODO :: 외부 상점용 재화 올라가는 기능 추가 필요..
+
             EndGameWave();
         }
         SetDamageText(damage, bossMonster.GetHUDTransform().position, Color.black).Forget();
