@@ -16,7 +16,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
     private Animator monsterAnim = null;
 
     private Transform targetTransform;
-    private AABB curAABB;
+    private OBB curOBB;
     private Vector3 rangeDirection;
 
     [SerializeField] private RuntimeAnimatorController[] Anim;
@@ -54,7 +54,7 @@ public class EnemyObject : MonoBehaviour, IPoolable
         monsterAnim.runtimeAnimatorController = Anim[(int)type];
         nowState = MonsterState.Chase;
         var tempSize = sprite.rect.size / sprite.pixelsPerUnit;
-        curAABB = new AABB(this.transform, tempSize);
+        curOBB = new OBB(this.transform, tempSize);
         if (type == MonsterType.Boss)
         {
             BossAttackPattern.SetActive(true);
@@ -200,31 +200,19 @@ public class EnemyObject : MonoBehaviour, IPoolable
         gameObject.SetActive(false);
     }
     /// <summary>
-    /// 몬스터 충돌 체크 함수.(AABB 알고리즘 사용)
+    /// 몬스터 충돌 체크 함수.(OBB 알고리즘 사용)
     /// </summary>
     /// <param name="_other"></param>
     /// <returns></returns>
-    public bool OnCheckCollision(AABB _other)
+    public bool OnCheckCollision(OBB _other)
     {
-        if (curAABB == null)
+        if (curOBB == null)
         {
             var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-            curAABB = new AABB(this.transform, size);
+            curOBB = new OBB(this.transform, size);
         }
 
-#if UNITY_EDITOR
-        var aabb = curAABB;
-        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-        Debug.DrawLine(leftTop, rightTop, Color.black);
-        Debug.DrawLine(rightTop, rightBottom, Color.black);
-        Debug.DrawLine(rightBottom, leftBottom, Color.black);
-        Debug.DrawLine(leftBottom, leftTop, Color.black);
-#endif
-        return curAABB.CheckCollisionOBB(_other);
+        return curOBB.CheckCollision(_other);
     }
     /// <summary>
     /// 보스 공격 패턴에 따른 공격 범위 컨트롤 함수.

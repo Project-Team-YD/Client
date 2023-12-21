@@ -622,7 +622,7 @@ public class GameSceneController : BaseSceneController
     }
 
     /// <summary>
-    /// 플레이어 AABB 충돌 체크
+    /// 플레이어 OBB 충돌 체크
     /// </summary>
     /// <param name="_cancellationToken">UniTask CancelToken</param>
     /// <returns></returns>
@@ -633,7 +633,7 @@ public class GameSceneController : BaseSceneController
             // 임시 보스 공격
             if (bossMonster != null)
             {
-                var isCollision = bossMonster.OnCheckCollision(localPlayerController.GetPlayerAABB);
+                var isCollision = bossMonster.OnCheckCollision(localPlayerController.GetPlayerOBB);
 
                 if (isCollision)
                 {
@@ -647,7 +647,7 @@ public class GameSceneController : BaseSceneController
             {
                 for (int i = 0; i < monsterList.Count; i++)
                 {
-                    var isCollision = monsterList[i].OnCheckCollision(localPlayerController.GetPlayerAABB);
+                    var isCollision = monsterList[i].OnCheckCollision(localPlayerController.GetPlayerOBB);
 
                     if (isCollision)
                     {
@@ -737,7 +737,7 @@ public class GameSceneController : BaseSceneController
 
             obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
 
-            // 원거리 무기의 경우 여기서 AABB 적용
+            // 원거리 무기의 경우 여기서 OBB 적용
             // 충돌체크
             var isCheck = CheckMonsterAttack(_weapon, obj);
             if (isCheck)
@@ -790,7 +790,7 @@ public class GameSceneController : BaseSceneController
             obj.transform.position += (direction.normalized * BULLET_SPEED) * Time.deltaTime;
 
             // 충돌체크
-            var isCheck = obj.OnCheckCollision(localPlayerController.GetPlayerAABB);
+            var isCheck = obj.OnCheckCollision(localPlayerController.GetPlayerOBB);
             if (isCheck)
             {
                 bulletPool.EnqueueObject(obj);
@@ -867,7 +867,7 @@ public class GameSceneController : BaseSceneController
                 _bullet.transform.position += (_direction.normalized * (BULLET_SPEED * _bulletSpeed)) * Time.deltaTime;
 
                 // 충돌체크
-                var isCheck = _bullet.OnCheckCollision(localPlayerController.GetPlayerAABB);
+                var isCheck = _bullet.OnCheckCollision(localPlayerController.GetPlayerOBB);
                 if (isCheck)
                 {
                     bulletPool.EnqueueObject(_bullet);
@@ -888,34 +888,15 @@ public class GameSceneController : BaseSceneController
         }
     }
     /// <summary>
-    /// 원거리 무기 AABB
+    /// 원거리 무기 OBB
     /// </summary>
     /// <param name="_bullet"></param>
     /// <returns></returns>
     private bool CheckMonsterAttack(WeaponSlot _weapon, Bullet _bullet)
     {
-#if UNITY_EDITOR
-        var aabb = _bullet.GetBulletAABB;
-        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
-        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
-        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
-        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
-
-        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
-        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
-        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
-        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
-#endif
-
-        // 여기서 보스 공격확인
         if (bossMonster != null)
         {
-            var isCollision = bossMonster.OnCheckCollision(_bullet.GetBulletAABB);
+            var isCollision = bossMonster.OnCheckCollision(_bullet.GetBulletOBB);
 
             if (isCollision)
             {
@@ -928,7 +909,7 @@ public class GameSceneController : BaseSceneController
             for (int i = 0; i < monsterList.Count; i++)
             {
 
-                var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletAABB);
+                var isCollision = monsterList[i].OnCheckCollision(_bullet.GetBulletOBB);
                 if (isCollision)
                 {
                     AttackMonster(_weapon, i);
@@ -940,9 +921,9 @@ public class GameSceneController : BaseSceneController
     }
 
     /// <summary>
-    /// 근접무기 용 충돌 체크
+    /// 근접무기용 충돌 체크
     /// </summary>
-    /// <param name="_aabb"></param>
+    /// <param name="_weapon"></param>
     /// <returns></returns>
     public async UniTask<bool> CheckMonsterAttack(WeaponSlot _weapon)
     {
@@ -950,7 +931,7 @@ public class GameSceneController : BaseSceneController
 
         if (bossMonster != null)
         {
-            var isCollision = bossMonster.OnCheckCollision(_weapon.GetWeaponAABB);
+            var isCollision = bossMonster.OnCheckCollision(_weapon.GetWeaponOBB);
 
             if (isCollision)
             {
@@ -962,7 +943,7 @@ public class GameSceneController : BaseSceneController
         {
             for (int i = 0; i < monsterList.Count; i++)
             {
-                var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponAABB);
+                var isCollision = monsterList[i].OnCheckCollision(_weapon.GetWeaponOBB);
                 if (isCollision)
                 {
                     AttackMonster(_weapon, i);

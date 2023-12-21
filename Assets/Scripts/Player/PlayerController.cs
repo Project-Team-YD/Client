@@ -18,29 +18,18 @@ public class PlayerController : BasePlayerController
 
     private PlayerManager playerManager = null;
 
-    private AABB curAABB;
+    private OBB curOBB;
 
-    public AABB GetPlayerAABB
+    public OBB GetPlayerOBB
     {
         get
         {
-            if (curAABB == null)
+            if (curOBB == null)
             {
-                curAABB = new AABB(this.transform, playerSprite.size);
+                curOBB = new OBB(this.transform, playerSprite.size);
             }
 
-#if UNITY_EDITOR
-            var leftTop = new Vector3(curAABB.GetLeft, curAABB.GetTop, 0);
-            var rightTop = new Vector3(curAABB.GetRight, curAABB.GetTop, 0);
-            var leftBottom = new Vector3(curAABB.GetLeft, curAABB.GetBottom, 0);
-            var rightBottom = new Vector3(curAABB.GetRight, curAABB.GetBottom, 0);
-
-            Debug.DrawLine(leftTop, rightTop, Color.black);
-            Debug.DrawLine(rightTop, rightBottom, Color.black);
-            Debug.DrawLine(rightBottom, leftBottom, Color.black);
-            Debug.DrawLine(leftBottom, leftTop, Color.black);
-#endif
-            return curAABB;
+            return curOBB;
         }
     }
 

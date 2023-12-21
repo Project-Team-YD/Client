@@ -24,7 +24,7 @@ public class WeaponSlot : MonoBehaviour
     private float coolTime;
     private bool isRightWeapon;
 
-    private AABB curAABB;
+    private OBB curOBB;
 
     private CancellationTokenSource cancellationTokenSource;
 
@@ -33,19 +33,19 @@ public class WeaponSlot : MonoBehaviour
     public int GetWeaponID { get { return weaponId; } }
 
     /// <summary>
-    /// 근접무기용 AABB
+    /// 근접무기용 OBB
     /// </summary>
-    public AABB GetWeaponAABB
+    public OBB GetWeaponOBB
     {
         get
         {
-            if (curAABB == null)
+            if (curOBB == null)
             {
                 var size = weaponSprite.sprite.rect.size / weaponSprite.sprite.pixelsPerUnit;
-                curAABB = new AABB(this.transform, size);
+                curOBB = new OBB(this.transform, size);
             }
 
-            return curAABB;
+            return curOBB;
         }
     }
     /// <summary>
@@ -117,25 +117,6 @@ public class WeaponSlot : MonoBehaviour
                             coolTime = 360 / attackSpeeds;
                             transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
 
-#if UNITY_EDITOR
-                            var aabb = GetWeaponAABB;
-                            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-                            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-                            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-                            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-                            Vector3 leftTop2 = aabb.RotatePoint(leftTop);
-                            Vector3 rightTop2 = aabb.RotatePoint(rightTop);
-                            Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
-                            Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
-
-                            Debug.DrawLine(leftTop2, rightTop2, Color.blue);
-                            Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
-                            Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
-                            Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
-#endif
-
-                            // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                             if (isBossAttack == false)
                             {
                                 isBossAttack = await gameSceneController.CheckMonsterAttack(this);
@@ -156,25 +137,6 @@ public class WeaponSlot : MonoBehaviour
                             coolTime = 360 / attackSpeeds;
                             transform.RotateAround(playerTransform.position, Vector3.forward, coolTime * Time.deltaTime);
 
-#if UNITY_EDITOR
-                            var aabb = GetWeaponAABB;
-                            var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-                            var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-                            var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-                            var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-                            Vector3 leftTop2 = aabb.RotatePoint(leftTop);
-                            Vector3 rightTop2 = aabb.RotatePoint(rightTop);
-                            Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
-                            Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
-
-                            Debug.DrawLine(leftTop2, rightTop2, Color.blue);
-                            Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
-                            Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
-                            Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
-#endif
-
-                            // TODO:: 가만히있을땐 문제 없음 이동할때 문제 있음 확인중
                             if (isBossAttack == false)
                             {
                                 isBossAttack = await gameSceneController.CheckMonsterAttack(this);

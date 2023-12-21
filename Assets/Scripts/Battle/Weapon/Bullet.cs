@@ -7,19 +7,19 @@ public class Bullet : MonoBehaviour, IPoolable
     private SpriteRenderer spriteRenderer = null;
     private Transform enemyTransform = null;
     private Transform playerTransform = null;
-    private AABB curAABB;
+    private OBB curOBB;
     private WeaponType weaponType;
-    public AABB GetBulletAABB
+    public OBB GetBulletOBB
     {
         get
         {
-            if (curAABB == null)
+            if (curOBB == null)
             {
                 var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-                curAABB = new AABB(this.transform, size);
+                curOBB = new OBB(this.transform, size);
             }
 
-            return curAABB;
+            return curOBB;
         }
     }
     private void Awake()
@@ -49,7 +49,7 @@ public class Bullet : MonoBehaviour, IPoolable
         }
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-        curAABB = new AABB(this.transform, size);
+        curOBB = new OBB(this.transform, size);
     }
     /// <summary>
     /// 현재 발사체의 무기의 타입을 반환.
@@ -72,7 +72,7 @@ public class Bullet : MonoBehaviour, IPoolable
         transform.rotation = Quaternion.AngleAxis(angle - 45, Vector3.forward);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-        curAABB = new AABB(this.transform, size);
+        curOBB = new OBB(this.transform, size);
     }
     /// <summary>
     /// 보스 몬스터 총알 Sprite지정 함수.
@@ -86,7 +86,7 @@ public class Bullet : MonoBehaviour, IPoolable
         transform.rotation = Quaternion.AngleAxis(angle + 90 + (_rotationAngle * 45), Vector3.forward);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-        curAABB = new AABB(this.transform, size);
+        curOBB = new OBB(this.transform, size);
     }
     /// <summary>
     /// 보스 몬스터 몸체 공격 Sprite지정 함수.
@@ -97,7 +97,7 @@ public class Bullet : MonoBehaviour, IPoolable
         transform.rotation = Quaternion.Euler(0, 0, 0);
 
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-        curAABB = new AABB(this.transform, size);
+        curOBB = new OBB(this.transform, size);
     }
 
     public void OnActivate()
@@ -114,32 +114,14 @@ public class Bullet : MonoBehaviour, IPoolable
     /// </summary>
     /// <param name="_other">OBB</param>
     /// <returns></returns>
-    public bool OnCheckCollision(AABB _other)
+    public bool OnCheckCollision(OBB _other)
     {
-        if (curAABB == null)
+        if (curOBB == null)
         {
             var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
-            curAABB = new AABB(this.transform, size);
+            curOBB = new OBB(this.transform, size);
         }
 
-#if UNITY_EDITOR
-        var aabb = GetBulletAABB;
-        var leftTop = new Vector3(aabb.GetLeft, aabb.GetTop, 0);
-        var rightTop = new Vector3(aabb.GetRight, aabb.GetTop, 0);
-        var leftBottom = new Vector3(aabb.GetLeft, aabb.GetBottom, 0);
-        var rightBottom = new Vector3(aabb.GetRight, aabb.GetBottom, 0);
-
-        Vector3 leftTop2 = aabb.RotatePoint(leftTop);
-        Vector3 rightTop2 = aabb.RotatePoint(rightTop);
-        Vector3 leftBottom2 = aabb.RotatePoint(leftBottom);
-        Vector3 rightBottom2 = aabb.RotatePoint(rightBottom);
-
-        Debug.DrawLine(leftTop2, rightTop2, Color.blue);
-        Debug.DrawLine(rightTop2, rightBottom2, Color.blue);
-        Debug.DrawLine(rightBottom2, leftBottom2, Color.blue);
-        Debug.DrawLine(leftBottom2, leftTop2, Color.blue);
-#endif
-
-        return curAABB.CheckCollisionOBB(_other);
+        return curOBB.CheckCollision(_other);
     }
 }
