@@ -105,9 +105,11 @@ public class TransitionManager : Singleton<TransitionManager>
                     sequenceFadeInOut.Play();
                 }
                 else
+                {
 #if UNITY_EDITOR
                     Debug.Log("이미지에 적용하세요.");
 #endif
+                }
                 break;
             case TransitionType.PositionMove:
                 InitPositionMove(_object, _vector, _time);
@@ -120,9 +122,11 @@ public class TransitionManager : Singleton<TransitionManager>
                     sequenceInvisible.Play();
                 }
                 else
+                {
 #if UNITY_EDITOR
                     Debug.Log("텍스트에 적용해주세요.");
 #endif
+                }
                 break;
             case TransitionType.Rotate:
                 InitRotateInfinity(_object, _vector, _time);

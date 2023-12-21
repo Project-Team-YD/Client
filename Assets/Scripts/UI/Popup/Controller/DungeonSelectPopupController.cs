@@ -78,6 +78,11 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
             uiMgr.ClearAllPanelStack();
             SceneHelper.getInstance.ChangeScene(typeof(GameScene));
         }
+        else if((MessageCode)result.code == MessageCode.Fail)
+        {
+            var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
+            panel.InitPopup(result.message, Application.Quit);
+        }
         else
         {
 #if UNITY_EDITOR

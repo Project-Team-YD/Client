@@ -4,6 +4,7 @@ using UnityEngine;
 
 enum MessageCode
 {
+    Fail = 100,
     Success = 200,
     BadRequest = 400,
     NotFound = 404,
