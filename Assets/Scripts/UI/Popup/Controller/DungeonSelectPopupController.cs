@@ -42,6 +42,8 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
         infinityText = infinityBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         timeAttackText = timeAttackBtn.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
         Initialize();
+
+        infinityBtn.gameObject.SetActive(false);
     }
 
     protected override void Initialize()

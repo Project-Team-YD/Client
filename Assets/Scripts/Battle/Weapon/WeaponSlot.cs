@@ -5,7 +5,7 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 
 public class WeaponSlot : MonoBehaviour
-{   
+{
     private Transform playerTransform = null;
     private SpriteRenderer weaponSprite = null;
     private GameSceneController gameSceneController = null;
@@ -209,10 +209,10 @@ public class WeaponSlot : MonoBehaviour
                             }
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
-                            attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
+                            var attackSpeeds = (attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
+                            attackSpeeds = (attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
-                            await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
+                            await UniTask.Delay((int)attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
                             enemy = null;
                         }
@@ -229,10 +229,10 @@ public class WeaponSlot : MonoBehaviour
                         {
                             gameSceneController.FireBullet(enemy, this).Forget();
 
-                            var attackSpeeds = (int)(attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
-                            attackSpeeds = (int)(attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
+                            var attackSpeeds = (attackSpeed - ((info.enhance * WeaponTable.RANGED_WEAPON_ENHANCE_SPEED) * attackSpeed));
+                            attackSpeeds = (attackSpeeds - (attackSpeeds * playerManager.GetPlayerAttackSpeed)) * 1000;
 
-                            await UniTask.Delay(attackSpeeds, cancellationToken: cancellationTokenSource.Token);
+                            await UniTask.Delay((int)attackSpeeds, cancellationToken: cancellationTokenSource.Token);
 
                             enemy = null;
                         }
