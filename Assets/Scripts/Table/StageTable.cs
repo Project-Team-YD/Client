@@ -16,12 +16,19 @@ public class StageTable : Singleton<StageTable>, ITable
 
         return true;
     }
-
+    /// <summary>
+    /// EndWave 반환 함수.
+    /// </summary>
+    /// <returns>END_STAGE_WAVE</returns>
     public int GetEndWave()
     {
         return END_STAGE_WAVE;
     }
-
+    /// <summary>
+    /// CurrentWave에 대한 StageInfo반환.
+    /// </summary>
+    /// <param name="_index">CurrentWave</param>
+    /// <returns>stageInfos[_index]</returns>
     public StageInfo GetStageInfoByIndex(int _index)
     {
         if (_index >= END_STAGE_WAVE)

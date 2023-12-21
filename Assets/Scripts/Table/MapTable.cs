@@ -15,18 +15,21 @@ public class MapTable : Singleton<MapTable>, ITable
         mapInfos = await TableLoader.getInstance.LoadTableJson<MapInfo[]>("MapInfo");
 
         return true;
-    }    
+    }
 
     /// <summary>
     /// MapInfo by Chapter
     /// </summary>
     /// <param name="_index">ChapterIndex</param>
-    /// <returns></returns>
+    /// <returns>mapInfos[_index]</returns>
     public MapInfo GetMapInfoByIndex(int _index)
     {
         return mapInfos[_index];
     }
-
+    /// <summary>
+    /// Chapters Count
+    /// </summary>
+    /// <returns>mapInfos.Length</returns>
     public int GetMapCount()
     {
         return mapInfos.Length;

@@ -20,17 +20,27 @@ public class EnemyTable : Singleton<EnemyTable>, ITable
         
         return true;
     }
-
+    /// <summary>
+    /// 생성 숫자 반환 함수.
+    /// </summary>
+    /// <returns>createCount</returns>
     public int GetCreateCount()
     {
         return createCount;
     }
-
+    /// <summary>
+    /// 리젠 숫자 반환 함수.
+    /// </summary>
+    /// <returns>regenCount</returns>
     public int GetRegenCount()
     {
         return regenCount;
     }
-
+    /// <summary>
+    /// 몬스터 객체 반환 함수.
+    /// </summary>
+    /// <param name="_index">index</param>
+    /// <returns>enemyInfos[_index]</returns>
     public EnemyInfo GetEnemyInfoByIndex(int _index)
     {
         if (_index >= enemyInfos.Length)

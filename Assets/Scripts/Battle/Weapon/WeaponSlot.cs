@@ -96,8 +96,6 @@ public class WeaponSlot : MonoBehaviour
         return info;
     }
 
-    // TODO :: 여기서 AABB 체크도 같이해서 데미지를 주는게 맞을듯한데 의견 여쭤보기..임시 Controller Update문 함수 
-    // TODO :: 원거리 무기는 Bullet같은 스크립트를 하나 파서 거기서 컨트롤해줘야..........생각해보기
     /// <summary>
     /// 무기 타입별 공격 로직 함수.
     /// while 조건 변경 필요할듯 다음 웨이브 때 공격하려면
@@ -245,7 +243,10 @@ public class WeaponSlot : MonoBehaviour
             }
         }
     }
-
+    /// <summary>
+    /// 보스 몬스터 공격 딜레이 함수.
+    /// </summary>
+    /// <returns></returns>
     private async UniTaskVoid BossAttackDelay()
     {
         await UniTask.Delay(1000);
@@ -253,8 +254,7 @@ public class WeaponSlot : MonoBehaviour
     }
 
     /// <summary>
-    /// yield 어떻게 처리할지
-    /// 이미 공격한 원거리 공격 회수하는거 생각하기
+    /// WeaponAttackCancelToken.Cancel()
     /// </summary>
     public void StopAttack()
     {

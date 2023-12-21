@@ -54,7 +54,9 @@ public class WeaponController : MonoBehaviour
 
         playerManager.PlayerWeaponController = this;
     }
-
+    /// <summary>
+    /// WeaponSlot AttackStart
+    /// </summary>
     public void StartAttack()
     {
         int weaponCount = playerManager.PlayerWeapons.Length;
@@ -63,7 +65,9 @@ public class WeaponController : MonoBehaviour
             slot[i].WeaponAttack();
         }
     }
-
+    /// <summary>
+    /// WeaponSlot AttackStop
+    /// </summary>
     public void StopAttack()
     {
         int slotCount = slot.Length;
@@ -72,7 +76,9 @@ public class WeaponController : MonoBehaviour
             slot[i].StopAttack();
         }
     }
-
+    /// <summary>
+    /// WeaponSlot 셋팅 및 추가시 Update함수.
+    /// </summary>
     public void UpdateWeapon()
     {
         int weaponCount = playerManager.PlayerWeapons.Length;
