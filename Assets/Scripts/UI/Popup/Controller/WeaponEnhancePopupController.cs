@@ -225,7 +225,18 @@ public class WeaponEnhancePopupController : UIBaseController, IPopup
     {
         RequestUpgradeItem upgradeItem = new RequestUpgradeItem();
         upgradeItem.id = weaponIndex;
+        var data = WeaponTable.getInstance.GetInventoryData(weaponIndex);
         var result = await GrpcManager.GetInstance.UpgradeItem(upgradeItem);
+        if(data.enchant == result.enchant)
+        {
+            var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
+            panel.InitPopup("강화에 실패했습니다.");
+        }
+        else
+        {
+            var panel = await UIManager.getInstance.Show<MessageOneButtonBoxPopupController>("MessageOneButtonBoxPopup");
+            panel.InitPopup("강화에 성공했습니다.");
+        }
         PlayerManager.getInstance.CurrentMoney = result.money;
 
         var inventory = await GrpcManager.GetInstance.LoadInventory();
