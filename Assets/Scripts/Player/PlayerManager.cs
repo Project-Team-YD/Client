@@ -42,6 +42,9 @@ public class PlayerManager : Singleton<PlayerManager>
     public float GetPlayerDamage { get { return damage * ONE_HUNDREDTH; } }
     public float GetPlayerAttackSpeed { get { return attackSpeed * ONE_HUNDREDTH; } }
 
+    /// <summary>
+    /// passive item player state setting
+    /// </summary>
     private void PassiveItemApply()
     {
         PassiveStateReset();
@@ -59,6 +62,11 @@ public class PlayerManager : Singleton<PlayerManager>
         }
     }
 
+    /// <summary>
+    /// 서버에서 받은 무기와 패시브 아이템 적용
+    /// </summary>
+    /// <param name="_weapon"></param> player weapon
+    /// <param name="_passive"></param> player passive item
     public void UpdatePlayerWeapon(Weapon[] _weapon, Effect[] _passive)
     {
         playerWeapons = _weapon;
@@ -68,9 +76,11 @@ public class PlayerManager : Singleton<PlayerManager>
             PassiveItemApply();
     }
 
+    /// <summary>
+    /// Passive State Reset
+    /// </summary>
     public void PassiveStateReset()
     {
-        // 초기화
         maxHp = 0;
         regenHp = 0;
         damage = 0;

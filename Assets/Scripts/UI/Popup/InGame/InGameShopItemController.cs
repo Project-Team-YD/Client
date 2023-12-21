@@ -35,6 +35,10 @@ public class InGameShopItemController : MonoBehaviour
         isChoice = false;
     }
 
+    /// <summary>
+    /// shop item data setting
+    /// </summary>
+    /// <param name="_callBack"></param> select index callback
     public void SetShopItemData(Action<int> _callBack)
     {
         callBack = _callBack;
@@ -42,16 +46,24 @@ public class InGameShopItemController : MonoBehaviour
         UpdateItemImage();
     }
 
+    /// <summary>
+    /// item select
+    /// </summary>
     private void OnClickButton()
     {
         callBack(idx);
         isChoice = true;
     }
 
+    /// <summary>
+    /// Avoid duplicate selection
+    /// </summary>
+    /// <param name="_isOn"></param> on/off
     public void OnOffChoiceEffectImage(bool _isOn)
     {
         choiceEffect.enabled = _isOn;
     }
+
     /// <summary>
     /// image update
     /// </summary>
@@ -72,7 +84,7 @@ public class InGameShopItemController : MonoBehaviour
     /// <summary>
     /// 강화 ui active
     /// </summary>
-    /// <param name="_isActive"></param>
+    /// <param name="_isActive"></param> on/off
     public void ActiveEnhance(bool _isActive)
     {
         enhance.gameObject.SetActive(_isActive);

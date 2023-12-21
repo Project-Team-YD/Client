@@ -26,6 +26,10 @@ public class UIJoyPad : MoveHandler
         joypadBackgroundRectTransform.gameObject.SetActive(false);
     }
 
+    /// <summary>
+    /// Joypad inputting
+    /// </summary>
+    /// <param name="_inputPos"></param> input position    
     public void OnJoypad(Vector2 _inputPos)
     {
         if (isPushJoypad == true)
@@ -34,11 +38,18 @@ public class UIJoyPad : MoveHandler
         }
     }
 
+    /// <summary>
+    /// target move
+    /// </summary>
     private void MoveUpdate()
     {
         OnMove(direction, joypadInputSpeed);
     }
 
+    /// <summary>
+    /// Calculating joypad input direction speed
+    /// </summary>
+    /// <param name="_inputPos"></param> input position
     private void MoveJoypad(Vector2 _inputPos)
     {
         Vector2 joypadBackgroundPos = joypadBackgroundRectTransform.position;
@@ -59,6 +70,12 @@ public class UIJoyPad : MoveHandler
         MoveUpdate();
     }
 
+    /// <summary>
+    /// joypad ui renewal
+    /// </summary>
+    /// <param name="_joypadBackgroundPos"></param> joypadBackground ui position
+    /// <param name="_distanceInput"></param> input distance
+    /// <param name="_direction"></param> input direction
     private void UpdateJoypadUI(Vector2 _joypadBackgroundPos, float _distanceInput, Vector2 _direction)
     {
         float distancePos = _distanceInput >= maxDistance ? maxDistance : _distanceInput;
@@ -67,6 +84,10 @@ public class UIJoyPad : MoveHandler
         joypadStickRectTransform.position = _joypadBackgroundPos + moveJoypad;
     }
 
+    /// <summary>
+    /// input down
+    /// </summary>
+    /// <param name="_inputPos"></param> input position
     public void OnJoypadDown(Vector2 _inputPos)
     {
         if (isUsingJoypad == false)
@@ -98,6 +119,9 @@ public class UIJoyPad : MoveHandler
         #endregion
     }
 
+    /// <summary>
+    /// Reset after input
+    /// </summary>
     public void OnJoypadUp()
     {
         joypadBackgroundRectTransform.gameObject.SetActive(false);

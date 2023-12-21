@@ -300,7 +300,7 @@ public class GameSceneController : BaseSceneController
         {
             // show 하기 전에 서버에 데이터 보내고 받은 데이터 넘겨주기
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
-            popup.SetData(true);
+            popup.SetResultData(true);
             PoolManager.getInstance.RemoveObjectPool<EnemyObject>();
             PoolManager.getInstance.RemoveObjectPool<Bullet>();
             PoolManager.getInstance.RemoveObjectPool<DamageText>();
@@ -1146,7 +1146,7 @@ public class GameSceneController : BaseSceneController
             SetPlaying(false);
 
             var popup = await uIManager.Show<ResultPanelController>("ResultPanel");
-            popup.SetData();
+            popup.SetResultData();
 
             joypadController.OnJoypadUp();
             isTouch = false;

@@ -33,21 +33,10 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private TextMeshProUGUI checkText = null;
     #endregion
 
-    /// <summary>
-    /// 동적 생성후 관리 예정
-    /// 슬롯이 없을경우에 한해서만 생성
-    /// 슬롯이 존제 할경우 재사용 권장
-    /// 버튼 연결해줄 콜백 함수 추가 필요
-    /// </summary>
     [SerializeField] private InGameShopItemController shopItemController = null;
 
     [SerializeField] private TextMeshProUGUI possessionGoldText = null;
 
-    /// <summary>
-    /// 상점 아이템
-    /// 왼쪽(위) 장착
-    /// 오른쪽(아래) 장착
-    /// </summary>
     [SerializeField] private Transform itemShopSlotTransform = null;
     [SerializeField] private Transform weaponItemSlotTransform = null;
     [SerializeField] private Transform itemSlotTransform = null;
@@ -58,10 +47,6 @@ public class InGameShopPanelController : UIBaseController
     [SerializeField] private TextMeshProUGUI descriptionText = null;
     [SerializeField] private TextMeshProUGUI priceText = null;
 
-    /// <summary>
-    /// 구매완료 팝업
-    /// 일단 스크립트 따로 안만들고 여기서 관리를 해줘야할지 생각 필요
-    /// </summary>
     [SerializeField] private GameObject buyObjectGroup = null;
     [SerializeField] private Button nextButton = null;
 
@@ -152,10 +137,10 @@ public class InGameShopPanelController : UIBaseController
 
         callBack = null;
     }
-
     /// <summary>
-    /// 서버에서 데이터 받아와주고 1번째 아이템 자동 선택
+    /// 서버에서 구매할수있는 아이템 받아서 출력
     /// </summary>
+    /// <param name="_callback"></param> next wave callback
     public async void SetData(Action _callback)
     {
         callBack = _callback;
@@ -209,7 +194,9 @@ public class InGameShopPanelController : UIBaseController
         }
     }
 
-    // 내가 장착중인 아이템 불러오기
+    /// <summary>
+    /// player item setting
+    /// </summary>
     private void UpdateMyWeaponData()
     {
         var items = playerManager.PlayerWeapons;
@@ -252,6 +239,9 @@ public class InGameShopPanelController : UIBaseController
         }
     }
 
+    /// <summary>
+    /// player passive item setting
+    /// </summary>
     private void UpdateMyPassiveItemData()
     {
         var items = playerManager.PlayerPassiveItem;
@@ -358,6 +348,10 @@ public class InGameShopPanelController : UIBaseController
     }
     #endregion
 
+    /// <summary>
+    /// 상점 아이템 선택 함수
+    /// </summary>
+    /// <param name="_idx"></param> select item index
     private void OnClickItem(int _idx)
     {
         int shopItemCount = shopItemList.Count;
@@ -374,13 +368,13 @@ public class InGameShopPanelController : UIBaseController
         selectItemIndex = _idx;
     }
 
+    #region item info 
     private WeaponInfo GetWeapon(int _id)
     {
         var item = Array.Find(weaponInfos, x => x.weaponId == _id);
         return item;
     }
 
-    // 나중에 아이템 정보 띄우기용
     private void OnClickWeaponData(int _key)
     {
 
@@ -390,4 +384,5 @@ public class InGameShopPanelController : UIBaseController
     {
 
     }
+    #endregion
 }

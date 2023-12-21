@@ -80,9 +80,10 @@ public class ResultPanelController : UIBaseController
 
     /// <summary>
     /// 클리어 결과 서버 연동
+    /// 데이터 갱신
     /// </summary>
     /// <param name="_isClear"></param> 클리어 여부
-    public async void SetData(bool _isClear = false)
+    public async void SetResultData(bool _isClear = false)
     {
         rankGroup.SetActive(false);
 
@@ -149,7 +150,7 @@ public class ResultPanelController : UIBaseController
     }
 
     /// <summary>
-    /// 랭킹 갱신시 팝업 띄우고 팝업 화면 터치시 랭킹 갱신 팝업 꺼주기
+    /// rnak 갱신 팝업 close 버튼
     /// </summary>
     private void OnClickRankButton()
     {

@@ -4,41 +4,42 @@ using UnityEngine;
 
 public class AABB
 {
-    private Vector3 size;
+    private const float SIZE_CORRECTION = 0.5f;
+    private Vector3 halfSize;
     private Transform thisTransform = null;
 
-    public Vector3 GetSize { get { return size; } }
+    public Vector3 GetSize { get { return halfSize; } }
     public Transform GetTransform { get { return thisTransform; } }
 
     /// <summary>
-    /// Setting
+    /// Constructor
     /// </summary>
     /// <param name="_transform"></param> Current Object
     /// <param name="_size"></param> Current Object Size
     public AABB(Transform _transform, Vector3 _size)
     {
-        size = _size * 0.5f;
+        halfSize = _size * SIZE_CORRECTION;
         thisTransform = _transform;
     }
 
     public float GetLeft
     {
-        get { return thisTransform.position.x - size.x; }
+        get { return thisTransform.position.x - halfSize.x; }
     }
 
     public float GetRight
     {
-        get { return thisTransform.position.x + size.x; }
+        get { return thisTransform.position.x + halfSize.x; }
     }
 
     public float GetTop
     {
-        get { return thisTransform.position.y + size.y; }
+        get { return thisTransform.position.y + halfSize.y; }
     }
 
     public float GetBottom
     {
-        get { return thisTransform.position.y - size.y; }
+        get { return thisTransform.position.y - halfSize.y; }
     }
 
     /// <summary>
@@ -106,10 +107,10 @@ public class AABB
         // 거리 벡터
         var dis = Mathf.Abs(Vector3.Dot(_dis, _axis));
 
-        if (dis > Mathf.Abs(Vector3.Dot(_axis, GetTransform.up * size.y))
-            + Mathf.Abs(Vector3.Dot(_axis, GetTransform.right * size.x))
-            + Mathf.Abs(Vector3.Dot(_axis, _other.GetTransform.up * _other.size.y))
-            + Mathf.Abs(Vector3.Dot(_axis, _other.GetTransform.right * _other.size.x)))
+        if (dis > Mathf.Abs(Vector3.Dot(_axis, GetTransform.up * halfSize.y))
+            + Mathf.Abs(Vector3.Dot(_axis, GetTransform.right * halfSize.x))
+            + Mathf.Abs(Vector3.Dot(_axis, _other.GetTransform.up * _other.halfSize.y))
+            + Mathf.Abs(Vector3.Dot(_axis, _other.GetTransform.right * _other.halfSize.x)))
         {
             return false;
         }

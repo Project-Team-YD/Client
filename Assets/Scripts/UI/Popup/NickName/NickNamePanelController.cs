@@ -91,7 +91,7 @@ public class NickNamePanelController : UIBaseController
     /// <summary>
     /// 닉네임 입력 제한
     /// </summary>
-    /// <param name="_text"></param>
+    /// <param name="_text"></param> inputfield 
     private void InputFieldValueChanged(string _text)
     {
         if (_text.Length < MIN_TEXT)

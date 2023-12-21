@@ -31,9 +31,9 @@ public class TimeManager : Singleton<TimeManager>
     }
 
     /// <summary>
-    /// 시간 정지 조건문 추가 예정
+    /// 랭킹을 위한 play time update
     /// </summary>
-    /// <param name="_cancellationToken"></param>
+    /// <param name="_cancellationToken"></param> unitask cancel을 위한 token
     /// <returns></returns>
     public async UniTaskVoid UpdateTime(CancellationTokenSource _cancellationToken)
     {
