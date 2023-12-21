@@ -170,10 +170,7 @@ public class GameSceneController : BaseSceneController
     }
 
     private void Update()
-    {
-        // 다른 팝업 띄워져있을때 joypad안뜨도록 해야함
-        // 조이패드 상단 간섭 금지
-        // 조이패드 임시
+    {        
         if (isPlaying)
         {
             OnClickJoypad();
@@ -262,13 +259,7 @@ public class GameSceneController : BaseSceneController
     }
 
     /// <summary>
-    /// 상점 팝업 닫을때 실행할 것
-    /// 시간은 이어서 할지 or 0부터 시작할지 고민
-    /// update에 필요한 변수 초기화
-    /// StartGameWave를 실행하려하는데 다음 웨이브확인할 방법이?
-    /// StartGameWave안에 createmonster가 있는데 어떻게 할지 확인 필요
-    /// 3,2,1 이라는 큰 텍스트를 보여줘서 다음 웨이브라는것을 표현할지
-    /// startnextwave 실행하면 다음 웨이브 시작임
+    /// 인게임 상점 팝업 닫을때 실행되는 NextWave 시작 함수.
     /// </summary>
     private void StartNextWave()
     {
@@ -325,7 +316,10 @@ public class GameSceneController : BaseSceneController
 
         timeManager.PauseTime();
     }
-
+    /// <summary>
+    /// GameWaveEnd 체크 함수.
+    /// </summary>
+    /// <param name="_endWave"></param>
     private void CheckGameWaveEnd(bool _endWave)
     {
         var gameWave = inGameManager.CurrentStage - STAGE_CORRECTION;
@@ -340,7 +334,10 @@ public class GameSceneController : BaseSceneController
             CreateBossMonster().Forget();
         }
     }
-
+    /// <summary>
+    /// isPlaying 값 Set함수.
+    /// </summary>
+    /// <param name="_value">bool Set Data</param>
     private void SetPlaying(bool _value)
     {
         isPlaying = _value;
@@ -471,7 +468,9 @@ public class GameSceneController : BaseSceneController
             await UniTask.Delay(100, cancellationToken: monsterRegenCancel.Token);
         }
     }
-
+    /// <summary>
+    /// MoveMonster메소드 시작 함수.
+    /// </summary>
     private async void StartMoveMonster()
     {
         await MoveMonster(monsterMoveCancel = new CancellationTokenSource());
@@ -1019,7 +1018,10 @@ public class GameSceneController : BaseSceneController
         }
         SetDamageText(damage, monster.GetHUDTransform().position, Color.black).Forget();
     }
-
+    /// <summary>
+    /// 보스 몬스터를 공격했을때 호출 함수
+    /// </summary>
+    /// <param name="_weapon">공격한 무기의 Slot</param>
     private void BossMonsterAttack(WeaponSlot _weapon)
     {
         if (weapons == null)
@@ -1087,7 +1089,9 @@ public class GameSceneController : BaseSceneController
 
         return false;
     }
-
+    /// <summary>
+    /// 웨이브가 끝나고 꺼내 쓰고 있는 불렛객체 모두를 다시 오브젝트 풀로 담는 함수.
+    /// </summary>
     private void EndWaveActiveBulletObjectEnqueue()
     {
         foreach (Transform item in BulletPoolRoot)
@@ -1101,7 +1105,9 @@ public class GameSceneController : BaseSceneController
             }
         }
     }
-
+    /// <summary>
+    /// 웨이브가 끝나고 꺼내 쓰고 있는 데미지텍스트객체 모두를 다시 오브젝트 풀로 담는 함수.
+    /// </summary>
     private void EndWaveActiveDamageTextObjectEnqueue()
     {
         foreach (Transform item in damageTextRoot)
