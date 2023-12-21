@@ -118,7 +118,7 @@ public class WeaponSelectPopupController : UIBaseController, IPopup
         int inventorysCount = inventorys.Count;
         for (int i = 0; i < inventorysCount; i++)
         {
-            bool isOn = i == _key;
+            bool isOn = inventorys[i].id == _key;
             inventorys[i].OnOffChoiceEffectImage(isOn);
         }
         weaponImage.enabled = true;

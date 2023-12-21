@@ -61,6 +61,12 @@ public class ShopPopupController : UIBaseController, IPopup
     /// <param name="_id">아이템 id</param>
     private void SetDescriptionText(int _id)
     {
+        int itemCount = tableMgr.GetShopDataCount();
+        for (int i = 0; i < itemCount; i++)
+        {
+            bool isOn = items[i].itemId == _id;
+            items[i].OnOffChoiceEffectImage(isOn);
+        }
         itemIndex = _id;
         descriptionText.text = $"이름 : {tableMgr.GetItemInfo(_id).itemName}\n\n" +
             $"{tableMgr.descriptions[_id]}\n\n" +
@@ -88,12 +94,15 @@ public class ShopPopupController : UIBaseController, IPopup
         {
             shopitem = tableMgr.GetShopItem(i);
             items[i].RefreshItemSlot(shopitem.isBuy);
+            items[i].OnOffChoiceEffectImage(false);
         }
         if (_money != null)
         {
             lobbyMoneyText = _money;
             _money.text = $"{PlayerManager.getInstance.CurrentMoney}";
         }
+        descriptionText.text = string.Empty;
+        buyBtn.interactable = false;
     }
     /// <summary>
     /// 상점 구매 기능.
@@ -127,6 +136,12 @@ public class ShopPopupController : UIBaseController, IPopup
     private void OnClickCloseButton()
     {
         descriptionText.text = string.Empty;
+        buyBtn.interactable = false;
+        int itemCount = tableMgr.GetShopDataCount();
+        for (int i = 0; i < itemCount; i++)
+        {
+            items[i].OnOffChoiceEffectImage(false);
+        }
         uiMgr.Hide();
     }
 

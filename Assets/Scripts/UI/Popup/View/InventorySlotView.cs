@@ -14,7 +14,7 @@ public class InventorySlotView : MonoBehaviour
 
     private WeaponEnhancePopupController weaponEnhancePopupController = null;
     private WeaponSelectPopupController weaponSelectPopupController = null;
-    private int id;
+    [NonSerialized] public int id;
 
     /// <summary>
     /// 무기 이미지 지정 함수.
