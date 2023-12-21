@@ -23,12 +23,18 @@ public class ShopItemSlotView : MonoBehaviour
         soldOutDimObject.SetActive(_item.isBuy);
         itemBtn.onClick.AddListener(OnClickItemSlot);
     }
-
+    /// <summary>
+    /// 선택한 아이템 효과 이미지 OnOff함수.
+    /// </summary>
+    /// <param name="_isOn">On/Off여부</param>
     public void OnOffChoiceEffectImage(bool _isOn)
     {
         choiceImage.enabled = _isOn;
     }
-
+    /// <summary>
+    /// 상점 구매한 아이템 Dim효과를 켜주기 위해 구매 후 새로 고쳐주는 함수.
+    /// </summary>
+    /// <param name="_isBuy">아이템 샀는지 bool값</param>
     public void RefreshItemSlot(bool _isBuy)
     {
         soldOutDimObject.SetActive(_isBuy);

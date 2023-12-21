@@ -27,10 +27,7 @@ public class LobbySceneController : BaseSceneController
         playerNickName.text = PlayerManager.getInstance.UserName;
         moneyText.text = $"{PlayerManager.getInstance.CurrentMoney}";
     }
-    private void Start()
-    {
-
-    }
+    
     /// <summary>
     /// 던전 입장 버튼 이벤트.
     /// </summary>

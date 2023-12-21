@@ -7,7 +7,7 @@ public class BaseSceneController : MonoBehaviour
 {
     public string musicName = string.Empty;
 
-    static protected int chapterIndex; // ÀÓ½Ã..³ªÁß¿¡ ·Îºñ¿¡¼­ ¼±ÅÃÇÑ Ã©ÅÍ¿Í Ä³¸¯ÅÍµîÀ» ¸Å´ÏÀú·Î ¸¸µé¾î¼­ °ÔÀÓ¾À¿¡ ³Ñ°ÜÁà¾ß µÉ °Í °°À½..
+    static protected int chapterIndex; // ì„ì‹œ..ë‚˜ì¤‘ì— ë¡œë¹„ì—ì„œ ì„ íƒí•œ ì±•í„°ì™€ ìºë¦­í„°ë“±ì„ ë§¤ë‹ˆì €ë¡œ ë§Œë“¤ì–´ì„œ ê²Œì„ì”¬ì— ë„˜ê²¨ì¤˜ì•¼ ë  ê²ƒ ê°™ìŒ..
     protected MapInfo chapterMap;
     private Sprite mapImage = null;
 
@@ -21,7 +21,7 @@ public class BaseSceneController : MonoBehaviour
     protected PlayerController localPlayerController = null;
     [SerializeField] protected Transform playerTransform = null;
 
-    // TODO:: ÇÃ·¹ÀÌ¾î Á¤º¸ °¡Áö°í ÀÖ¾î¾ßÇÔ
+    // TODO:: í”Œë ˆì´ì–´ ì •ë³´ ê°€ì§€ê³  ìˆì–´ì•¼í•¨
     #endregion
 
     #region Camera
@@ -81,6 +81,11 @@ public class BaseSceneController : MonoBehaviour
 
     }        
 
+    /// <summary>
+    /// Map Sprite ë°˜í˜¸ë‚˜ í•¨ìˆ˜.
+    /// </summary>
+    /// <param name="_imageName">SpriteName</param>
+    /// <returns>Sprite</returns>
     protected Sprite GetMapSprite(string _imageName)
     {
         mapImage = Resources.Load<Sprite>($"Image/{_imageName}");
