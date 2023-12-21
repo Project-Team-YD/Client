@@ -24,7 +24,13 @@ public class MessageTwoButtonBoxPopupController : UIBaseController, IPopup
         okButton.onClick.AddListener(OnClickOkButton);
         cancelButton.onClick.AddListener(OnClickCancelButton);
     }
-
+    /// <summary>
+    /// Popup 셋팅 함수.
+    /// </summary>
+    /// <param name="_content">Text 내용</param>
+    /// <param name="_callback">Ok버튼 이벤트 함수.</param>
+    /// <param name="_okText">Ok버튼 문구.</param>
+    /// <param name="_cancelText">Cancel버튼 문구.</param>
     public void InitPopup(string _content, Action _callback = null, string _okText = "확인", string _cancelText = "취소")
     {
         uiMgr = UIManager.getInstance;

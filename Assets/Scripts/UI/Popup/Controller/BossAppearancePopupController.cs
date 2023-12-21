@@ -35,7 +35,10 @@ public class BossAppearancePopupController : UIBaseController, IPopup
         bossText.text = BOSS_APPEARANCE_TEXT;
         DimBackgroundImageFadeInOut().Forget();
     }
-
+    /// <summary>
+    /// DimImage DoTween FadeInOut && PositionMove Start 함수.
+    /// </summary>
+    /// <returns></returns>
     private async UniTask DimBackgroundImageFadeInOut()
     {
         transitionMgr.Play(TransitionManager.TransitionType.FadeInOut, 1.0f, Vector3.zero, backgroundImage.gameObject);

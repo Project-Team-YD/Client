@@ -43,7 +43,7 @@ public class PausePopupController : UIBaseController, IPopup
         timeMgr.PlayTime();
         callback?.Invoke(true);
     }
-
+    
     public void SetCallback(Action<bool> _callback)
     {
         callback = _callback;
