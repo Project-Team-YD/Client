@@ -34,7 +34,9 @@ namespace HSMLibrary.Tables
             try
             {
                 string path = Path.Combine("Table", $"{_path}");
+#if UNITY_EDITOR
                 Debug.Log($"PATH : {path}");
+#endif
                 //.. TODO :: Addressable / ?????? ????
                 var asset = await Resources.LoadAsync(path, typeof(TextAsset)) as TextAsset;
 

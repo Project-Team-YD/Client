@@ -91,7 +91,9 @@ public class RankingPopupController : UIBaseController, IPopup
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log("Server Error");
+#endif
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace HSMLibrary.Scene
@@ -40,7 +40,9 @@ namespace HSMLibrary.Scene
             while (asyncOp.isDone == false)
             {
                 //.. TODO :: Progress 처리
+#if UNITY_EDITOR
                 Debug.Log(string.Format("Load Scene : {0} / Progress : {1}", sceneName, asyncOp.progress));
+#endif
                 yield return new WaitForEndOfFrame();
             }
 

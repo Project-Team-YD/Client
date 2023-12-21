@@ -65,7 +65,9 @@ namespace Server
             {
                 { "uuid", UUID }
             };
+#if UNITY_EDITOR
             Debug.Log("uuid::" + UUID);
+#endif
             //CallOptions callOptions = new CallOptions(metaData);
 
             //var response = grpcGameServerClient.GlobalGrpcStreamBroadcast(metaData);

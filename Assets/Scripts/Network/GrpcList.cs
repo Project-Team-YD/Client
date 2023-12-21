@@ -61,7 +61,9 @@ public partial class GrpcManager
         string jsonData = JsonConvert.SerializeObject(requestPacket);
 
         string result = await SendRpcAsync(rpcKey, jsonData);
+#if UNITY_EDITOR
         Debug.Log(result);
+#endif
         var response = JsonConvert.DeserializeObject<ResponseBuyItem>(result);
         return response;
     }
@@ -71,7 +73,9 @@ public partial class GrpcManager
         string jsonData = JsonConvert.SerializeObject(requestPacket);
 
         string result = await SendRpcAsync(rpcKey, jsonData);
+#if UNITY_EDITOR
         Debug.Log(result);
+#endif
         var response = JsonConvert.DeserializeObject<ResponseUpgradeItem>(result);
         return response;
     }
@@ -124,7 +128,9 @@ public partial class GrpcManager
         string jsonData = JsonConvert.SerializeObject(requestPacket);
 
         string result = await SendRpcAsync(rpcKey, jsonData);
+#if UNITY_EDITOR
         Debug.Log(result);
+#endif
         var response = JsonConvert.DeserializeObject<ResponseUpdateTimeAttackRank>(result);
         return response;
     }
@@ -133,7 +139,9 @@ public partial class GrpcManager
     {
         string rpcKey = "game_over";
         string result = await SendRpcAsync(rpcKey);
+#if UNITY_EDITOR
         Debug.Log(result);
+#endif
         var response = JsonConvert.DeserializeObject<ResponseGameOver>(result);
         return response;
     }
@@ -142,7 +150,9 @@ public partial class GrpcManager
     {
         string rpcKey = "load_time_attack_rank_table";
         string result = await SendRpcAsync(rpcKey);
+#if UNITY_EDITOR
         Debug.Log(result);
+#endif
         var response = JsonConvert.DeserializeObject<ResponseLoadTimeAttackRankTable>(result);
         return response;
     }

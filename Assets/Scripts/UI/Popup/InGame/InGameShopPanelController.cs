@@ -168,8 +168,7 @@ public class InGameShopPanelController : UIBaseController
         RequestLoadIngameShop loadIngameShop = new RequestLoadIngameShop();
         loadIngameShop.currentStage = inGameManager.CurrentStage;
         loadIngameShop.gold = (int)playerManager.CurrentGold;
-        var result = await GrpcManager.GetInstance.LoadIngameShop(loadIngameShop);
-        Debug.Log($"{InGameManager.getInstance.CurrentStage}");
+        var result = await GrpcManager.GetInstance.LoadIngameShop(loadIngameShop);        
         if ((MessageCode)result.code == MessageCode.Success)
         {
             int count = result.items.Length;
@@ -204,7 +203,9 @@ public class InGameShopPanelController : UIBaseController
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log("ServerError");
+#endif
         }
     }
 
@@ -339,7 +340,9 @@ public class InGameShopPanelController : UIBaseController
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log("ServerError");
+#endif
         }
     }
 

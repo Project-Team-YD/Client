@@ -122,7 +122,9 @@ public class ResultPanelController : UIBaseController
             }
             else
             {
+#if UNITY_EDITOR
                 Debug.Log("Server Error");
+#endif
             }
         }
         else
@@ -136,7 +138,9 @@ public class ResultPanelController : UIBaseController
             }
             else
             {
+#if UNITY_EDITOR
                 Debug.Log("Server Error");
+#endif
             }
         }
 

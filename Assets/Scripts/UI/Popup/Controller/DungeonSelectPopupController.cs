@@ -80,7 +80,9 @@ public class DungeonSelectPopupController : UIBaseController, IPopup
         }
         else
         {
+#if UNITY_EDITOR
             Debug.Log("ServerError");
+#endif
         }
     }
     /// <summary>

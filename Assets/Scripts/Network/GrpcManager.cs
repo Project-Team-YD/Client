@@ -80,7 +80,9 @@ public partial class GrpcManager
             };
             var metaData = new Metadata();
             metaData.Add("UUID", ServerManager.GetInstance.UUID);
+#if UNITY_EDITOR
             Debug.Log($"SendRpcAsync:: RpcKey:{rpcKey}/message:{message}/UUID:{ServerManager.GetInstance.UUID}");
+#endif
             GlobalGrpcResponse response = await ServerManager.GetInstance.grpcGameServerClient.GlobalGRpcAsync(request, metaData);
             return response.Message;
         }
@@ -157,19 +159,24 @@ public partial class GrpcManager
                     var response = call.ResponseStream.Current;
                     var opcode = call.ResponseStream.Current.Opcode;
                     // 여기서 수신된 응답을 처리
+#if UNITY_EDITOR
                     Debug.Log($"Received message: {response.Message}");
+#endif
                     switch(opcode)
                     {
                         case (int)Opcode.HEARTBEAT:
                             var requestPacket = new RequestHeartBeat();
                             requestPacket.heartBeat = ServerManager.GetInstance.heartBeat;
-
+#if UNITY_EDITOR
                             Debug.Log($"Request HeartBeat!! HeartBeat:{requestPacket.heartBeat}");
+#endif
                             var responsePacket = await CheckHeartBeat(requestPacket);
                             if (responsePacket.code == (int)MessageCode.Success)
                             {
                                 ServerManager.GetInstance.heartBeat = responsePacket.heartBeat;
+#if UNITY_EDITOR
                                 Debug.Log($"Change HeartBeat!! HeartBeat:{responsePacket.heartBeat}");
+#endif
                             }
                             break;
                         case (int)Opcode.DUPLICATE_LOGIN:

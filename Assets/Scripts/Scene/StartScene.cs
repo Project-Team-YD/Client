@@ -33,8 +33,10 @@ public class StartScene : Scene
 
         string result = $"Response MessageCode:{loginResponse.code}/{loginResponse.message}/{loginResponse.UUID}";
 
+#if UNITY_EDITOR
         Debug.Log(result);
         Debug.Log($"HeartBeat:{loginResponse.heartBeat}");
+#endif
         //-- 로그인 성공시
         if (loginResponse.code == (int)MessageCode.Success)
         {
@@ -54,7 +56,9 @@ public class StartScene : Scene
             }
             catch (System.OperationCanceledException)
             {
+#if UNITY_EDITOR
                 Debug.Log("클라이언트에서 루프가 중지 되었습니다.");
+#endif
             }
         }
         else
