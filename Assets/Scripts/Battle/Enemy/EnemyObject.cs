@@ -274,7 +274,10 @@ public class EnemyObject : MonoBehaviour, IPoolable
         }
         return false;
     }
-
+    /// <summary>
+    /// 공격 범위의 메인 방향을 가져오는 함수.
+    /// </summary>
+    /// <returns>Vector3</returns>
     public Vector3 GetAttackRangeDirection()
     {
         return rangeDirection;

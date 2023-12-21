@@ -74,7 +74,11 @@ public class Bullet : MonoBehaviour, IPoolable
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, size);
     }
-
+    /// <summary>
+    /// 보스 몬스터 총알 Sprite지정 함수.
+    /// </summary>
+    /// <param name="_direction">Vector3 방향</param>
+    /// <param name="_rotationAngle">int 총알 회전값.</param>
     public void SetBossMonsterBulletSprite(Vector3 _direction, int _rotationAngle)
     {
         spriteRenderer.sprite = Resources.Load<Sprite>($"Weapon/Boss_bullet");
@@ -84,7 +88,9 @@ public class Bullet : MonoBehaviour, IPoolable
         var size = spriteRenderer.sprite.rect.size / spriteRenderer.sprite.pixelsPerUnit;
         curAABB = new AABB(this.transform, size);
     }
-
+    /// <summary>
+    /// 보스 몬스터 몸체 공격 Sprite지정 함수.
+    /// </summary>
     public void SetBossMonsterBodyAttackSprite()
     {
         spriteRenderer.sprite = Resources.Load<Sprite>($"Monster/Boss/Boss");
@@ -103,7 +109,11 @@ public class Bullet : MonoBehaviour, IPoolable
     {
         gameObject.SetActive(false);
     }
-
+    /// <summary>
+    /// Bullet 객체 충돌 체크 함수.
+    /// </summary>
+    /// <param name="_other">OBB</param>
+    /// <returns></returns>
     public bool OnCheckCollision(AABB _other)
     {
         if (curAABB == null)
