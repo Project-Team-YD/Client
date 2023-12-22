@@ -2,10 +2,10 @@
 	{
 		"name": "CloseMonster",
 		"type": "Close",
-		"hp": 20,
+		"hp": 15,
 		"moveSpeed": 3,
 		"attackDistance": 0,
-		"attackPower": 10
+		"attackPower": 6
 	},
 	{
 		"name": "LongMonster",
@@ -13,14 +13,14 @@
 		"hp": 10,
 		"moveSpeed": 1.5,
 		"attackDistance": 4,
-		"attackPower": 5
+		"attackPower": 4
 	},
 	{
 		"name": "BossMonster",
 		"type": "Boss",
-		"hp": 5000,
+		"hp": 500,
 		"moveSpeed": 5,
 		"attackDistance": 20,
-		"attackPower": 50
+		"attackPower": 15
 	}
 ]
