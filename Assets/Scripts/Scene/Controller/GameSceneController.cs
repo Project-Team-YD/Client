@@ -170,7 +170,7 @@ public class GameSceneController : BaseSceneController
     }
 
     private void Update()
-    {        
+    {
         if (isPlaying)
         {
             OnClickJoypad();
@@ -1142,7 +1142,7 @@ public class GameSceneController : BaseSceneController
     }
 
     /// <summary>
-    /// hp regen item effect
+    /// hp regen passive item effect apply
     /// </summary>
     /// <param name="_cancellationToken"></param>
     /// <returns></returns>
@@ -1153,7 +1153,7 @@ public class GameSceneController : BaseSceneController
             var regenHp = playerManager.GetPlayerRegenHp;
             if (regenHp > 0)
             {
-                var maxHp = playerMaxHp + +(playerMaxHp * playerManager.GetPlayerMaxHP);
+                var maxHp = playerMaxHp + (playerMaxHp * playerManager.GetPlayerMaxHP);
                 if (currentPlayerHp < maxHp)
                 {
                     currentPlayerHp += regenHp;
