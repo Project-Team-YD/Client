@@ -1,12 +1,18 @@
 ---
-**Client- 양윤호 / 김도영**
-**Server- 엄재창**
+작업 파트
+---
+---
+Client- 양윤호 / 김도영
 ---
 * Client 영상 링크 : https://youtu.be/ln_rDEjQUak
+---
+Server- 엄재창
+---
+
 * Server 영상 링크 : https://youtu.be/6zgo1bKeIv0
   
-ProjectYD는 전 직장동료 3명이 같이 만든 포트폴리오 프로젝트입니다.
-프로젝트 FrameWork는 전 직장 팀장님께 받은걸 Base로 사용했습니다.
+ProjectYD는 3인 프로젝트입니다.  
+프로젝트 클라이언트 FrameWork는 전 직장 팀장님께 받은걸 Base로 사용했습니다.
 
 ---
 개별 작업 (Client)
